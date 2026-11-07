@@ -191,7 +191,7 @@ sidecar/test/fixtures/agent/
 2. 在 `providers/registry.mjs` 注册一行（数组追加，不改别的）
 3. 录一份真实交互，存 `test/fixtures/agent/<name>.*`
 4. `node --test test/agent-conformance.test.mjs` 全绿
-5. 设置页能选中它，握手返回 `ok`
+5. `pgh agent status` 里它是 `ok`，设置页能看到它（选中用 `pgh agent use <name>`）
 
 **合计改动：1 个新文件 + 1 行注册 + 1 份 fixture。** 上层零改动 —— 这就是这一层存在的全部理由。
 
@@ -278,7 +278,7 @@ UI 得特判某个工具名——这正是 §4 禁止的「按名字分支」，
 2. 复制 `providers/_template.mjs` → `remote.mjs`
 3. 归一化后与 `expected.events.json` 对齐
 4. `node --test test/agent-conformance.test.mjs` 全绿（§9 那 5 条）
-5. 设置页能选中、握手返回 `ok`
+5. `pgh agent status` 里它是 `ok`；`pgh agent use <name>` 能选中（设置页只有只读展示，见 §13.5）
 
 改动量仍是「1 个新文件 + 1 行注册 + 1 份 fixture」，上层零改动。
 

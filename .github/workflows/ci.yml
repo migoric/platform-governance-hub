@@ -1,0 +1,75 @@
+name: CI
+
+# 一条命令的放大版：CI 不另写规则，全部走 scripts/check.sh，阈值只在 scripts/gates.env 里定义一次。
+# 拆分原则按「跑得动的地方」而不是「概念上的模块」：
+#   js   —— sidecar 与四个静态门禁，Linux 即可，几十秒
+#   rust —— GPUI 要 Metal 与 macOS SDK，只能上 macOS runner，且贵，所以只在 GovernanceHub 落地后才真跑
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# 同一分支的新推送取消旧跑批：门禁只看最新一次，排队等旧提交没有意义
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  # 与 scripts/gates.env 相邻但不重复：这里只放 CI 环境变量
+  FORCE_COLOR: "1"
+
+jobs:
+  js:
+    name: sidecar + 静态门禁
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          # sidecar 零依赖，不装任何包；写 cache 只会拖慢
+          cache: ""
+
+      - name: 单测 + 覆盖率 + 契约 + 边界 + 敏感信息 + 行数
+        run: bash scripts/check.sh js
+
+  rust:
+    name: Rust 编译 + 单测 + 结构快照
+    runs-on: macos-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      # GovernanceHub 尚未落地时整段跳过：跳过要在日志里明确写出来，不能假装通过
+      - name: 探测 GovernanceHub 是否已落地
+        id: probe
+        run: |
+          if [ -f GovernanceHub/Cargo.toml ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::GovernanceHub/Cargo.toml 不存在，Rust 门禁跳过（跳过 ≠ 通过）"
+          fi
+
+      - name: 安装 Rust（含 rustfmt，gpui 的 build script 会调）
+        if: steps.probe.outputs.present == 'true'
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+
+      - name: 缓存依赖
+        if: steps.probe.outputs.present == 'true'
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: GovernanceHub
+
+      - name: cargo build + test + 结构快照回归
+        if: steps.probe.outputs.present == 'true'
+        run: bash scripts/check.sh rust

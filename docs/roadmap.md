@@ -121,6 +121,25 @@ category-certs 4 / eu-market 3）+ 8 份词典；`pgh check` / `pgh rules list` 
 
 第 4 条是这一档的真正验收 —— 它模拟的就是「以后接新 agent 服务」那一天。
 
+**进度（2026-11-07）**
+
+sidecar 侧已落地：事件契约（7 种 + 铁律校验，违规标识与 Rust `event.rs` 逐字同名）、
+Provider 接口注释、注册表、三个 provider（`replay` 可用 / `claude-cli` 翻译层写好但端到端未验证 /
+`remote` 空壳且只失败）、`_template` 接入骨架、握手与降级阶梯、4 个只读工具、
+`pgh agent list / handshake / run / tool`。
+
+验收对照：
+
+| 条目 | 状态 |
+|---|---|
+| 1. 三条门禁全过 | ✅ 外部字段名与 `provider ==` 两条是 M0 预埋的 `check-boundaries.mjs`，新代码天然通过；每个 provider 有同名 fixture 由 conformance 测试保证 |
+| 2. replay 当主 provider 时 UI 明确标注 | ⚠️ CLI 已标（stderr「回放数据，不是真实分析」），UI 还没接 |
+| 3. 断网 + 只装 replay 仍可用 | ✅ 本机实测就是这条路（claude 没装、remote 没配），`run` 正常出事件 |
+| 4. 接入演练（≤2 文件，15 分钟绿） | ⏳ 未做。`_template.mjs` 在，但还没真按 checklist 走一遍计时 |
+
+**没做到的**：工具面没接进 provider 回路；UI 未消费事件流；`claude-cli` 的映射是
+按公开格式手写的，不是真实录制 —— 详见 [`agent-acl.md §13`](agent-acl.md)。
+
 ---
 
 ## M3 — 接真实数据与产出物

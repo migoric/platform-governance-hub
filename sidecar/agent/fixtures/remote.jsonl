@@ -1,0 +1,7 @@
+// remote 的期望事件 —— 对端未就绪时的**诚实失败**形态。
+//
+// 注意这不是「正常会话」的样例，而是「配不上就得说清楚」的样例。
+// 它必须能过 conformance 的第 1、4 条：事件序列确定、error 后有 done。
+{"kind":"started","sessionId":"sess-remote-unavailable","provider":"remote","capabilities":{"streaming":false,"tools":false,"vision":false,"cost":false,"maxSteps":0}}
+{"kind":"error","code":"E_REMOTE_NOT_CONFIGURED","message":"远程 hub 未配置","retryable":false}
+{"kind":"done","reason":"error"}

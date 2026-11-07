@@ -281,3 +281,63 @@ UI 得特判某个工具名——这正是 §4 禁止的「按名字分支」，
 5. 设置页能选中、握手返回 `ok`
 
 改动量仍是「1 个新文件 + 1 行注册 + 1 份 fixture」，上层零改动。
+
+---
+
+## 13. 实现进度（2026-11-07，M2 第一刀）
+
+已落地（sidecar 侧）：
+
+| 文件 | 内容 |
+|---|---|
+| `sidecar/agent/contract.mjs` | 7 种事件、`CONTRACT_VERSION`、结构校验、铁律校验（`validateTimeline`）、`joinText` / `sumCost` / `toolTrace` |
+| `sidecar/agent/provider.mjs` | Provider / StartRequest / Handshake 的类型注释，**没有实现** |
+| `sidecar/agent/providers/registry.mjs` | 注册表：数组顺序就是阶梯顺序 |
+| `sidecar/agent/providers/replay.mjs` | 回放 `sidecar/agent/fixtures/replay.jsonl`；`attribution() = { real: false }` |
+| `sidecar/agent/providers/claude-cli.mjs` | 本机 claude 的翻译层 + 进程层；**端到端未验证，见下** |
+| `sidecar/agent/providers/remote.mjs` | 空实现：一律 `E_REMOTE_NOT_CONFIGURED` / `E_REMOTE_NOT_IMPLEMENTED` |
+| `sidecar/agent/providers/_template.mjs` | 接入骨架，**故意不注册** |
+| `sidecar/agent/ladder.mjs` | `handshake()` + `resolveAgent()`，产出「用了谁 + 为什么」 |
+| `sidecar/agent/tools.mjs` | 4 个只读工具，统一脱敏 + 32KB 截断 |
+| `sidecar/cli/commands/agent.mjs` | `pgh agent list / handshake / run / tool` |
+
+### 13.1 两条设计选择的理由
+
+**违规标识与 Rust 同名。** `contract.mjs` 的 `started_first` / `started_once` /
+`tool_call_paired` / `tool_result_paired` / `error_needs_done` 与
+`crates/hub-agent/src/event.rs` 的 `rule` 字面量逐字相同。同一份事件流，两边必须
+给出同一份诊断 —— 否则「同一套契约」只是说法。`agent-contract.test.mjs` 里有一条
+测试专门盯这个集合。
+
+**谁能用由 provider 自己说。** `probe()` 回答「我能不能用」，`attribution()` 回答
+「我产出的是不是真实分析」。`ladder.mjs` 不判断名字，`check-boundaries.mjs` 的
+「不许 `provider === "x"`」门禁因此仍然漂亮地通过 —— 加第四个 provider 时，
+阶梯与门禁都不用改。
+
+### 13.2 没做到的事，写在这里
+
+1. **claude-cli 端到端未验证。** 开发机没装 `claude`，`translateLine` 的映射依据的是
+   公开输出格式，`sidecar/test/fixtures/agent/claude-cli.stream.jsonl` 是**手写样例，
+   不是真实录制**。它证明了「给定这样的行，翻译与收尾是对的」（进程层也用
+   `fake-claude.mjs` 跑过真 spawn），**没有**证明真实 claude 输出长这样。
+   验证路径：在有 claude 的机器上录一份真实交互替换该文件，再跑 conformance。
+2. **remote 是空壳。** 对端不存在，所以它只会失败，理由分别是「未配置」与「协议未接入」。
+   故意不发请求 —— 一个没有对端的 HTTP 客户端会把「服务没上线」伪装成「网络抖了一下」。
+3. **工具面还没有接进 provider。** 4 个工具能通过 `pgh agent tool` 单独验证，
+   但 provider 自己没有工具回路（模型请求工具 → 内核执行 → 回填）。
+   现在的约定是「工具回路归 provider 自己」，`_template.mjs` 里写明了这条。
+   接真实服务时若发现不适合，再改接口 —— 现在没有第二个实现，改了也无从验证。
+4. **UI 没接。** 任务详情仍读 M0 的静态投影（`agent/tasks.mjs`），没有消费事件流。
+   设置页的 provider 选择与握手结果也没做。这是 M2 的下一刀。
+
+### 13.3 验证方式
+
+```bash
+pgh agent list                    # 三个 provider 各自的握手结论
+pgh agent handshake               # 走阶梯，看降到了哪一层、为什么
+pgh agent run --prompt "..."      # 跑一次，事件流打到 stdout（--json 逐行）
+pgh agent tool rule_lookup --args '{"ruleId":"listing.title.absolute_terms"}'
+```
+
+本机实测：`remote` 与 `claude-cli` 都握手失败并给出原因，自动降到 `replay`，
+`run` 输出 11 个事件 / 2 次工具 / 成本显示「—」（不是 0）。

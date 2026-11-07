@@ -101,9 +101,15 @@ test("pgh tasks 缺 --mock → 退出码 2", (t) => {
 test("main：help / version / 未知命令", (t) => {
   const { logs, io } = sandbox(t)
   assert.equal(main([], io), 0)
-  assert.match(logs.join("\n"), /pgh 0\.2\.0-m1/)
+  // 断言格式而不是具体版本号：升版本不该逼着改测试
+  assert.match(logs.join("\n"), /^pgh \d+\.\d+\.\d+-m\d+/)
   assert.equal(main(["--version"], io), 0)
-  assert.match(logs.at(-1), /^0\.2\.0-m1$/)
+  assert.match(logs.at(-1), /^\d+\.\d+\.\d+-m\d+$/)
+
+  // 帮助里的版本与 --version 必须是同一个来源，不能各写一遍
+  const helpVersion = logs.join("\n").match(/^pgh (\S+)/)?.[1]
+  assert.equal(helpVersion, logs.at(-1))
+
   assert.equal(main(["nope"], io), 2)
   assert.equal(main(["snapshot", "--help"], io), 0)
 })

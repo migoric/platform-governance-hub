@@ -1,0 +1,11 @@
+// claude-cli 的期望事件序列 —— 由 test/fixtures/agent/claude-cli.stream.jsonl 翻译而来。
+//
+// ⚠️ 同样地：原始样例是手写的，不是真实录制。这份期望值证明的是「翻译规则」，
+// 不是「真实服务如此」。真实录制回来后两者要一起替换。
+{"kind":"started","sessionId":"sess-claude-sample","provider":"claude-cli","capabilities":{"streaming":true,"tools":true,"vision":true,"cost":true,"maxSteps":8}}
+{"kind":"text","delta":"先把这个 SKU 读出来。"}
+{"kind":"tool_call","callId":"call-1","name":"snapshot_query","args":{"section":"items","itemId":"it_8f21a"}}
+{"kind":"tool_result","callId":"call-1","ok":true,"summary":"{\"id\":\"it_8f21a\"}","bytes":16}
+{"kind":"text","delta":"标题里有 Best，命中绝对化用语。"}
+{"kind":"usage","inputTokens":1280,"outputTokens":96,"costUsd":0.0031}
+{"kind":"done","reason":"ok"}

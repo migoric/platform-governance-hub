@@ -29,9 +29,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: "24"
           # sidecar 零依赖，不装任何包；写 cache 只会拖慢
@@ -45,7 +45,7 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 40
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       # GovernanceHub 尚未落地时整段跳过：跳过要在日志里明确写出来，不能假装通过
       - name: 探测 GovernanceHub 是否已落地
@@ -78,12 +78,11 @@ jobs:
     name: Windows 目标编译（跨端不是口号）
     runs-on: windows-latest
     timeout-minutes: 40
-    # 第一次真跑之前不加门禁效力：先在 CI 上拿一次结果，绿了再摘掉这个开关。
-    # 本机交叉编译验不了这条 —— `--target x86_64-pc-windows-msvc` 会卡在 ring 的 C 代码
-    # 找不到 Windows SDK 头文件，是工具链限制，不是我们的代码。
-    continue-on-error: true
+    # 已在 GitHub 托管 runner 上真跑通过（2026-11-07，run 42326859894），所以是硬门禁。
+    # 注意本机 `--target x86_64-pc-windows-msvc` 仍然失败：ring 的 C 代码找不到 Windows SDK 头，
+    # 那是本机交叉编译工具链的限制，不能用来判断 CI 结果，反过来 CI 绿也不代表本机能交叉编。
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: 探测 GovernanceHub 是否已落地
         id: probe

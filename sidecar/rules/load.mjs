@@ -88,6 +88,8 @@ export function loadRuleSet(dir = RULES_DIR) {
       ruleCount: pack.rules.length,
       effectiveFrom: pack.effectiveFrom,
       effectiveTo: pack.effectiveTo ?? null,
+      // 「出处是否核实过」必须跟着快照走：UI 不能替规则包假设它已核实
+      sourceStatus: pack.source.status,
     })),
     rules,
     dicts,
@@ -112,7 +114,16 @@ export function loadCandidateRules(file, platform = "marketplace-a") {
   const list = Array.isArray(data) ? data : Array.isArray(data?.rules) ? data.rules : [data]
   const errors = []
   list.forEach((rule, i) => {
-    const pack = { packId: "candidate", platform, version: "9999.12.31", effectiveFrom: "1970-01-01", source: { doc: file, clause: "candidate" }, rules: [rule] }
+    // 合成包只为了借用 validatePack 的单条规则校验；它本身没有出处，
+    // 所以来源明确标 draft —— 候选规则的出处要由规则自己的 source 交代。
+    const pack = {
+      packId: "candidate",
+      platform,
+      version: "9999.12.31",
+      effectiveFrom: "1970-01-01",
+      source: { status: "draft", doc: file, clause: "candidate" },
+      rules: [rule],
+    }
     const result = validatePack(pack)
     for (const e of result.errors) errors.push({ ...e, path: `[${i}]${e.path ? `.${e.path}` : ""}` })
   })

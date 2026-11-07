@@ -5,10 +5,9 @@
   "effectiveFrom": "2026-11-01",
   "effectiveTo": null,
   "source": {
+    "status": "draft",
     "doc": "《商品信息发布规范》（虚构，用于本机演示）",
-    "clause": "第 3 章 商品标题与描述",
-    "url": "（本机 pack 内配置，不写死域名）",
-    "retrievedAt": "2026-11-06"
+    "clause": "第 3 章 商品标题与描述"
   },
   "rules": [
     {
@@ -46,6 +45,7 @@
         "autoFixable": false
       },
       "source": {
+        "status": "draft",
         "clause": "3.2.1",
         "note": "判严了的代价：标题少几个形容词；判松了：直接下架"
       }
@@ -85,6 +85,7 @@
         "autoFixable": false
       },
       "source": {
+        "status": "draft",
         "clause": "3.2.2",
         "note": "中文按子串命中，「最」会误伤「最近」这类词，需人工确认"
       }
@@ -117,6 +118,7 @@
         "autoFixable": false
       },
       "source": {
+        "status": "draft",
         "clause": "3.1.4",
         "note": "字符数按码点计，一个 emoji 算 1 个字"
       }
@@ -151,6 +153,7 @@
         "autoFixable": false
       },
       "source": {
+        "status": "draft",
         "clause": "3.2.5",
         "note": "部分站点允许标题写折扣，所以只给 suggest"
       }
@@ -183,6 +186,7 @@
         "autoFixable": false
       },
       "source": {
+        "status": "draft",
         "clause": "3.3.1",
         "note": "只记一笔，不催：双单位是体验问题不是合规问题"
       }
@@ -218,6 +222,7 @@
         "autoFixable": false
       },
       "source": {
+        "status": "draft",
         "clause": "4.1.3",
         "note": "本条只标出宣称，比例与材质字段的一致性靠人工核对"
       }
@@ -255,6 +260,7 @@
         "autoFixable": false
       },
       "source": {
+        "status": "draft",
         "clause": "4.2.1",
         "note": "Repair 在英文里既可能是「修复」也可能是「修缮」，按严判"
       }
@@ -287,6 +293,7 @@
         "autoFixable": false
       },
       "source": {
+        "status": "draft",
         "clause": "4.2.4",
         "note": "不禁售，只是容易被审核问「凭什么说专业」"
       }
@@ -319,6 +326,7 @@
         "autoFixable": false
       },
       "source": {
+        "status": "draft",
         "clause": "4.3.2",
         "note": "本条只负责标出宣称；证书是否真的存在由人工清单核对"
       }
@@ -351,6 +359,7 @@
         "autoFixable": false
       },
       "source": {
+        "status": "draft",
         "clause": "5.1.2",
         "note": "只认标题与属性里的电池信号，包材里的电池查不到"
       }
@@ -381,6 +390,7 @@
         "autoFixable": false
       },
       "source": {
+        "status": "draft",
         "clause": "6.1.1",
         "note": "缺字段时没有原文可引，证据记为 absence"
       }
@@ -419,6 +429,7 @@
         "autoFixable": false
       },
       "source": {
+        "status": "draft",
         "clause": "2.1.3",
         "note": "scope 只覆盖 blocked：在售商品走其他规则，不在这里重复报"
       }
@@ -451,6 +462,7 @@
         "autoFixable": false
       },
       "source": {
+        "status": "draft",
         "clause": "3.1.1",
         "note": "批量导入最容易把占位文案带到线上"
       }
@@ -485,6 +497,7 @@
         "autoFixable": false
       },
       "source": {
+        "status": "draft",
         "clause": "3.4.1",
         "note": "只查非空，不判质量；质量归语义判定"
       }
@@ -519,6 +532,7 @@
         "autoFixable": false
       },
       "source": {
+        "status": "draft",
         "clause": "7.2.1",
         "note": "美妆不走这条：成分表格式不同"
       }
@@ -555,6 +569,7 @@
         "autoFixable": false
       },
       "source": {
+        "status": "draft",
         "clause": "7.2.3",
         "note": "集合外的产地不一定是错，可能只是没维护进白名单"
       }

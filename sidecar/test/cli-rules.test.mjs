@@ -29,7 +29,7 @@ const CANDIDATE = {
   checks: [{ type: "text.match", path: "title", pattern: "\\b[A-Z]{3,}\\b" }],
   evidence: { quote: true, locate: "offset" },
   remediation: { hint: "改成首字母大写", autoFixable: false },
-  source: { clause: "3.1.6" },
+  source: { status: "draft", clause: "3.1.6" },
 }
 
 test("pgh rules list：包、条数、四档分布都在", (t) => {

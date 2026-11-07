@@ -612,7 +612,7 @@
                           "hex": "#4C5666FF"
                         }
                       },
-                      "text": "3 个包 · 23 条规则 · 命中 7 条 · 待判 6 条"
+                      "text": "3 个包（3 个出处未核实） · 23 条规则 · 命中 7 条 · 待判 6 条"
                     }
                   ]
                 },
@@ -753,6 +753,19 @@
                             "weight": "medium"
                           },
                           "text": "生效期"
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "text_size": 12.0,
+                            "text_color": {
+                              "token": "text_tertiary",
+                              "hex": "#6B7480FF"
+                            },
+                            "weight": "medium"
+                          },
+                          "text": "出处"
                         }
                       ]
                     },
@@ -822,6 +835,41 @@
                             }
                           },
                           "text": "2026-11-01 起生效"
+                        },
+                        {
+                          "kind": "badge",
+                          "style": {
+                            "axis": "column",
+                            "pad": [
+                              4.0,
+                              8.0,
+                              4.0,
+                              8.0
+                            ],
+                            "stroke": {
+                              "width": 1.0,
+                              "paint": {
+                                "token": "state_awaiting",
+                                "hex": "#8A5A00FF"
+                              }
+                            },
+                            "radius": 6.0
+                          },
+                          "children": [
+                            {
+                              "kind": "text",
+                              "style": {
+                                "axis": "column",
+                                "text_size": 12.0,
+                                "text_color": {
+                                  "token": "state_awaiting",
+                                  "hex": "#8A5A00FF"
+                                },
+                                "weight": "medium"
+                              },
+                              "text": "出处未核实"
+                            }
+                          ]
                         }
                       ]
                     },
@@ -891,6 +939,41 @@
                             }
                           },
                           "text": "2026-10-15 起生效"
+                        },
+                        {
+                          "kind": "badge",
+                          "style": {
+                            "axis": "column",
+                            "pad": [
+                              4.0,
+                              8.0,
+                              4.0,
+                              8.0
+                            ],
+                            "stroke": {
+                              "width": 1.0,
+                              "paint": {
+                                "token": "state_awaiting",
+                                "hex": "#8A5A00FF"
+                              }
+                            },
+                            "radius": 6.0
+                          },
+                          "children": [
+                            {
+                              "kind": "text",
+                              "style": {
+                                "axis": "column",
+                                "text_size": 12.0,
+                                "text_color": {
+                                  "token": "state_awaiting",
+                                  "hex": "#8A5A00FF"
+                                },
+                                "weight": "medium"
+                              },
+                              "text": "出处未核实"
+                            }
+                          ]
                         }
                       ]
                     },
@@ -960,6 +1043,41 @@
                             }
                           },
                           "text": "2026-09-01 起生效"
+                        },
+                        {
+                          "kind": "badge",
+                          "style": {
+                            "axis": "column",
+                            "pad": [
+                              4.0,
+                              8.0,
+                              4.0,
+                              8.0
+                            ],
+                            "stroke": {
+                              "width": 1.0,
+                              "paint": {
+                                "token": "state_awaiting",
+                                "hex": "#8A5A00FF"
+                              }
+                            },
+                            "radius": 6.0
+                          },
+                          "children": [
+                            {
+                              "kind": "text",
+                              "style": {
+                                "axis": "column",
+                                "text_size": 12.0,
+                                "text_color": {
+                                  "token": "state_awaiting",
+                                  "hex": "#8A5A00FF"
+                                },
+                                "weight": "medium"
+                              },
+                              "text": "出处未核实"
+                            }
+                          ]
                         }
                       ]
                     }

@@ -13,6 +13,20 @@ import { staticRisk } from "../domain/regex-guard.mjs"
 export const SEVERITIES = Object.freeze(["blocker", "required", "suggest", "observe"])
 export const KINDS = Object.freeze(["deterministic", "semantic", "manual"])
 
+/**
+ * 出处状态只有两档，没有第三档可以躲：
+ *   · draft    —— 条款编号是按规范形状编的，不是任何真实文件里的原文
+ *   · verified —— 逐条对过原文，能给出可点开的链接与抓取日期
+ *
+ * 强制这个字段的理由：不写它，「虚构条款」与「已核实条款」在数据里长得一模一样，
+ * 而这两种东西在追责时完全是两件事。宁可让规则包显式承认未核实，也不许默认成已核实。
+ */
+export const SOURCE_STATUSES = Object.freeze(["draft", "verified"])
+
+/** 只有 http(s) 才算可查证的出处；空串、"待补"、占位文案一律不算。 */
+const HTTP_URL_RE = /^https?:\/\/\S+$/
+const isHttpUrl = (v) => typeof v === "string" && HTTP_URL_RE.test(v)
+
 /** 规则 id：`<域>.<字段>.<判据>`，至少三段，全小写蛇形，不许带平台前缀。 */
 export const RULE_ID_RE = /^[a-z][a-z0-9_]*(\.[a-z0-9_]+){2,}$/
 export const PACK_VERSION_RE = /^\d{4}\.\d{2}\.\d+$/
@@ -99,6 +113,46 @@ function validateCheck(check, platform, path, errors) {
   }
 }
 
+/**
+ * 出处三件事必须自洽：状态、链接、抓取日期。
+ *
+ * draft 配一个像链接的占位串最坏 —— 它看起来能点，于是没人再去核实。
+ * 所以 draft 一律不许有 url，要挂链接就得同时把状态改成 verified 并写抓取日期。
+ */
+function validateSourceStatus(source, path, { requireClause, errors }) {
+  if (!isObj(source)) {
+    err(errors, "E_RULE_SOURCE", path, "缺 source 对象")
+    return
+  }
+  if (requireClause && !nonEmpty(source.clause)) {
+    err(errors, "E_RULE_SOURCE", `${path}.clause`, "缺条款出处（没有出处的规则不许入库）")
+  }
+  const status = source.status
+  if (!SOURCE_STATUSES.includes(status)) {
+    err(
+      errors,
+      "E_SOURCE_STATUS",
+      `${path}.status`,
+      `出处状态必须是 ${SOURCE_STATUSES.join("/")}，实际是 ${status === undefined ? "（未填）" : status}`,
+    )
+    return
+  }
+  const hasUrl = source.url !== undefined && source.url !== null && source.url !== ""
+  if (status === "draft") {
+    if (hasUrl) {
+      err(errors, "E_SOURCE_DRAFT_URL", `${path}.url`, "draft 出处不许挂链接：占位链接看着能点，就没人去核实了。要么删掉 url，要么核实后改成 verified")
+    }
+    return
+  }
+  // verified：必须能查证
+  if (!isHttpUrl(source.url)) {
+    err(errors, "E_SOURCE_URL", `${path}.url`, "verified 出处必须给 http(s) 链接")
+  }
+  if (!DATE_RE.test(source.retrievedAt ?? "")) {
+    err(errors, "E_SOURCE_RETRIEVED", `${path}.retrievedAt`, "verified 出处必须写抓取日期（YYYY-MM-DD）")
+  }
+}
+
 function validateRule(rule, platform, path, errors) {
   if (!isObj(rule)) {
     err(errors, "E_RULE_SHAPE", path, "规则不是对象")
@@ -139,8 +193,10 @@ function validateRule(rule, platform, path, errors) {
     }
   }
 
-  if (!isObj(rule.source) || !nonEmpty(rule.source.clause)) {
+  if (rule.source === undefined) {
     err(errors, "E_RULE_SOURCE", `${path}.source.clause`, "缺条款出处（没有出处的规则不许入库）")
+  } else {
+    validateSourceStatus(rule.source, `${path}.source`, { requireClause: true, errors })
   }
   if (rule.scope !== undefined) {
     if (!isObj(rule.scope)) err(errors, "E_RULE_SCOPE", `${path}.scope`, "scope 必须是对象")
@@ -186,8 +242,13 @@ export function validatePack(pack) {
       err(errors, "E_PACK_RANGE", "effectiveTo", `effectiveTo=${pack.effectiveTo} 早于 effectiveFrom=${pack.effectiveFrom}`)
     }
   }
-  if (!isObj(pack.source) || !nonEmpty(pack.source.doc) || !nonEmpty(pack.source.clause)) {
+  if (!isObj(pack.source)) {
     err(errors, "E_PACK_SOURCE", "source", "pack 必须写清 source.doc 与 source.clause")
+  } else {
+    if (!nonEmpty(pack.source.doc)) {
+      err(errors, "E_PACK_SOURCE", "source.doc", "pack 必须写清 source.doc")
+    }
+    validateSourceStatus(pack.source, "source", { requireClause: true, errors })
   }
   if (!Array.isArray(pack.rules)) {
     err(errors, "E_PACK_RULES", "rules", "rules 必须是数组")

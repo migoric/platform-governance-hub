@@ -79,10 +79,19 @@ category-certs 4 / eu-market 3）+ 8 份词典；`pgh check` / `pgh rules list` 
 面板「上架前检查」「规则与证据」（出图 8 份 → 10 份）；每条规则都有正例反例 fixture。
 实测：mock 快照 8 个商品 → 7 条 finding + 6 条待判；sidecar 190 项测试、Rust 64 项测试全绿。
 
+*（同日追加）* 出处状态机器化：`source.status` 强制 `draft` / `verified` 两档，
+23 条规则与 3 个包全部标为 `draft`，`verified` 必须给链接与抓取日期、`draft` 挂链接直接拒绝；
+快照带 `rulePacks[].sourceStatus`，规则库面板逐包标「出处未核实」并在标题栏计数。
+测试 196 项（新增 6 项专盯这条），结构基准只有 `10-rule-library.json` 变化。
+
 **没做到的三件事，写在这里**
 
 1. **规则口径是虚构的。** 23 条规则的 `source.clause` 按常见平台规范的形状编的，不是任何真实条款。
    上线前必须逐条换成原文 —— 这是 M1 的出口条件，不是文档细节。
+   *（2026-11-07 补）* 已经不再是「文档里承认一下」的状态：每条规则与每个包都强制带
+   `source.status`，当前全部是 `draft`（`verified` 必须给 `http(s)` 链接与抓取日期，
+   `draft` 挂链接会被拒），界面上逐包标「出处未核实」并在标题栏计数。
+   但**出口条件没变**：机器只能保证「未核实这件事没被藏起来」，不能替你核实。
 2. **check 只有 AND，没有条件。** 「有宣称但缺证书」这类跨字段条件表达不出来，只能降级成
    `semantic` 产待判占位，或拆成两条独立规则。
 3. **`asset.meta` / `relation.exists` / `external.query` 未实现。** 写进规则会被校验器拒绝，

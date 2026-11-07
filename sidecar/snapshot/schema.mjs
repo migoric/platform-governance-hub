@@ -5,6 +5,8 @@
 
 import { parseLocalIso } from "../util/dates.mjs"
 import { getPath } from "../util/paths.mjs"
+// 出处状态是规则侧的定义，快照侧只引用不另立一套 —— 两处枚举一旦分叉，UI 会显示成第三态
+import { SOURCE_STATUSES } from "../rules/schema.mjs"
 
 export const SNAPSHOT_SCHEMA_VERSION = 1
 
@@ -279,6 +281,20 @@ export function validateSnapshot(input) {
   if (input.scope !== undefined && !isObj(input.scope)) err(errors, "E_SCOPE", "scope", "scope 必须是对象")
   if (input.rulePacks !== undefined && !Array.isArray(input.rulePacks)) {
     err(errors, "E_RULE_PACKS", "rulePacks", "rulePacks 必须是数组")
+  }
+  if (Array.isArray(input.rulePacks)) {
+    input.rulePacks.forEach((pack, i) => {
+      const path = `rulePacks[${i}]`
+      if (!isObj(pack)) {
+        err(errors, "E_RULE_PACKS", path, "规则包必须是对象")
+        return
+      }
+      // 出处状态必须随快照走：UI 靠它决定要不要标「未核实」，
+      // 漏带的话 UI 会静默当成无事发生，所以这里当成契约的一部分。
+      if (!SOURCE_STATUSES.includes(pack.sourceStatus)) {
+        err(errors, "E_RULE_PACK_SOURCE_STATUS", `${path}.sourceStatus`, `sourceStatus 必须是 ${SOURCE_STATUSES.join("/")}，实际是 ${pack.sourceStatus}`)
+      }
+    })
   }
 
   const items = Array.isArray(input.items) ? input.items : []

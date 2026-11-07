@@ -40,5 +40,8 @@ target/
 # 本机敏感词表（内网域名 / 平台名）：词表本身也是敏感信息，不进 git
 scripts/gates.local.json
 
+# 编辑器 / Agent 工作台本地状态（含会话与缓存，不进 git；也不要删，本地还要用）
+.workbuddy/
+
 # 系统
 .DS_Store

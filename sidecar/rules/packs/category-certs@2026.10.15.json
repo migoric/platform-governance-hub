@@ -5,10 +5,9 @@
   "effectiveFrom": "2026-10-15",
   "effectiveTo": null,
   "source": {
+    "status": "draft",
     "doc": "《类目资质与禁限售规则》（虚构，用于本机演示）",
-    "clause": "第 2 章 类目挂载与资质",
-    "url": "（本机 pack 内配置，不写死域名）",
-    "retrievedAt": "2026-11-06"
+    "clause": "第 2 章 类目挂载与资质"
   },
   "rules": [
     {
@@ -21,7 +20,7 @@
       "checks": [{ "type": "field.required", "path": "category" }],
       "evidence": { "quote": true, "locate": "offset" },
       "remediation": { "hint": "补一级 + 二级类目", "autoFixable": false },
-      "source": { "clause": "2.1.1", "note": "类目缺失时后续规则全部无法 scope，属阻断项" }
+      "source": { "status": "draft", "clause": "2.1.1", "note": "类目缺失时后续规则全部无法 scope，属阻断项" }
     },
     {
       "id": "category.material.forbidden",
@@ -33,7 +32,7 @@
       "checks": [{ "type": "text.dictionary", "path": "attrs.material", "dict": "forbidden-materials", "mode": "any" }],
       "evidence": { "quote": true, "locate": "offset" },
       "remediation": { "hint": "立即下架，并核对 CITES 许可", "autoFixable": false },
-      "source": { "clause": "2.4.1", "note": "清单本身不完整，漏报风险靠人工巡检兜底" }
+      "source": { "status": "draft", "clause": "2.4.1", "note": "清单本身不完整，漏报风险靠人工巡检兜底" }
     },
     {
       "id": "category.age_group.enum",
@@ -45,7 +44,7 @@
       "checks": [{ "type": "field.enum", "path": "attrs.ageGroup", "values": ["adult", "kids", "infant"] }],
       "evidence": { "quote": true, "locate": "offset" },
       "remediation": { "hint": "改为 adult / kids / infant", "autoFixable": false },
-      "source": { "clause": "2.3.2", "note": "童装的资质要求按年龄段分档，枚举错了会取错档位" }
+      "source": { "status": "draft", "clause": "2.3.2", "note": "童装的资质要求按年龄段分档，枚举错了会取错档位" }
     },
     {
       "id": "category.region.blocked",
@@ -57,7 +56,7 @@
       "checks": [{ "type": "list.contains", "path": "category", "values": ["武器", "仿真枪", "处方药"], "mode": "any" }],
       "evidence": { "quote": true, "locate": "offset" },
       "remediation": { "hint": "下架或换站点", "autoFixable": false },
-      "source": { "clause": "2.5.1", "note": "证据指向 category 数组里的那一个元素" }
+      "source": { "status": "draft", "clause": "2.5.1", "note": "证据指向 category 数组里的那一个元素" }
     }
   ]
 }

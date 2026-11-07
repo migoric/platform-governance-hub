@@ -39,7 +39,8 @@
       "version": "2026.11.1",
       "ruleCount": 16,
       "effectiveFrom": "2026-11-01",
-      "effectiveTo": null
+      "effectiveTo": null,
+      "sourceStatus": "draft"
     },
     {
       "id": "category-certs",
@@ -47,7 +48,8 @@
       "version": "2026.10.15",
       "ruleCount": 4,
       "effectiveFrom": "2026-10-15",
-      "effectiveTo": null
+      "effectiveTo": null,
+      "sourceStatus": "draft"
     },
     {
       "id": "eu-market",
@@ -55,7 +57,8 @@
       "version": "2026.09.01",
       "ruleCount": 3,
       "effectiveFrom": "2026-09-01",
-      "effectiveTo": null
+      "effectiveTo": null,
+      "sourceStatus": "draft"
     }
   ],
   "items": [

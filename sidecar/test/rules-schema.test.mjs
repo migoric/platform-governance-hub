@@ -10,7 +10,7 @@ const rule = (over = {}) => ({
   kind: "deterministic",
   checks: [{ type: "field.required", path: "title" }],
   evidence: { quote: true, locate: "offset" },
-  source: { clause: "3.1.1" },
+  source: { status: "draft", clause: "3.1.1" },
   ...over,
 })
 
@@ -20,7 +20,7 @@ const pack = (over = {}) => ({
   version: "2026.11.1",
   effectiveFrom: "2026-11-01",
   effectiveTo: null,
-  source: { doc: "《演示规范》", clause: "第 1 章" },
+  source: { status: "draft", doc: "《演示规范》", clause: "第 1 章" },
   rules: [rule()],
   ...over,
 })
@@ -51,6 +51,43 @@ test("semantic 带 checks 被拒绝：引擎只产占位，不猜", () => {
 
 test("没有 source 条款的规则不许入库", () => {
   assert.ok(codes(validatePack(pack({ rules: [rule({ source: {} })] }))).includes("E_RULE_SOURCE"))
+})
+
+test("出处状态必须显式表态：缺 status 不许默认成已核实", () => {
+  const bad = rule({ source: { clause: "3.1.1" } })
+  assert.ok(codes(validatePack(pack({ rules: [bad] }))).includes("E_SOURCE_STATUS"))
+  // 包级同样强制
+  const badPack = pack({ source: { doc: "《演示规范》", clause: "第 1 章" } })
+  assert.ok(codes(validatePack(badPack)).includes("E_SOURCE_STATUS"))
+})
+
+test("出处状态只有 draft / verified 两档", () => {
+  const bad = rule({ source: { status: "ok", clause: "3.1.1" } })
+  assert.ok(codes(validatePack(pack({ rules: [bad] }))).includes("E_SOURCE_STATUS"))
+})
+
+test("draft 不许挂链接：占位链接看着能点，就没人去核实了", () => {
+  const bad = rule({ source: { status: "draft", clause: "3.1.1", url: "https://example.com/x" } })
+  const result = validatePack(pack({ rules: [bad] }))
+  assert.ok(codes(result).includes("E_SOURCE_DRAFT_URL"))
+})
+
+test("verified 必须给 http(s) 链接与抓取日期，缺一不可", () => {
+  const noUrl = rule({ source: { status: "verified", clause: "3.1.1", retrievedAt: "2026-11-06" } })
+  assert.ok(codes(validatePack(pack({ rules: [noUrl] }))).includes("E_SOURCE_URL"))
+
+  const fakeUrl = rule({ source: { status: "verified", clause: "3.1.1", url: "待补", retrievedAt: "2026-11-06" } })
+  assert.ok(codes(validatePack(pack({ rules: [fakeUrl] }))).includes("E_SOURCE_URL"))
+
+  const noDate = rule({ source: { status: "verified", clause: "3.1.1", url: "https://example.com/x" } })
+  assert.ok(codes(validatePack(pack({ rules: [noDate] }))).includes("E_SOURCE_RETRIEVED"))
+})
+
+test("verified 三件齐了才放行", () => {
+  const good = rule({
+    source: { status: "verified", clause: "3.1.1", url: "https://example.com/x", retrievedAt: "2026-11-06" },
+  })
+  assert.deepEqual(validatePack(pack({ rules: [good] })).errors, [])
 })
 
 test("四档之外的 severity 被拒绝", () => {

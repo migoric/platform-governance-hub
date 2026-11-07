@@ -111,18 +111,28 @@ pub fn build(ctx: &ViewCtx) -> Node {
         )
     };
 
-    kit::panel(
-        &palette,
-        "规则库与证据",
-        &format!(
+    // 出处未核实的包数要出现在标题栏：这是「结论能追到什么」的前提，不该藏在表格里
+    let unverified = packs.iter().filter(|pack| pack.source_is_unverified()).count();
+    let subtitle = if unverified == 0 {
+        format!(
             "{} 个包 · {} 条规则 · 命中 {} 条 · 待判 {} 条",
             packs.len(),
             snapshot.summary.rules_evaluated,
             snapshot.summary.findings,
             snapshot.summary.unjudged
-        ),
-        body,
-    )
+        )
+    } else {
+        format!(
+            "{} 个包（{} 个出处未核实） · {} 条规则 · 命中 {} 条 · 待判 {} 条",
+            packs.len(),
+            unverified,
+            snapshot.summary.rules_evaluated,
+            snapshot.summary.findings,
+            snapshot.summary.unjudged
+        )
+    };
+
+    kit::panel(&palette, "规则库与证据", &subtitle, body)
 }
 
 /// `reason` 是 sidecar 的封闭集；这里只做展示映射，遇到不认识的原样显示 —— 不猜，也不吞。
@@ -174,6 +184,19 @@ fn pack_row(ctx: &ViewCtx, pack: &crate::models::RulePack) -> Node {
                 .size(text::CAPTION)
                 .color(palette.text_tertiary),
         )
+        .child(match pack.source_label() {
+            // 已核实是常态，不用标签打扰；未核实与未知都必须写在脸上
+            Some(label) => kit::tag(
+                &palette,
+                label,
+                if pack.source_status == "draft" {
+                    palette.state_awaiting
+                } else {
+                    palette.text_tertiary
+                },
+            ),
+            None => kit::tag(&palette, "出处已核实", palette.state_done),
+        })
 }
 
 fn stat_row(ctx: &ViewCtx, stat: &crate::state::selector::RuleStat) -> Node {
@@ -235,6 +258,7 @@ fn pack_header(ctx: &ViewCtx) -> Node {
         .child(header("版本").width(COL_VERSION))
         .child(header("条数").width(COL_COUNT))
         .child(header("生效期"))
+        .child(header("出处"))
 }
 
 fn stat_header(ctx: &ViewCtx) -> Node {
@@ -272,10 +296,25 @@ mod tests {
     #[test]
     fn 三个包与总数都在() {
         let text = tree().visible_text().join("\n");
-        assert!(text.contains("3 个包 · 23 条规则"), "{text}");
+        assert!(text.contains("3 个包（3 个出处未核实） · 23 条规则"), "{text}");
         assert!(text.contains("baseline"));
         assert!(text.contains("category-certs"));
         assert!(text.contains("eu-market"));
+    }
+
+    #[test]
+    fn 出处未核实要在标题栏和每一行都写出来() {
+        let tree = tree();
+        let text = tree.visible_text().join("\n");
+        // 标题栏：一眼看到有几个包没核实
+        assert!(text.contains("3 个出处未核实"), "{text}");
+        // 每一行：三个包各自带标签，不是一个总括词糊过去
+        assert_eq!(
+            tree.visible_text().iter().filter(|t| *t == "出处未核实").count(),
+            3,
+            "{text}",
+        );
+        assert!(text.contains("出处"), "表头要有这一列");
     }
 
     #[test]

@@ -5,10 +5,9 @@
   "effectiveFrom": "2026-09-01",
   "effectiveTo": null,
   "source": {
+    "status": "draft",
     "doc": "《欧盟市场准入要求》（虚构，用于本机演示）",
-    "clause": "第 1 章 CE / REACH / 标签",
-    "url": "（本机 pack 内配置，不写死域名）",
-    "retrievedAt": "2026-11-06"
+    "clause": "第 1 章 CE / REACH / 标签"
   },
   "rules": [
     {
@@ -21,7 +20,7 @@
       "checks": [],
       "evidence": { "quote": true, "locate": "offset" },
       "remediation": { "hint": "上传 CE DoC 与测试报告", "autoFixable": false },
-      "source": { "clause": "1.2.1", "note": "证书是否覆盖该型号，机器判不了，只能人工核对" }
+      "source": { "status": "draft", "clause": "1.2.1", "note": "证书是否覆盖该型号，机器判不了，只能人工核对" }
     },
     {
       "id": "listing.description.efficacy_claim",
@@ -33,7 +32,7 @@
       "checks": [],
       "evidence": { "quote": true, "locate": "offset" },
       "remediation": { "hint": "改为非功效表述，或补齐功效评价报告", "autoFixable": false },
-      "source": { "clause": "1.4.3", "note": "词典永远漏，所以交语义判定；判不出来就留在待判，不算通过" }
+      "source": { "status": "draft", "clause": "1.4.3", "note": "词典永远漏，所以交语义判定；判不出来就留在待判，不算通过" }
     },
     {
       "id": "listing.image.watermark",
@@ -45,7 +44,7 @@
       "checks": [],
       "evidence": { "quote": true, "locate": "offset" },
       "remediation": { "hint": "换白底无水印主图", "autoFixable": false },
-      "source": { "clause": "1.5.2", "note": "需要 vision 能力；provider 不支持时保持待判" }
+      "source": { "status": "draft", "clause": "1.5.2", "note": "需要 vision 能力；provider 不支持时保持待判" }
     }
   ]
 }

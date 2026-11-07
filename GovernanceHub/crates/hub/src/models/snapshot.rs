@@ -123,6 +123,26 @@ pub struct RulePack {
     pub version: String,
     pub rule_count: u32,
     pub effective_from: String,
+    /// 出处是否核实过：`draft` / `verified`。
+    ///
+    /// 用字符串而不是枚举，是为了让旧快照（没有这个字段）落成空串而不是解析失败 ——
+    /// 但空串不能当成「已核实」，界面上要显示成「出处状态未知」。
+    pub source_status: String,
+}
+
+impl RulePack {
+    /// 出处状态的可展示形态：已核实是常态（不打扰），其余两种都要说出来。
+    pub fn source_label(&self) -> Option<&'static str> {
+        match self.source_status.as_str() {
+            "verified" => None,
+            "draft" => Some("出处未核实"),
+            _ => Some("出处状态未知"),
+        }
+    }
+
+    pub fn source_is_unverified(&self) -> bool {
+        self.source_status != "verified"
+    }
 }
 
 #[derive(Clone, Debug, Default, Deserialize)]

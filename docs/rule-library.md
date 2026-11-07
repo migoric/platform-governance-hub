@@ -41,10 +41,9 @@
   "effectiveFrom": "2026-11-01",
   "effectiveTo": null,
   "source": {
-    "doc": "《商品信息发布规范》",
-    "clause": "第 3 章 商品标题",
-    "url": "（本机 pack 内配置，不写死域名）",
-    "retrievedAt": "2026-11-06"
+    "status": "draft",
+    "doc": "《商品信息发布规范》（虚构，用于本机演示）",
+    "clause": "第 3 章 商品标题"
   },
   "rules": []
 }
@@ -52,6 +51,8 @@
 
 > `platform` 是 pack 的标识，不是规则的一部分。规则 id 里**不带平台前缀** ——
 > 同一套「标题极限词」规则换个平台还能用，带前缀就复不了了。
+>
+> `source.status` 见 §3.1：内置的 3 个包全部是 `draft`，出处是按规范形状编的，不是真实原文。
 
 ## 3. 单条规则
 
@@ -72,7 +73,7 @@
   ],
   "evidence": { "quote": true, "locate": "offset" },
   "remediation": { "hint": "删除「最 / 第一 / 国家级」等绝对化用词", "autoFixable": false },
-  "source": { "clause": "3.2.1", "note": "平台按违规严重度扣分" }
+  "source": { "status": "draft", "clause": "3.2.1", "note": "平台按违规严重度扣分" }
 }
 ```
 
@@ -84,7 +85,26 @@
 | `scope` | 否 | 缺省 = 全匹配。`"*"` 是通配，不是字符串字面量 |
 | `checks` | 是 | 数组，**全部 pass 才算通过**；空数组只对 `semantic` / `manual` 合法 |
 | `evidence` | 是 | 决定 finding 里证据怎么长 |
-| `source` | 是 | 条款出处；没有出处的规则不许入库（校验器会拒绝） |
+| `source` | 是 | 条款出处，且必须带 `status`（见 §3.1）；没有出处的规则不许入库 |
+
+### 3.1 出处状态：`draft` 还是 `verified`
+
+只有两档，没有第三档可以躲：
+
+| 值 | 含义 | 附加要求 |
+|---|---|---|
+| `draft` | 条款编号按规范形状编的，**不是任何真实文件里的原文** | **不许有 `url`** |
+| `verified` | 逐条对过原文 | 必须有 `http(s)` 的 `url` + `retrievedAt`（YYYY-MM-DD） |
+
+两条都是校验器硬拦的，不是约定：
+
+- **`draft` 挂 url 会被拒**（`E_SOURCE_DRAFT_URL`）。占位链接最坏 —— 它看起来能点，于是没人再去核实。
+- **`verified` 缺链接或缺抓取日期会被拒**（`E_SOURCE_URL` / `E_SOURCE_RETRIEVED`）。
+- **`status` 不填会被拒**（`E_SOURCE_STATUS`）。不给默认值：默认值会让「忘填」静默通过，而
+  「虚构条款」和「已核实条款」在追责时完全是两件事。
+
+界面上，`draft` / 未知都会在规则库面板显式标出来，标题栏还会计数（「3 个包（3 个出处未核实）」）。
+快照里的 `rulePacks[].sourceStatus` 就是把这个状态带过去的通道 —— 当前内置规则**全部是 `draft`**。
 
 ## 4. 严重度四档
 

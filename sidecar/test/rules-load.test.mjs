@@ -14,7 +14,7 @@ const RULE = {
   kind: "deterministic",
   checks: [{ type: "field.required", path: "title" }],
   evidence: { quote: true, locate: "offset" },
-  source: { clause: "1.1" },
+  source: { status: "draft", clause: "1.1" },
 }
 
 const PACK = {
@@ -23,7 +23,7 @@ const PACK = {
   version: "2026.11.1",
   effectiveFrom: "2026-11-01",
   effectiveTo: null,
-  source: { doc: "《演示规范》", clause: "第 1 章" },
+  source: { status: "draft", doc: "《演示规范》", clause: "第 1 章" },
   rules: [RULE],
 }
 
@@ -42,6 +42,19 @@ test("内置规则集：3 个包 23 条规则，byId 能按 id 反查", () => {
   assert.equal(ruleSet.dicts.size, 8)
   assert.deepEqual(ruleSet.packMeta.map((p) => p.ruleCount), [16, 4, 3])
   assert.equal(ruleSet.byId.get("listing.claim.organic").packVersion, "2026.11.1")
+})
+
+test("内置规则库的出处全部是 draft：没有一条能冒充已核实", () => {
+  const ruleSet = loadRuleSet()
+  const draftPacks = ruleSet.packs.filter((p) => p.source.status === "draft")
+  assert.equal(draftPacks.length, 3, "三个包的出处都是按规范形状编的，不是真实原文")
+
+  const notDraft = ruleSet.rules.filter(({ rule }) => rule.source.status !== "draft")
+  assert.deepEqual(
+    notDraft.map(({ rule }) => rule.id),
+    [],
+    "还没有任何一条规则对过真实原文，不许标 verified",
+  )
 })
 
 test("自建目录：只读 packs/ 与 dicts/，词条顺序保留", (t) => {

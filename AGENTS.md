@@ -31,6 +31,12 @@ bash scripts/check.sh                            # 全量（含门禁）
 Windows 目标不要求本机可跑，但**每次改动 UI 层至少跑一次**
 `cargo check --target x86_64-pc-windows-msvc`（需 `rustup target add`），否则「跨端」只是口号。
 
+> 实测（2026-11-07）：在 macOS 上这条**会卡在依赖的 C 代码**，不是卡在我们的代码——
+> `ring` 编译时需要 Windows SDK 的头文件（`fatal error: 'assert.h' file not found`），
+> 本机没有。所以跨端验证由 CI 的 `windows` 作业兜底（`windows-latest` 上原生
+> `cargo check`），本机只保证「不引入平台专有 API」。连续条件写在这里，免得下次
+> 以为是自己写坏了。
+
 **环境前置**（换机器或换 Xcode 版本后会重新需要）：
 
 | 依赖 | 为什么 | 一条命令 |

@@ -73,3 +73,41 @@ jobs:
       - name: cargo build + test + 结构快照回归
         if: steps.probe.outputs.present == 'true'
         run: bash scripts/check.sh rust
+
+  windows:
+    name: Windows 目标编译（跨端不是口号）
+    runs-on: windows-latest
+    timeout-minutes: 40
+    # 第一次真跑之前不加门禁效力：先在 CI 上拿一次结果，绿了再摘掉这个开关。
+    # 本机交叉编译验不了这条 —— `--target x86_64-pc-windows-msvc` 会卡在 ring 的 C 代码
+    # 找不到 Windows SDK 头文件，是工具链限制，不是我们的代码。
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 探测 GovernanceHub 是否已落地
+        id: probe
+        shell: bash
+        run: |
+          if [ -f GovernanceHub/Cargo.toml ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::GovernanceHub/Cargo.toml 不存在，Windows 目标检查跳过（跳过 ≠ 通过）"
+          fi
+
+      - name: 安装 Rust
+        if: steps.probe.outputs.present == 'true'
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: 缓存依赖
+        if: steps.probe.outputs.present == 'true'
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: GovernanceHub
+
+      # 只 check 不 build：Windows 上 gpui 还需要 resource/manifest 步骤，M0 还没有 build.sh
+      - name: cargo check --workspace（原生 Windows）
+        if: steps.probe.outputs.present == 'true'
+        working-directory: GovernanceHub
+        run: cargo check --workspace

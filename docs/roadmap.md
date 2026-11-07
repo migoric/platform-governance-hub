@@ -109,8 +109,7 @@ category-certs 4 / eu-market 3）+ 8 份词典；`pgh check` / `pgh rules list` 
 | providers | `claude-cli`（本机）、`replay`（fixtures）、`remote`（**空实现 + 模板**；对端就绪后按 [`agent-acl.md §12`](agent-acl.md) 接入） |
 | 工具面 | `snapshot_query` / `rule_lookup` / `evidence_get` / `impact_estimate`，全只读 |
 | `hub-agent`（Rust） | `crates/hub-agent`：内部事件模型、provider 协议、能力分支（`hub` 可依赖它，反向不行） |
-| 面板 | 任务详情接真实事件流（替换 M0 的静态数据源，卡面与折叠条不动）、设置里的 provider 选择与握手结果 |
-| 门禁 | grep 检查外部协议字段名只出现在 `providers/` |
+| 面板 | 任务详情接真实事件流（替换 M0 的静态数据源，卡面与折叠条不动）、设置里的 provider 选择与握手结果 || 门禁 | grep 检查外部协议字段名只出现在 `providers/` |
 
 **验收**
 
@@ -133,6 +132,12 @@ Provider 接口注释、注册表、三个 provider（`replay` 可用 / `claude-
 投影里同时带 `events`，校验器从 events 重算 `timeline` 逐字段比对 —— 投影手改会被抓出来，
 提交的 fixture 也有一条「重跑 replay 必须字节相等」的测试盯着。
 
+**设置页已落地（只读）**（2026-11-07 第三刀）：`pgh agent status` 探一遍所有 provider，
+把「谁可用 / 为什么不可用 / 这次产出算不算真实分析 / 阶梯跳过了谁」落成
+`~/.pgh/agent/status.json`；设置页读这一份，不自己探测。偏好从 `~/.pgh/config.json`
+的 `agent.preferred` 读，`pgh agent use <id|auto>` 写 —— 在此之前 `agent` 命令的
+`config` 是硬编码的空对象，配置链其实没接上。
+
 验收对照：
 
 | 条目 | 状态 |
@@ -142,8 +147,10 @@ Provider 接口注释、注册表、三个 provider（`replay` 可用 / `claude-
 | 3. 断网 + 只装 replay 仍可用 | ✅ 本机实测就是这条路（claude 没装、remote 没配），`run` 正常出事件 |
 | 4. 接入演练（≤2 文件，15 分钟绿） | ⏳ 未做。`_template.mjs` 在，但还没真按 checklist 走一遍计时 |
 
-**没做到的**：工具面没接进 provider 回路；设置页的 provider 选择与握手结果还没做；
-`claude-cli` 只验到「未登录」这条错误路径，成功路径没有真实录制 —— 详见 [`agent-acl.md §13`](agent-acl.md)。
+**没做到的**：工具面没接进 provider 回路；设置页只读 —— provider 状态看得见，
+但切换只有 `pgh agent use` 一条命令行入口，窗口里没有可点的控件（M2 的 UI 层整体只有
+「画树」一条路径，交互是后面的事）；`claude-cli` 只验到「未登录」这条错误路径，
+成功路径没有真实录制 —— 详见 [`agent-acl.md §13`](agent-acl.md)。
 
 ---
 

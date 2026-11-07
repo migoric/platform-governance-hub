@@ -5,7 +5,7 @@
 
 use std::path::{Path, PathBuf};
 
-use crate::models::{AgentSession, Snapshot, TaskDetail, TasksFile};
+use crate::models::{AgentSession, AgentStatus, Snapshot, TaskDetail, TasksFile};
 
 /// 数据从哪来 —— 出图基准与真窗口的区别只体现在这里。
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -25,6 +25,8 @@ pub struct Store {
     pub detail: Option<TaskDetail>,
     /// 会话投影（事件流聚合后的结果）。`None` = 没跑过 / 跑失败 / 旧版本没有这个文件。
     pub session: Option<AgentSession>,
+    /// 握手状态报告（`pgh agent status` 落盘）。`None` = 没探过。
+    pub status: Option<AgentStatus>,
     pub origin: Option<Origin>,
     /// 读失败的原因（不是「没有文件」，而是「文件坏了」）。
     pub load_error: Option<String>,
@@ -49,6 +51,7 @@ impl Store {
         store.tasks = read_json::<TasksFile>(&dir.join("tasks.json"), &mut store.load_error);
         store.detail = read_json::<TaskDetail>(&dir.join("task-detail.json"), &mut store.load_error);
         store.session = read_json::<AgentSession>(&dir.join("agent-session.json"), &mut store.load_error);
+        store.status = read_json::<AgentStatus>(&dir.join("agent-status.json"), &mut store.load_error);
         store
     }
 
@@ -68,6 +71,8 @@ impl Store {
         store.tasks = read_json::<TasksFile>(&home.join("agent/tasks.json"), &mut store.load_error);
         // 会话投影由 `pgh agent session` 落在 ~/.pgh/agent/session.json（不是事件流文件）
         store.session = read_json::<AgentSession>(&home.join("agent/session.json"), &mut store.load_error);
+        // 握手状态由 `pgh agent status` 落在 ~/.pgh/agent/status.json；设置页读这一份
+        store.status = read_json::<AgentStatus>(&home.join("agent/status.json"), &mut store.load_error);
         // 任务记录仍是 fixture：M2 还没有「任务存档」这条链路，详情面板会自己说明这一点
         store.detail = read_json::<TaskDetail>(&fixtures_dir().join("task-detail.json"), &mut store.load_error);
         store
@@ -128,12 +133,14 @@ mod tests {
     use super::*;
 
     #[test]
-    fn fixtures_能读全三份() {
+    fn fixtures_都能读全() {
         let store = Store::from_fixtures(fixtures_dir());
         assert!(store.load_error.is_none(), "{:?}", store.load_error);
         assert!(store.has_snapshot());
         assert!(store.has_tasks());
         assert!(store.detail.is_some());
+        assert!(store.session.is_some(), "没有会话投影，任务详情只能显示空状态");
+        assert!(store.status.is_some(), "没有握手报告，设置页只能显示空状态");
     }
 
     #[test]

@@ -13,7 +13,7 @@ use hub::ui::{Appearance, Palette};
 const USAGE: &str = "用法：hub [选项]
 
   （无参数）                 打开窗口，读 $PGH_HOME 或 ~/.pgh/
-  --render <目录>           出 10 份结构快照（读 fixtures/）
+  --render <目录>           出 11 份结构快照（读 fixtures/）
   --check-baseline          与 fixtures/structure/ 基准逐文件比较，不一致退出码 1
   --appearance <light|dark> 配色（默认 light）
   --fixtures <目录>         覆盖 fixture 目录（默认 GovernanceHub/fixtures）

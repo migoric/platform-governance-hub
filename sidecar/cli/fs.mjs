@@ -38,6 +38,16 @@ export function agentSessionPath(env = process.env) {
   return join(agentDir(env), "session.json")
 }
 
+/** 用户配置（`agent.preferred` 等；凭据也只在这里，agent-acl §11）。 */
+export function configPath(env = process.env) {
+  return join(dataDir(env), "config.json")
+}
+
+/** 握手状态报告：设置页读这份，不自己跑探测（见 agent/status.mjs）。 */
+export function agentStatusPath(env = process.env) {
+  return join(agentDir(env), "status.json")
+}
+
 /**
  * 建目录并保证 0700。已存在也重新 chmod —— 之前被别的 umask 建过就补回来。
  * @param {string} dir

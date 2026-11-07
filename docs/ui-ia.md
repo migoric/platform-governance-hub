@@ -132,6 +132,24 @@ M1 落地的是**只读第一版**：上架前检查按商品聚合成三态（�
 
 （原「报告」面板已并入任务层，见 §2.1。）
 
+### 2.4 设置
+
+| 视图 | 唯一要回答的问题 | 数据来源 | 主视觉 |
+|---|---|---|---|
+| 设置 | 现在用的是哪个 agent 服务、为什么不是更前面的那个、这次产出能不能当真实分析？ | `~/.pgh/agent/status.json`（`pgh agent status` 落盘） | 当前服务一行 + provider 三行（状态 / 契约版本 / 能力 / 归属）+ 两条限制 |
+
+**这一屏不自己探测。** 它读的是 sidecar 探完一遍的结论，和「面板数字只算一次」同一条规矩：
+窗口与终端各探一遍，迟早会出现「终端说 remote 没配、窗口说可用」。
+
+三条渲染规矩（`agent-acl.md §13.5` 写了理由）：
+
+- 握手失败的 provider **不展开能力行** —— 那是地板值，不是「不支持」；
+- 归属三态：真实 / 回放 / **未声明**，未声明不借用回放的颜色；
+- 两条限制必须写在屏上：握手通过**不代表账号已登录**；指定服务后阶梯不退让。
+
+M2 落地的是**只读版**：能看见状态，不能点。切换入口是 `pgh agent use <id|auto>` ——
+画一个点了没反应的分段控件比不画更糟。UI 交互层到位后再补选择控件。
+
 ## 3. 设计系统：照 deskbench 的目标，在 GPUI 里重建
 
 左列是要复现的观感与行为，右列是 GPUI 侧的落点。**没有一项是「继承」，全部是重写**，
@@ -231,7 +249,7 @@ M1 落地的是**只读第一版**：上架前检查按商品聚合成三态（�
 1. `cargo run -p hub -- --render <目录> [--appearance dark]` 对每个视图输出一份 JSON：
    节点树（类型 / 层级 / 关键样式）+ 可见文本 + 数据源条数。
    确定性来自固定 fixture（`fixtures/snapshot.json`、`fixtures/tasks.json`、`fixtures/task-detail.json`）。
-   已提交的基准在 `GovernanceHub/fixtures/structure/`，10 份、文件名字典序即视图顺序（全 ASCII，
+   已提交的基准在 `GovernanceHub/fixtures/structure/`，11 份、文件名字典序即视图顺序（全 ASCII，
    Windows 上文件名编码不惹事）。`--check-baseline` 逐文件比字节，`scripts/check.sh rust` 会调它。
 2. 比结构的方式：同一视图两份 JSON 做 diff（`--check-baseline` 不一致时退出码 1）。
    改版是自己想要的 → 重新生成基准（`--render fixtures/structure`）；
@@ -250,3 +268,7 @@ deskbench 踩过的两个坑在 GPUI 里换了形状：
 新增两个必须出快照的视图：**任务列表**（四种状态各一份）与**任务详情**（思考折叠条的收起/展开两态）。
 任务详情用 `GovernanceHub/fixtures/task-detail.json`，保证每次出图内容一致；
 M2 接上 `replay` provider 后，改由 provider 回放同一份 fixture，卡面不动。
+
+M2 又加一份：**设置**（`11-settings.json`），数据来自 `GovernanceHub/fixtures/agent-status.json`。
+这份 fixture 特意是「离线降级到回放」的场景（remote 未配置、claude-cli 未安装），
+因为那是最常见的一种真实状态，也最能验证「回放必须标出来」。

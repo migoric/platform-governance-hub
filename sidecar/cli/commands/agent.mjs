@@ -9,23 +9,34 @@ import { Event, CONTRACT_VERSION, sumCost, joinText, validateTimeline, toolTrace
 import { resolveAgent, handshake } from "../../agent/ladder.mjs"
 import { listProviderIds, createProvider } from "../../agent/providers/registry.mjs"
 import { SessionProjectionError, SessionValidationError, assertValidSession, projectSession } from "../../agent/session.mjs"
+import { assertValidAgentStatus, buildAgentStatus, providerConfigOf, StatusValidationError } from "../../agent/status.mjs"
 import { listTools, invokeTool } from "../../agent/tools.mjs"
 import { loadRuleSet } from "../../rules/load.mjs"
+import { ConfigError, preferredOf, readConfig, writePreferred } from "../config.mjs"
 import { parseFlags, UsageError } from "../args.mjs"
-import { agentSessionPath, snapshotPath, stringify, writeAtomic } from "../fs.mjs"
+import { agentSessionPath, agentStatusPath, snapshotPath, stringify, writeAtomic } from "../fs.mjs"
 
 export const AGENT_USAGE = `用法：pgh agent <子命令> [参数]
 
   list                            列出注册的 provider 与各自握手结果
-  handshake [--provider <id>]     只握手，看降级到哪一层（默认跑整条阶梯）
+  handshake [--provider <id>]     只握手，看降级到哪一层（默认按配置走阶梯）
+  status [--out <文件>]           探一遍所有 provider，落盘设置页读的状态报告
+  use <id|auto> [--force]         选用一个 provider（auto = 按阶梯自动选）
   run --prompt <文本>             跑一次会话，事件流打到 stdout
   session --prompt <文本>         跑一次会话并落盘**投影**（界面读这份，不读事件流）
   tool <名字> [--args <JSON>]     直接调一个只读工具（调试用）
 
 公共参数：
-  --provider <id>   指定 provider（${listProviderIds().join(" / ")}）；不给就走降级阶梯
+  --provider <id>   指定 provider，本次有效（${listProviderIds().join(" / ")}）；不给就用配置里的偏好
   --json            机器可读输出（一行一个 JSON）
   --snapshot <文件> 覆盖快照路径（默认 ~/.pgh/snapshot.json）
+
+status 专有：
+  --out <文件>      写到指定路径（默认 ~/.pgh/agent/status.json）
+  --pretty          JSON 缩进输出到 stdout（不落盘；fixture 就是这么生成的）
+
+use 专有：
+  --force           握手失败的 provider 也写入（之后会话会直接报错，不会偷偷换人）
 
 session 专有：
   --out <文件>      写到指定路径（默认 ~/.pgh/agent/session.json）
@@ -53,14 +64,114 @@ function printHandshake(stdout, handshakeResult) {
 
 async function runList({ stdout, config }) {
   for (const id of listProviderIds()) {
-    const result = await handshake(createProvider(id, { config: config?.agent?.[id] ?? config?.[id] }))
+    const result = await handshake(createProvider(id, { config: providerConfigOf(config, id) }))
     printHandshake(stdout, result)
   }
   return 0
 }
 
-async function runHandshake({ flags, stdout, stderr, config }) {
-  const { provider, degraded, reason, attempts } = await resolveAgent({ config, preferred: flags.provider })
+/**
+ * `pgh agent status` —— 设置页的数据源。
+ *
+ * 落盘而不是让 UI 去调 `agent list`：窗口里要显示的「能不能用 / 为什么不能 /
+ * 算不算真实分析」必须是算过一次的结论，否则终端与窗口迟早给出两套说法。
+ */
+async function runStatus({ flags, stdout, stderr, env, config, preferred }) {
+  const report = await buildAgentStatus({ config, preferred })
+  try {
+    assertValidAgentStatus(report)
+  } catch (error) {
+    if (error instanceof StatusValidationError) {
+      stderr(error.message)
+      for (const item of error.errors) stderr(`  · ${item.path || "<root>"}  ${item.code}  ${item.message}`)
+      return 1
+    }
+    throw error
+  }
+
+  if (flags.json === true) {
+    stdout(JSON.stringify(report))
+    return 0
+  }
+  if (flags.pretty === true) {
+    stdout(stringify(report, true).trimEnd())
+    return report.selected === null ? 1 : 0
+  }
+
+  for (const provider of report.providers) {
+    printHandshake(stdout, {
+      ok: provider.ok,
+      provider: provider.id,
+      contractVersion: provider.contractVersion,
+      capabilities: provider.capabilities,
+      reason: provider.reason ?? undefined,
+    })
+    if (provider.attribution.real === false) {
+      stdout(`  ${provider.attribution.label || "未声明产出归属"}`)
+    }
+  }
+
+  if (report.selected === null) {
+    stderr("没有任何可用 provider。")
+  } else {
+    stdout(`→ 使用 ${report.selected}${report.degraded ? "（不是真实分析）" : ""}`)
+    if (report.reason) stdout(`  ${report.reason}`)
+  }
+
+  const target = typeof flags.out === "string" ? flags.out : agentStatusPath(env)
+  writeAtomic(target, stringify(report, false))
+  stderr(`已写入 ${target}（${report.providers.length} 个 provider）`)
+  return report.selected === null ? 1 : 0
+}
+
+/**
+ * `pgh agent use <id|auto>` —— 写偏好。
+ *
+ * 默认拒绝写入握不上手的 provider：指定了 preferred 之后阶梯**不会退让**
+ * （`ladder.mjs` 里写明了理由），所以选一个连不上的服务等于把助手配成不可用。
+ * 要硬写就 `--force`，并且终端会说清后果。
+ */
+async function runUse({ flags, stdout, stderr, env, config }) {
+  const id = flags._?.[0]
+  if (typeof id !== "string") {
+    stderr("use 需要 provider id 或 auto")
+    stderr(AGENT_USAGE)
+    return 2
+  }
+  if (id !== "auto" && !listProviderIds().includes(id)) {
+    stderr(`不认识的 provider：${id}（可选：${[...listProviderIds(), "auto"].join(" / ")}）`)
+    return 2
+  }
+
+  if (id === "auto") {
+    const path = writePreferred(null, env)
+    stdout(`✔ 已改为自动：按阶梯 ${listProviderIds().join(" → ")} 依次尝试（${path}）`)
+    return 0
+  }
+
+  const result = await handshake(createProvider(id, { config: providerConfigOf(config, id) }))
+  if (!result.ok && flags.force !== true) {
+    stderr(`✘ ${id} 当前不可用：${result.reason}`)
+    stderr("  没有写入配置。已选的 provider 不可用时，会话会直接失败，不会偷偷换成别的服务。")
+    stderr(`  确实要写：pgh agent use ${id} --force`)
+    return 1
+  }
+
+  const path = writePreferred(id, env)
+  if (result.ok) {
+    stdout(`✔ 已选用 ${id}（${path}）`)
+  } else {
+    stdout(`⚠ 已选用 ${id}，但当前握手失败：${result.reason}`)
+    stdout("  会话会直接报错，不会降级到别的服务。")
+  }
+  return 0
+}
+
+async function runHandshake({ flags, stdout, stderr, config, preferred }) {
+  const { provider, degraded, reason, attempts } = await resolveAgent({
+    config,
+    preferred: flags.provider ?? preferred ?? undefined,
+  })
 
   if (flags.json === true) {
     stdout(JSON.stringify({ ok: provider !== null, provider: provider?.id() ?? "none", degraded, reason: attempts }))
@@ -79,14 +190,17 @@ async function runHandshake({ flags, stdout, stderr, config }) {
   return 0
 }
 
-async function runSession({ flags, stdout, stderr, env, config }) {
+async function runSession({ flags, stdout, stderr, env, config, preferred }) {
   if (typeof flags.prompt !== "string" || flags.prompt.trim() === "") {
     stderr("run 需要 --prompt")
     stderr(AGENT_USAGE)
     return 2
   }
 
-  const { provider, degraded, reason } = await resolveAgent({ config, preferred: flags.provider })
+  const { provider, degraded, reason } = await resolveAgent({
+    config,
+    preferred: flags.provider ?? preferred ?? undefined,
+  })
   if (!provider) {
     stderr(reason ?? "没有可用的 agent 服务")
     return 1
@@ -127,14 +241,17 @@ async function runSession({ flags, stdout, stderr, env, config }) {
  * 存结论又怕手写 —— 所以投影里同时带着 events，校验器从 events 重算比对
  * （`validateSession` 的 E_SESSION_TIMELINE_DRIFT）。
  */
-async function runRecordSession({ flags, stdout, stderr, env, config }) {
+async function runRecordSession({ flags, stdout, stderr, env, config, preferred }) {
   if (typeof flags.prompt !== "string" || flags.prompt.trim() === "") {
     stderr("session 需要 --prompt")
     stderr(AGENT_USAGE)
     return 2
   }
 
-  const { provider, degraded, reason } = await resolveAgent({ config, preferred: flags.provider })
+  const { provider, degraded, reason } = await resolveAgent({
+    config,
+    preferred: flags.provider ?? preferred ?? undefined,
+  })
   if (!provider) {
     stderr(reason ?? "没有可用的 agent 服务")
     return 1
@@ -232,7 +349,7 @@ export async function runAgent(argv, io = {}) {
   let parsed
   try {
     parsed = parseFlags(argv, {
-      booleans: ["json", "help", "pretty"],
+      booleans: ["json", "help", "pretty", "force"],
       strings: ["provider", "prompt", "args", "snapshot", "out"],
     })
   } catch (error) {
@@ -250,15 +367,39 @@ export async function runAgent(argv, io = {}) {
     return flags.help === true ? 0 : 2
   }
 
-  const config = {}
+  // 配置坏掉不能当空的读：那会让「选好的服务」悄悄失效，而用户以为是自己选错了
+  let config
+  let preferred
+  try {
+    config = readConfig(env)
+    preferred = preferredOf(config)
+  } catch (error) {
+    if (error instanceof ConfigError) {
+      stderr(error.message)
+      return 2
+    }
+    throw error
+  }
+
+  // 配置里写了个不存在的 provider：直接说清楚，不让阶梯报一句「没有可用服务」了事
+  if (preferred !== null && !listProviderIds().includes(preferred)) {
+    stderr(`配置里的 agent.preferred 是 ${preferred}，但注册表里没有它（可选：${listProviderIds().join(" / ")}）`)
+    stderr("改回来：pgh agent use auto")
+    return 2
+  }
+
   const [sub, ...rest] = positional
-  const ctx = { flags: { ...flags, _: rest }, stdout, stderr, env, config }
+  const ctx = { flags: { ...flags, _: rest }, stdout, stderr, env, config, preferred }
 
   switch (sub) {
     case "list":
       return runList(ctx)
     case "handshake":
       return runHandshake(ctx)
+    case "status":
+      return runStatus(ctx)
+    case "use":
+      return runUse(ctx)
     case "run":
       return runSession(ctx)
     case "session":

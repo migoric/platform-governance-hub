@@ -3,12 +3,14 @@
 //! 边界很清楚（architecture.md §5）：写盘侧严格（sidecar 的 `schema.mjs`），
 //! 读盘侧宽容。旧快照缺字段必须能读出来，宁可少显示一块，也不要因为一个字段升级就打不开。
 
+pub mod agent_status;
 pub mod detail;
 pub mod format;
 pub mod session;
 pub mod snapshot;
 pub mod tasks;
 
+pub use agent_status::{AgentStatus, Capabilities, ProviderStatus};
 pub use detail::TaskDetail;
 pub use session::{AgentSession, Attribution, Step, TimelineItem, Usage};
 pub use snapshot::{

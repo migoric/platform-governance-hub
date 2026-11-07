@@ -300,7 +300,9 @@ UI 得特判某个工具名——这正是 §4 禁止的「按名字分支」，
 | `sidecar/agent/ladder.mjs` | `handshake()` + `resolveAgent()`，产出「用了谁 + 为什么」 |
 | `sidecar/agent/tools.mjs` | 4 个只读工具，统一脱敏 + 32KB 截断 |
 | `sidecar/agent/session.mjs` | **会话投影**：事件流 → 界面可直接摆的事实；`validateSession` 从 `events` 重算比对 |
-| `sidecar/cli/commands/agent.mjs` | `pgh agent list / handshake / run / session / tool` |
+| `sidecar/agent/status.mjs` | **握手状态报告**：每个 provider 能否用、为什么不能、归属是什么；`validateAgentStatus` 拦「选中了不可用的」 |
+| `sidecar/cli/config.mjs` | `~/.pgh/config.json` 的唯一读写入口；写偏好只动一个键 |
+| `sidecar/cli/commands/agent.mjs` | `pgh agent list / handshake / status / use / run / session / tool` |
 
 ### 13.1 两条设计选择的理由
 
@@ -329,16 +331,18 @@ UI 得特判某个工具名——这正是 §4 禁止的「按名字分支」，
    但 provider 自己没有工具回路（模型请求工具 → 内核执行 → 回填）。
    现在的约定是「工具回路归 provider 自己」，`_template.mjs` 里写明了这条。
    接真实服务时若发现不适合，再改接口 —— 现在没有第二个实现，改了也无从验证。
-4. **设置页没做。** 任务详情已接事件流（见 §13.4），但设置页的 provider 选择、
-   握手结果与「换服务」入口都还没有 —— 现在只能靠 `pgh agent handshake` 在终端看。
-   任务列表仍读 `agent/tasks.mjs` 的投影，没有按会话回填耗时/步数
+4. **设置页只读。** provider 状态、握手结果与「为什么不是更前面的那个」都做了（§13.5），
+   但窗口里没有可点的切换控件 —— M2 的 UI 层只有「画树」一条路径。切换入口现在是
+   `pgh agent use <id|auto>`。任务列表仍读 `agent/tasks.mjs` 的投影，没有按会话回填耗时/步数
    （事件契约没有时间戳，回填不了耗时；这一层要在契约 v2 讨论）。
 
 ### 13.3 验证方式
 
 ```bash
 pgh agent list                    # 三个 provider 各自的握手结论
-pgh agent handshake               # 走阶梯，看降到了哪一层、为什么
+pgh agent handshake               # 按配置/阶梯握手，看降到了哪一层、为什么
+pgh agent status                  # 探一遍全部并落盘 ~/.pgh/agent/status.json（设置页读这份）
+pgh agent use replay              # 写偏好；不可用的 provider 默认拒绝，--force 才写
 pgh agent run --prompt "..."      # 跑一次，事件流打到 stdout（--json 逐行）
 pgh agent session --prompt "..."  # 跑一次并落盘会话投影（UI 读这份）
 pgh agent tool rule_lookup --args '{"ruleId":"listing.title.absolute_terms"}'
@@ -400,3 +404,96 @@ pgh agent tool rule_lookup --args '{"ruleId":"listing.title.absolute_terms"}'
 「错误结束」了事 —— 所以 `has_unexplained_error()` 会在这种情况下明说
 「适配器没给原因，排查只能看上游日志」。要不要把「done(error) 必须配 error 事件」
 写进契约 v2，等接第二个真实服务时再定。
+
+---
+
+## 13.5 设置页：状态报告与配置链（2026-11-07 第三刀）
+
+### 为什么是一份文件，不是一次调用
+
+设置页要答三个问题：**现在用的是谁 / 为什么不是更前面的那个 / 这次产出算不算真实分析。**
+
+如果让窗口去跑 `pgh agent list`，这三件事就会在终端与窗口里各算一遍 —— 和
+「面板数字只能算一次」（`ui-ia.md §5`）是同一条规矩，只是对象换成了判断而不是数字。
+
+所以新增 `pgh agent status`：探一遍注册表里的每个 provider，把结论落成
+`~/.pgh/agent/status.json`（0600）。UI 读这份，**不探测、不判断名字**。
+
+```json
+{
+  "schemaVersion": 1,
+  "contractVersion": 1,
+  "preferred": null,
+  "selected": "replay",
+  "degraded": true,
+  "reason": "回放数据，不是真实分析",
+  "providers": [
+    { "id": "remote", "ok": false, "reason": "远程 hub 未配置（…）", "selected": false },
+    { "id": "claude-cli", "ok": false, "reason": "本机没有 claude 命令（…）", "selected": false },
+    { "id": "replay", "ok": true, "attribution": { "real": false, "label": "回放数据，不是真实分析" }, "selected": true }
+  ]
+}
+```
+
+四条校验（`validateAgentStatus`，落盘前跑），每条都对应一个会被用户看见的谎：
+
+1. 握手失败的 provider **必须给原因** —— 只画一个叉等于没解释；
+2. `attribution.real === false` 的**必须给 label** —— 回放不许装成默认值；
+3. `selected` 指向的那条**必须握手成功**，且与各行的 `selected` 标记一致；
+4. `degraded === true` 时**必须有 reason**。
+
+### `degraded` 不是「发生过降级」
+
+它只表示**这次产出不能当真实分析**。阶梯跳过了 remote 但选中的是 claude-cli（真服务）时，
+`degraded` 是 `false`，跳过原因在 `reason` 里。这两个信息界面分开摆：
+
+- 顶部徽章：`真实分析` / `回放` / `未声明`（三态，未声明不借用回放的颜色）
+- 原因行：sidecar 的结论 + 逐条「X 不可用：…」
+
+原因行与 headline 去重：replay 的 `reason` 就是它的 `label`，同一句话说两遍会被读成
+两个独立的问题（CLI 的 `runSession` 早就是这么处理的，这里保持一致）。
+
+### 配置链：在这一刀之前其实没接上
+
+`pgh agent` 的 `config` 一直是硬编码的 `{}` —— 也就是说 `agent.remote.endpoint` 永远读不到，
+`~/.pgh/config.json` 写了等于没写。现在：
+
+| 动作 | 落点 |
+|---|---|
+| 读 | `cli/config.mjs` 的 `readConfig`：文件不存在算正常，坏 JSON **报错**（当空配置会让偏好悄悄失效） |
+| 偏好 | `agent.preferred`；`pgh agent use <id>` 写，`use auto` 删键（不是写 `null`） |
+| 保留 | 写偏好只动这一个键；`agent.remote` 的 endpoint 与凭据原样不动 |
+
+`use` 默认**拒绝**写入握不上手的 provider：指定 preferred 之后阶梯不退让
+（`ladder.mjs` 开头写明了理由），选一个连不上的服务等于把助手配成不可用。
+要硬写就 `--force`，终端会说清「会话会直接报错，不会降级到别的服务」。
+
+配置坏掉或 preferred 指向不存在的 id 时，`agent` 子命令退出码 2 并给出改法
+（`pgh agent use auto`）—— 不让阶梯报一句「没有可用服务」了事。
+
+### UI 侧
+
+| 文件 | 改动 |
+|---|---|
+| `crates/hub/src/models/agent_status.rs` | 宽容解码 + 文案；`attribution` 是 `Option`，缺了就写「未声明」 |
+| `crates/hub/src/state/store.rs` | 多读一份 `agent-status.json`（真窗口读 `~/.pgh/agent/status.json`） |
+| `crates/hub/src/features/settings.rs` | 设置面板：headline / provider 列表 / 两条限制 |
+| `crates/hub/src/features/mod.rs` | `View::Settings`，快照 `11-settings.json`（10 份 → 11 份） |
+| `crates/hub/src/ui/kit.rs` | 拆出 `panel_with_note`：设置页的角标是「只读 · 切换走 CLI」，不是 `只读` |
+
+三条渲染规矩：
+
+1. **握手失败的 provider 不展开能力行。** 那时的 `capabilities` 是地板值（全 false），
+   显示出来等于说「它不支持」，而事实是「不知道」。
+2. **归属三态**：真实 / 回放 / 未声明。`attribution` 缺失时报「未声明产出归属」，
+   不替适配器说「回放」。
+3. **两条限制写在界面上**：握手通过只说明适配器与命令可用、**不代表账号已登录**；
+   指定 provider 之后阶梯不退让。不写这两句，设置页就会让人以为「绿灯 = 能用」。
+
+### 仍然没做到的
+
+- **握手 ≠ 登录。** `claude-cli` 的 `probe()` 只查 PATH（不执行 `--version`，避免副作用），
+  所以「装了但没登录」在设置页是绿灯。真实失败只能从会话事件流里看 ——
+  这是 `probe()` 的设计代价，写在界面上而不是藏起来。
+- **窗口里没有可点的切换控件。** 切换入口是 `pgh agent use`。等 UI 有交互层再补，
+  现在画一个点了没反应的分段控件比不画更糟。

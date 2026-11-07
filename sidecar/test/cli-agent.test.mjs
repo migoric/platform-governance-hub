@@ -4,20 +4,36 @@
 // 所以结论在 CI 与开发机上一致。
 
 import assert from "node:assert/strict"
-import { mkdtempSync, readFileSync, readdirSync, rmSync } from "node:fs"
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 import test from "node:test"
 
+import { validateAgentStatus } from "../agent/status.mjs"
+import { listProviderIds } from "../agent/providers/registry.mjs"
 import { validateSession } from "../agent/session.mjs"
 import { main } from "../pgh.mjs"
 
-/** 收集一次 CLI 调用的输出。agent 子命令是异步的，这里统一 await。 */
+/**
+ * 收集一次 CLI 调用的输出。agent 子命令是异步的，这里统一 await。
+ *
+ * 每次都注入临时 `PGH_HOME`：从 M2 起 `agent` 会读 `~/.pgh/config.json`，
+ * 不隔离的话测试结论就取决于开发机上的偏好设置（AGENTS.md §3.7）。
+ */
 async function run(argv) {
+  const home = mkdtempSync(join(tmpdir(), "pgh-cli-agent-"))
   const out = []
   const err = []
-  const code = await main(argv, { stdout: (s) => out.push(s), stderr: (s) => err.push(s) })
-  return { code, out: out.join("\n"), err: err.join("\n") }
+  try {
+    const code = await main(argv, {
+      env: { ...process.env, PGH_HOME: home },
+      stdout: (s) => out.push(s),
+      stderr: (s) => err.push(s),
+    })
+    return { code, out: out.join("\n"), err: err.join("\n") }
+  } finally {
+    rmSync(home, { recursive: true, force: true })
+  }
 }
 
 test("agent list 列出所有 provider，不可用的要给出原因", async () => {
@@ -193,3 +209,114 @@ function readDirectory(dir) {
     return []
   }
 }
+
+// ── agent status / use：设置页的数据源与「换服务」 ───────────────────
+
+/** 一个可复用同一个 PGH_HOME 的临时环境（要验证「写完就生效」必须复用）。 */
+function tempEnv() {
+  const home = mkdtempSync(join(tmpdir(), "pgh-cli-agent-"))
+  const env = { ...process.env, PGH_HOME: home }
+  mkdirSync(join(home, ".pgh"), { recursive: true })
+  return { env, home, done: () => rmSync(home, { recursive: true, force: true }) }
+}
+
+test("status --json 是一份自洽的报告，覆盖注册表里的每个 provider", async () => {
+  const { code, out, err } = await run(["agent", "status", "--json"])
+  assert.equal(code, 0, err)
+  const report = JSON.parse(out)
+  assert.deepEqual(validateAgentStatus(report), [])
+  assert.deepEqual(
+    report.providers.map((entry) => entry.id),
+    listProviderIds(),
+  )
+  assert.ok(report.selected, `至少 replay 可用：${report.reason}`)
+})
+
+test("status 默认落盘到 PGH_HOME/agent/status.json，权限 0600", async () => {
+  const tmp = tempEnv()
+  try {
+    const { code, err } = await runWithEnv(tmp.env, ["agent", "status"])
+    assert.equal(code, 0, err)
+    const file = join(tmp.home, ".pgh", "agent", "status.json")
+    assert.equal(statSync(file).mode & 0o777, 0o600)
+    assert.match(err, /已写入/)
+  } finally {
+    tmp.done()
+  }
+})
+
+test("use replay 之后，不带 --provider 的会话真的按配置走", async () => {
+  const tmp = tempEnv()
+  try {
+    const used = await runWithEnv(tmp.env, ["agent", "use", "replay"])
+    assert.equal(used.code, 0, used.err)
+    assert.match(used.out, /已选用 replay/)
+
+    // 配置真的生效：阶梯不再自己挑别的
+    const hs = await runWithEnv(tmp.env, ["agent", "handshake"])
+    assert.equal(hs.code, 0, hs.err)
+    assert.match(hs.out, /使用 replay/)
+    assert.match(hs.out, /回放数据，不是真实分析/)
+  } finally {
+    tmp.done()
+  }
+})
+
+test("use 一个连不上的 provider 会被拒绝，配置一个字都不写", async () => {
+  const tmp = tempEnv()
+  try {
+    const result = await runWithEnv(tmp.env, ["agent", "use", "remote"])
+    assert.equal(result.code, 1)
+    assert.match(result.err, /没有写入配置/)
+    assert.ok(!existsSync(join(tmp.home, ".pgh", "config.json")), "拒绝了却写了配置是最坏的情况")
+  } finally {
+    tmp.done()
+  }
+})
+
+test("--force 才写不可用的 provider，并且把后果说清楚", async () => {
+  const tmp = tempEnv()
+  try {
+    const result = await runWithEnv(tmp.env, ["agent", "use", "remote", "--force"])
+    assert.equal(result.code, 0, result.err)
+    assert.match(result.out, /握手失败/)
+    assert.match(result.out, /不会降级到别的服务/)
+    const config = JSON.parse(readFileSync(join(tmp.home, ".pgh", "config.json"), "utf8"))
+    assert.equal(config.agent.preferred, "remote")
+  } finally {
+    tmp.done()
+  }
+})
+
+test("use 不认识的 provider 是用法错误，不是写入失败", async () => {
+  const { code, err } = await run(["agent", "use", "gpt5"])
+  assert.equal(code, 2)
+  assert.match(err, /不认识的 provider/)
+  assert.match(err, /auto/)
+})
+
+test("配置里的 preferred 不存在时报清楚，并给出改法", async () => {
+  const tmp = tempEnv()
+  try {
+    writeFileSync(join(tmp.home, ".pgh", "config.json"), JSON.stringify({ agent: { preferred: "gone" } }), "utf8")
+    const result = await runWithEnv(tmp.env, ["agent", "handshake"])
+    assert.equal(result.code, 2)
+    assert.match(result.err, /agent\.preferred 是 gone/)
+    assert.match(result.err, /pgh agent use auto/)
+  } finally {
+    tmp.done()
+  }
+})
+
+test("配置文件坏了不会被当成空配置", async () => {
+  const tmp = tempEnv()
+  try {
+    writeFileSync(join(tmp.home, ".pgh", "config.json"), "{ broken", "utf8")
+    const result = await runWithEnv(tmp.env, ["agent", "list"])
+    assert.equal(result.code, 2, result.out + result.err)
+    assert.match(result.err, /config\.json/)
+    assert.match(result.err, /JSON/)
+  } finally {
+    tmp.done()
+  }
+})

@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "contractVersion": 1,
+  "preferred": null,
+  "selected": "replay",
+  "degraded": true,
+  "reason": "回放数据，不是真实分析",
+  "providers": [
+    {
+      "id": "remote",
+      "ok": false,
+      "contractVersion": 1,
+      "serverVersion": null,
+      "capabilities": {
+        "streaming": false,
+        "tools": false,
+        "vision": false,
+        "cost": false,
+        "maxSteps": 0
+      },
+      "attribution": {
+        "real": true,
+        "label": "远程 hub 分析"
+      },
+      "reason": "远程 hub 未配置（~/.pgh/config.json 缺 agent.remote.endpoint）",
+      "selected": false
+    },
+    {
+      "id": "claude-cli",
+      "ok": false,
+      "contractVersion": 1,
+      "serverVersion": null,
+      "capabilities": {
+        "streaming": false,
+        "tools": false,
+        "vision": false,
+        "cost": false,
+        "maxSteps": 0
+      },
+      "attribution": {
+        "real": true,
+        "label": "本机 claude 分析"
+      },
+      "reason": "本机没有 claude 命令（未安装或不在 PATH 里）",
+      "selected": false
+    },
+    {
+      "id": "replay",
+      "ok": true,
+      "contractVersion": 1,
+      "serverVersion": null,
+      "capabilities": {
+        "streaming": true,
+        "tools": true,
+        "vision": false,
+        "cost": false,
+        "maxSteps": 6
+      },
+      "attribution": {
+        "real": false,
+        "label": "回放数据，不是真实分析"
+      },
+      "reason": null,
+      "selected": true
+    }
+  ]
+}

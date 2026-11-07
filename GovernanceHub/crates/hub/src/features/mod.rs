@@ -6,6 +6,7 @@ pub mod dashboard;
 pub mod preflight;
 pub mod risk_list;
 pub mod rule_library;
+pub mod settings;
 pub mod shell;
 pub mod task_detail;
 pub mod task_list;
@@ -26,13 +27,14 @@ impl<'a> ViewCtx<'a> {
     }
 }
 
-/// 六个面板 + 十个出图视图名。M1 新增上架前检查与规则库两个只读面板。
+/// 七个面板 + 十一个出图视图名。M1 新增上架前检查与规则库，M2 新增设置。
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum View {
     Dashboard,
     RiskList,
     Preflight,
     RuleLibrary,
+    Settings,
     TaskList(crate::models::TaskState),
     TaskDetail { expanded: bool },
 }
@@ -45,6 +47,7 @@ impl View {
             View::RiskList => "风险清单",
             View::Preflight => "上架前检查",
             View::RuleLibrary => "规则与证据",
+            View::Settings => "设置",
             View::TaskList(_) => "进行中",
             View::TaskDetail { .. } => "任务",
         }
@@ -57,13 +60,14 @@ impl View {
             View::RiskList => "02-risk-list.json".to_string(),
             View::Preflight => "09-preflight.json".to_string(),
             View::RuleLibrary => "10-rule-library.json".to_string(),
+            View::Settings => "11-settings.json".to_string(),
             View::TaskList(state) => format!("0{}-tasks-{}.json", 3 + state_index(state), state.slug()),
             View::TaskDetail { expanded: false } => "07-task-detail-collapsed.json".to_string(),
             View::TaskDetail { expanded: true } => "08-task-detail-expanded.json".to_string(),
         }
     }
 
-    /// 10 份快照的固定顺序：总览 / 风险清单 / 四态任务列表 / 详情两态 / 上架前检查 / 规则库。
+    /// 11 份快照的固定顺序：总览 / 风险清单 / 四态任务列表 / 详情两态 / 上架前检查 / 规则库 / 设置。
     pub fn all() -> Vec<View> {
         use crate::models::TaskState;
         vec![
@@ -77,6 +81,7 @@ impl View {
             View::TaskDetail { expanded: true },
             View::Preflight,
             View::RuleLibrary,
+            View::Settings,
         ]
     }
 
@@ -87,6 +92,7 @@ impl View {
             View::RiskList => risk_list::build(ctx),
             View::Preflight => preflight::build(ctx),
             View::RuleLibrary => rule_library::build(ctx),
+            View::Settings => settings::build(ctx),
             View::TaskList(state) => task_list::build(ctx, state),
             View::TaskDetail { expanded } => task_detail::build(ctx, expanded),
         }

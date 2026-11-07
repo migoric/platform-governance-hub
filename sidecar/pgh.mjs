@@ -18,7 +18,8 @@ const USAGE = `pgh ${VERSION} — platform governance hub sidecar
   tasks     生成 / 校验任务列表投影（--mock）
   rules     看规则库、测一条新规则的影响（list / impact）
   check     对快照跑判定（引擎唯一入口）
-  agent     provider 握手、跑会话、调只读工具（list / handshake / run / tool）
+  agent     provider 握手、状态报告、选用服务、跑会话、调只读工具
+            （list / handshake / status / use / run / session / tool）
 
   pgh <命令> --help   看该命令的参数
   pgh --version       版本

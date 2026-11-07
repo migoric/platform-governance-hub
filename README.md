@@ -33,9 +33,11 @@ GovernanceHub.app  ──只读──▶  ~/.pgh/snapshot.json  ◀──写入�
 
 ## 现在到哪一步
 
-**M1 进行中。** `sidecar/` 已有 mock 快照、任务列表投影，以及**判定引擎 + 规则库**
-（3 个包 23 条规则、8 份词典、六种 check）；`GovernanceHub/` 已有六个只读视图与 10 份结构快照基准
-（含「上架前检查」与「规则库与证据」）；五条门禁 + CI 已接。真实采集在 M3，provider 在 M2。
+**M2 进行中。** `sidecar/` 已有 mock 快照、任务列表投影、**判定引擎 + 规则库**
+（3 个包 23 条规则、8 份词典、六种 check），以及 **agent 防腐层**（7 种事件契约、
+三个 provider、降级阶梯、4 个只读工具、会话投影与握手状态报告）；
+`GovernanceHub/` 已有七个只读视图与 11 份结构快照基准（含「上架前检查」「规则库与证据」「设置」）；
+五条门禁 + CI 已接。真实采集在 M3；设置页目前只读，切换 provider 走 `pgh agent use`。
 文档顺序阅读：
 
 1. [`docs/architecture.md`](docs/architecture.md) — 三层怎么切、进程怎么跑、边界在哪、**为什么 UI 用 GPUI**
@@ -56,6 +58,12 @@ node sidecar/pgh.mjs tasks --mock
 node sidecar/pgh.mjs rules list
 node sidecar/pgh.mjs check --mock
 node sidecar/pgh.mjs rules impact listing.claim.organic
+
+# agent：握手 / 看谁可用 / 选服务 / 跑一次会话
+node sidecar/pgh.mjs agent handshake
+node sidecar/pgh.mjs agent status          # 落盘 ~/.pgh/agent/status.json（设置页读这份）
+node sidecar/pgh.mjs agent use auto        # 或 pgh agent use replay
+node sidecar/pgh.mjs agent session --prompt "看下这个 SKU"
 
 # 桌面应用（需要 rustup + rustfmt + Metal Toolchain，见 AGENTS.md §2）
 cd GovernanceHub && cargo run -p hub

@@ -11,6 +11,14 @@ use crate::ui::tokens::{self, radius, space, text, Palette, Weight};
 /// 面板骨架：标题 + 副标题 + 主体。`RenderMode` 的两条渲染路径（真窗口 / 结构快照）
 /// 都吃这一个函数产出的树，所以布局不会分叉。
 pub fn panel(palette: &Palette, title: &str, subtitle: &str, body: Node) -> Node {
+    panel_with_note(palette, title, subtitle, "只读", body)
+}
+
+/// 同上，但右上角那句话由调用方给。
+///
+/// 设置页需要：「只读」在别处是事实层的意思（这里的东西模型改不了），
+/// 在配置页却容易被读成「不能配置」。把限制写清楚比复用一句标签重要。
+pub fn panel_with_note(palette: &Palette, title: &str, subtitle: &str, note: &str, body: Node) -> Node {
     Node::new(Kind::Panel)
         .gap(space::LG)
         .pad(space::XL)
@@ -34,7 +42,7 @@ pub fn panel(palette: &Palette, title: &str, subtitle: &str, body: Node) -> Node
                         ),
                 )
                 .child(
-                    Node::label("只读")
+                    Node::label(note)
                         .size(text::CAPTION)
                         .color(palette.text_tertiary),
                 ),

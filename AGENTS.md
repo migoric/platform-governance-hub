@@ -27,7 +27,7 @@ bash scripts/check.sh                            # 全量（含门禁）
 ```
 
 改了 UI 之后基准会红——**先确认变化是不是你想要的**，再 `cargo run -p hub -- --render fixtures/structure`
-重生成基准并把 10 份 JSON 一起提交。
+重生成基准并把 11 份 JSON 一起提交。
 
 Windows 目标不要求本机可跑，但**每次改动 UI 层至少跑一次**
 `cargo check --target x86_64-pc-windows-msvc`（需 `rustup target add`），否则「跨端」只是口号。
@@ -91,17 +91,21 @@ Windows 目标不要求本机可跑，但**每次改动 UI 层至少跑一次**
 
 ## 7. 当前阶段
 
-**M1 进行中。** 已落地：`sidecar/` 的 mock 快照 / 任务列表 / **规则引擎**（六种 check、证据三态、
+**M2 进行中。** 已落地：`sidecar/` 的 mock 快照 / 任务列表 / **规则引擎**（六种 check、证据三态、
 正则静态拒绝与熔断）、规则库（3 个包 23 条规则 + 8 份词典）、`pgh check` 与 `pgh rules list|impact`；
-`GovernanceHub/` 的 Cargo workspace、设计系统骨架、**六个只读视图与 10 份结构快照基准**；
-五条门禁 + CI。
-未开始：真实采集（M3）、provider（M2）、`asset.meta` / `relation.exists` / `external.query` 三种判据。
+**agent 防腐层**（7 种事件契约、三个 provider、降级阶梯、4 个只读工具、会话投影、
+握手状态报告、`~/.pgh/config.json` 配置链）；`GovernanceHub/` 的 Cargo workspace、
+设计系统骨架、**七个只读视图与 11 份结构快照基准**；五条门禁 + CI。
+
+未开始：真实采集（M3）、`asset.meta` / `relation.exists` / `external.query` 三种判据、
+工具面接进 provider 回路（现在的约定是「回路归 provider 自己」，见 `agent-acl.md §13.2`）。
+设置页只有只读版：切换入口是 `pgh agent use`，窗口里没有可点的控件。
 
 **规则口径尚未签字。** 23 条规则的 `source.clause` 目前是**虚构条款**，只用于跑通链路；
 要真正使用，必须逐条换成你手上的原文（`docs/rule-library.md §9`）。改口径是独立提交。
 
-开代码前先确认 `docs/roadmap.md` 里对应档的验收标准，不要提前实现 M2 的东西
-（尤其是 remote provider，等真服务）。
+开代码前先确认 `docs/roadmap.md` 里对应档的验收标准。`remote` provider 的真协议等
+对端出现再写 —— 不要照想象实现（见 `docs/agent-acl.md §12`）。
 
 远程 hub 的对端尚未存在，接入要求见 `docs/agent-acl.md §12`。那节是**带去谈的问询清单**，
 不是已定契约：先确认它到底给的是流式 API 还是只有页面，再录 fixture 写 `remote.mjs`。

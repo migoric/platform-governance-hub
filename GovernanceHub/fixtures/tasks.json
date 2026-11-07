@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-06T09:00:00+08:00",
+  "source": {
+    "kind": "mock"
+  },
+  "tasks": [
+    {
+      "id": "tk_8c31",
+      "title": "把上周新增的 12 条 blocker 逐条解释一遍",
+      "state": "running",
+      "agents": [
+        "条款研究员"
+      ],
+      "origin": "replay",
+      "startedAt": "2026-11-06T08:57:46+08:00",
+      "endedAt": null,
+      "durationMs": 134000,
+      "stepCount": 12
+    },
+    {
+      "id": "tk_2f47",
+      "title": "这批童鞋的电池资质要不要先下架",
+      "state": "awaiting",
+      "agents": [
+        "风险审阅员"
+      ],
+      "origin": "replay",
+      "startedAt": "2026-11-06T08:52:00+08:00",
+      "endedAt": null,
+      "durationMs": 480000,
+      "stepCount": 21
+    },
+    {
+      "id": "tk_9b05",
+      "title": "生成 10 月合规报告草稿",
+      "state": "done",
+      "agents": [
+        "报告撰写员"
+      ],
+      "origin": "replay",
+      "startedAt": "2026-11-06T08:00:00+08:00",
+      "endedAt": "2026-11-06T08:20:00+08:00",
+      "durationMs": 1200000,
+      "stepCount": 34
+    },
+    {
+      "id": "tk_4e1a",
+      "title": "核对 DE 站点的容量单位要求",
+      "state": "interrupted",
+      "agents": [
+        "条款研究员"
+      ],
+      "origin": "replay",
+      "startedAt": "2026-11-06T06:00:00+08:00",
+      "endedAt": "2026-11-06T06:05:00+08:00",
+      "durationMs": 300000,
+      "stepCount": 7
+    }
+  ]
+}
+

@@ -1,0 +1,18 @@
+[package]
+name = "hub"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+gpui.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+hub-agent.workspace = true
+
+[lib]
+name = "hub"
+path = "src/lib.rs"
+
+[[bin]]
+name = "hub"
+path = "src/main.rs"

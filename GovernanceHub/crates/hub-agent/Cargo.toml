@@ -1,0 +1,12 @@
+[package]
+name = "hub-agent"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+
+[lib]
+name = "hub_agent"
+path = "src/lib.rs"

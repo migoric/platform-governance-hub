@@ -1,0 +1,27 @@
+[workspace]
+resolver = "2"
+members = ["crates/hub", "crates/hub-agent"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.85"
+
+[workspace.dependencies]
+# gpui 是 pre-1.0，升级必然破坏 API —— 钉死具体版本，不用 `^`；升级单独一次提交并重跑结构快照
+# （docs/roadmap.md M0「换栈带来的三个风险」第 3 条）。
+gpui = "=0.2.2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+hub-agent = { path = "crates/hub-agent" }
+
+# 发布构建体积：结构快照与窗口都不需要调试符号
+[profile.release]
+strip = true
+lto = "thin"
+
+# 本机开发时给 gpui 留足优化（默认 dev 下 gpui 会非常卡）
+[profile.dev.package.gpui]
+opt-level = 3
+[profile.dev.package.gpui-macros]
+opt-level = 3

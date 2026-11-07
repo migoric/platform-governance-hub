@@ -127,6 +127,7 @@ platform-governance-hub/
 | 证据原件（证书 PDF、截图） | `~/.pgh/evidence/<hash>/` | 不进 git、不进报告附件之外的任何地方 |
 | 处置记录 | `~/.pgh/actions.jsonl` | 只追加，不覆写（审计要） |
 | 会话状态 | `~/.pgh/agent/` | 30 天滚动清理 |
+| 会话投影 | `~/.pgh/agent/session.json` | 不存「只有投影没有 events」的文件：投影必须能从 events 重算（`E_SESSION_TIMELINE_DRIFT`） |
 
 目录 0700、文件 0600。原子写一律 `tmp` + `rename`。
 

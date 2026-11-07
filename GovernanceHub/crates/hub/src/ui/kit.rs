@@ -324,7 +324,27 @@ pub fn sidebar(palette: &Palette, sections: &[(&str, &[(&str, &str)])], active: 
 }
 
 /// 一条工具轨迹：`name · summary`，失败要能一眼看出（ok=false 用状态色）。
-pub fn tool_trace_row(palette: &Palette, name: &str, summary: &str, ok: bool, bytes: u64) -> Node {
+///
+/// `ok` 是三态而不是布尔：`None` = 事件流里没见过这条调用的结果。
+/// 把「没见过结果」画成「失败」或者「成功」都是在替适配器编故事。
+pub fn tool_trace_row(
+    palette: &Palette,
+    name: &str,
+    summary: &str,
+    ok: Option<bool>,
+    bytes: Option<u64>,
+) -> Node {
+    let color = match ok {
+        Some(true) => palette.text_secondary,
+        Some(false) => palette.state_interrupted,
+        None => palette.text_tertiary,
+    };
+    let tail = match (ok, bytes) {
+        (Some(false), _) => "失败".to_string(),
+        (None, _) => "未返回".to_string(),
+        (Some(true), Some(bytes)) => format!("{bytes} B"),
+        (Some(true), None) => "—".to_string(),
+    };
     Node::new(Kind::ToolTraceRow)
         .axis(Axis::Row)
         .gap(space::SM)
@@ -340,20 +360,12 @@ pub fn tool_trace_row(palette: &Palette, name: &str, summary: &str, ok: bool, by
             Node::label(summary.to_string())
                 .size(text::MONO)
                 .mono()
-                .color(if ok {
-                    palette.text_secondary
-                } else {
-                    palette.state_interrupted
-                }),
+                .color(color),
         )
         .child(
-            Node::label(if ok {
-                format!("{bytes} B")
-            } else {
-                "失败".to_string()
-            })
-            .size(text::CAPTION)
-            .color(palette.text_tertiary),
+            Node::label(tail)
+                .size(text::CAPTION)
+                .color(palette.text_tertiary),
         )
 }
 
@@ -406,11 +418,31 @@ mod tests {
 
     #[test]
     fn 折叠条收起时不渲染轨迹行() {
-        let rows = vec![tool_trace_row(&LIGHT, "snapshot_query", "读到 3 条", true, 2048)];
+        let rows = vec![tool_trace_row(
+            &LIGHT,
+            "snapshot_query",
+            "读到 3 条",
+            Some(true),
+            Some(2048),
+        )];
         let closed = collapsible(&LIGHT, "思考 2 分 14 秒 · 12 步", false, rows.clone());
         let open = collapsible(&LIGHT, "思考 2 分 14 秒 · 12 步", true, rows);
         assert_eq!(closed.visible_text().len(), 2, "只有标记与标题");
         assert_eq!(open.visible_text().len(), 5, "展开后多出三条轨迹字段");
+    }
+
+    #[test]
+    fn 工具轨迹三态各有各的说法() {
+        let ok = tool_trace_row(&LIGHT, "a", "s", Some(true), Some(418));
+        assert!(ok.visible_text().contains(&"418 B".to_string()));
+        let failed = tool_trace_row(&LIGHT, "a", "s", Some(false), None);
+        assert!(failed.visible_text().contains(&"失败".to_string()));
+        // 没见过结果 ≠ 失败：这一行不许说「失败」，也不许说 0 B
+        let missing = tool_trace_row(&LIGHT, "a", "s", None, None);
+        let texts = missing.visible_text();
+        assert!(texts.contains(&"未返回".to_string()), "{texts:?}");
+        assert!(!texts.iter().any(|t| t == "失败"));
+        assert!(!texts.iter().any(|t| t.contains("0 B")));
     }
 
     #[test]

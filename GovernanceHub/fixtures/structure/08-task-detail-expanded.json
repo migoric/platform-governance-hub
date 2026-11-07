@@ -612,7 +612,7 @@
                           "hex": "#4C5666FF"
                         }
                       },
-                      "text": "进行中 · 耗时 2 分 14 秒 · 12 步 · 产出类型 解释"
+                      "text": "进行中 · 条款研究员 · 解释 · 正常结束"
                     }
                   ]
                 },
@@ -696,9 +696,21 @@
                           "hex": "#14181FFF"
                         }
                       },
-                      "text": "把上周新增的 12 条 blocker 逐条解释一遍"
+                      "text": "看下 it_8f21a 这条 blocker 到底怎么回事"
                     }
                   ]
+                },
+                {
+                  "kind": "text",
+                  "style": {
+                    "axis": "column",
+                    "text_size": 12.0,
+                    "text_color": {
+                      "token": "text_tertiary",
+                      "hex": "#6B7480FF"
+                    }
+                  },
+                  "text": "任务仍在进行；下面是这个任务最近一次已结束的会话。"
                 },
                 {
                   "kind": "collapsible",
@@ -755,9 +767,21 @@
                             },
                             "weight": "medium"
                           },
-                          "text": "思考 2 分 14 秒 · 12 步"
+                          "text": "11 个事件 · 2 次工具 · 耗时未记录"
                         }
                       ]
+                    },
+                    {
+                      "kind": "text",
+                      "style": {
+                        "axis": "column",
+                        "text_size": 14.0,
+                        "text_color": {
+                          "token": "text_secondary",
+                          "hex": "#4C5666FF"
+                        }
+                      },
+                      "text": "先把这个 SKU 的现状读出来。"
                     },
                     {
                       "kind": "tool_trace_row",
@@ -797,7 +821,7 @@
                             },
                             "mono": true
                           },
-                          "text": "读到 3 条 blocker（severity=blocker, status=open）"
+                          "text": "1 个 item：Best Women Summer Floral Midi Dress"
                         },
                         {
                           "kind": "text",
@@ -809,9 +833,21 @@
                               "hex": "#6B7480FF"
                             }
                           },
-                          "text": "2048 B"
+                          "text": "418 B"
                         }
                       ]
+                    },
+                    {
+                      "kind": "text",
+                      "style": {
+                        "axis": "column",
+                        "text_size": 14.0,
+                        "text_color": {
+                          "token": "text_secondary",
+                          "hex": "#4C5666FF"
+                        }
+                      },
+                      "text": "标题里有 Best。这不是风格问题 —— 绝对化用语是硬拦的。"
                     },
                     {
                       "kind": "tool_trace_row",
@@ -851,7 +887,7 @@
                             },
                             "mono": true
                           },
-                          "text": "listing.title.absolute_terms → 条款 3.2.1"
+                          "text": "blocker · 条款出处为 draft（未核实）"
                         },
                         {
                           "kind": "text",
@@ -863,117 +899,94 @@
                               "hex": "#6B7480FF"
                             }
                           },
-                          "text": "512 B"
+                          "text": "702 B"
                         }
                       ]
                     },
                     {
-                      "kind": "tool_trace_row",
+                      "kind": "text",
                       "style": {
-                        "axis": "row",
-                        "gap": 8.0,
+                        "axis": "column",
+                        "text_size": 14.0,
+                        "text_color": {
+                          "token": "text_secondary",
+                          "hex": "#4C5666FF"
+                        }
+                      },
+                      "text": "这条规则的判据是确定性词典匹配，改完标题能直接复算，不需要再等人工核对。另外提醒一句：这条规则的条款出处还没核实过，用它对外发合规声明之前要先对原文。"
+                    }
+                  ]
+                },
+                {
+                  "kind": "row",
+                  "style": {
+                    "axis": "row",
+                    "gap": 8.0
+                  },
+                  "data": {
+                    "source": "task-detail.session.events",
+                    "total": 11
+                  },
+                  "children": [
+                    {
+                      "kind": "badge",
+                      "style": {
+                        "axis": "column",
                         "pad": [
                           4.0,
-                          0.0,
-                          0.0,
-                          0.0
-                        ]
+                          8.0,
+                          4.0,
+                          8.0
+                        ],
+                        "stroke": {
+                          "width": 1.0,
+                          "paint": {
+                            "token": "replay_data",
+                            "hex": "#556070FF"
+                          }
+                        },
+                        "radius": 6.0
                       },
                       "children": [
                         {
                           "kind": "text",
                           "style": {
                             "axis": "column",
-                            "width": 150.0,
-                            "text_size": 12.5,
-                            "text_color": {
-                              "token": "text_secondary",
-                              "hex": "#4C5666FF"
-                            },
-                            "mono": true
-                          },
-                          "text": "evidence_get"
-                        },
-                        {
-                          "kind": "text",
-                          "style": {
-                            "axis": "column",
-                            "text_size": 12.5,
-                            "text_color": {
-                              "token": "text_secondary",
-                              "hex": "#4C5666FF"
-                            },
-                            "mono": true
-                          },
-                          "text": "it_8f21a.title @ offset 0 length 4"
-                        },
-                        {
-                          "kind": "text",
-                          "style": {
-                            "axis": "column",
                             "text_size": 12.0,
                             "text_color": {
-                              "token": "text_tertiary",
-                              "hex": "#6B7480FF"
-                            }
+                              "token": "replay_data",
+                              "hex": "#556070FF"
+                            },
+                            "weight": "medium"
                           },
-                          "text": "256 B"
+                          "text": "回放"
                         }
                       ]
                     },
                     {
-                      "kind": "tool_trace_row",
+                      "kind": "text",
                       "style": {
-                        "axis": "row",
-                        "gap": 8.0,
-                        "pad": [
-                          4.0,
-                          0.0,
-                          0.0,
-                          0.0
-                        ]
+                        "axis": "column",
+                        "text_size": 12.0,
+                        "text_color": {
+                          "token": "replay_data",
+                          "hex": "#556070FF"
+                        },
+                        "weight": "medium"
                       },
-                      "children": [
-                        {
-                          "kind": "text",
-                          "style": {
-                            "axis": "column",
-                            "width": 150.0,
-                            "text_size": 12.5,
-                            "text_color": {
-                              "token": "text_secondary",
-                              "hex": "#4C5666FF"
-                            },
-                            "mono": true
-                          },
-                          "text": "rule_lookup"
-                        },
-                        {
-                          "kind": "text",
-                          "style": {
-                            "axis": "column",
-                            "text_size": 12.5,
-                            "text_color": {
-                              "token": "state_interrupted",
-                              "hex": "#8C2F39FF"
-                            },
-                            "mono": true
-                          },
-                          "text": "listing.price.compare_at → 条款 4.1.3"
-                        },
-                        {
-                          "kind": "text",
-                          "style": {
-                            "axis": "column",
-                            "text_size": 12.0,
-                            "text_color": {
-                              "token": "text_tertiary",
-                              "hex": "#6B7480FF"
-                            }
-                          },
-                          "text": "失败"
+                      "text": "回放数据，不是真实分析"
+                    },
+                    {
+                      "kind": "text",
+                      "style": {
+                        "axis": "column",
+                        "text_size": 12.0,
+                        "text_color": {
+                          "token": "text_tertiary",
+                          "hex": "#6B7480FF"
                         }
-                      ]
+                      },
+                      "text": "replay · 正常结束 · 输入 1280 / 输出 96 token · 成本 — · 契约 v1"
                     }
                   ]
                 },
@@ -1000,7 +1013,7 @@
                         },
                         "weight": "semibold"
                       },
-                      "text": "12 条 blocker 的解释草稿（未完成） · 条款研究员 · 解释"
+                      "text": "it_8f21a 的判定解释 · 条款研究员 · 解释"
                     }
                   ]
                 },
@@ -1044,7 +1057,7 @@
                               "hex": "#4C5666FF"
                             }
                           },
-                          "text": "1. it_8f21a「Best Women Summer Floral Midi Dress」：标题以绝对化用词 Best 开头，命中条款 3.2.1。"
+                          "text": "it_8f21a「Best Women Summer Floral Midi Dress」标题以绝对化用语 Best 开头，命中 listing.title.absolute_terms（阻断）。"
                         }
                       ]
                     },
@@ -1077,7 +1090,7 @@
                               "hex": "#4C5666FF"
                             }
                           },
-                          "text": "2. it_7a9f1「Winter Puffer Jacket -50% Off」：标题含折扣表述，命中条款 3.2.4。"
+                          "text": "该规则的判据是确定性词典匹配，改完标题能直接复算，不必等人工复核。"
                         }
                       ]
                     },
@@ -1110,7 +1123,7 @@
                               "hex": "#4C5666FF"
                             }
                           },
-                          "text": "3. it_c61aa：价格划线价与当前价一致，命中条款 4.1.3（折算后无优惠，属误导）。"
+                          "text": "条款出处尚未核实（draft），对外发合规声明之前要先对原文。"
                         }
                       ]
                     }

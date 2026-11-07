@@ -124,21 +124,26 @@ category-certs 4 / eu-market 3）+ 8 份词典；`pgh check` / `pgh rules list` 
 **进度（2026-11-07）**
 
 sidecar 侧已落地：事件契约（7 种 + 铁律校验，违规标识与 Rust `event.rs` 逐字同名）、
-Provider 接口注释、注册表、三个 provider（`replay` 可用 / `claude-cli` 翻译层写好但端到端未验证 /
+Provider 接口注释、注册表、三个 provider（`replay` 可用 / `claude-cli` 翻译层写好、端到端只验到错误路径 /
 `remote` 空壳且只失败）、`_template` 接入骨架、握手与降级阶梯、4 个只读工具、
-`pgh agent list / handshake / run / tool`。
+`pgh agent list / handshake / run / session / tool`。
+
+**UI 侧已接入事件流**（2026-11-07 第二刀）：任务详情不再读手写的 `thought.tools`，
+改读 `agent/session.mjs` 从事件流聚合出的会话投影（`~/.pgh/agent/session.json`）。
+投影里同时带 `events`，校验器从 events 重算 `timeline` 逐字段比对 —— 投影手改会被抓出来，
+提交的 fixture 也有一条「重跑 replay 必须字节相等」的测试盯着。
 
 验收对照：
 
 | 条目 | 状态 |
 |---|---|
 | 1. 三条门禁全过 | ✅ 外部字段名与 `provider ==` 两条是 M0 预埋的 `check-boundaries.mjs`，新代码天然通过；每个 provider 有同名 fixture 由 conformance 测试保证 |
-| 2. replay 当主 provider 时 UI 明确标注 | ⚠️ CLI 已标（stderr「回放数据，不是真实分析」），UI 还没接 |
+| 2. replay 当主 provider 时 UI 明确标注 | ✅ CLI 进 stderr；UI 在归属行打「回放」徽章 + 照抄 provider 的免责原话，收起态也看得到 |
 | 3. 断网 + 只装 replay 仍可用 | ✅ 本机实测就是这条路（claude 没装、remote 没配），`run` 正常出事件 |
 | 4. 接入演练（≤2 文件，15 分钟绿） | ⏳ 未做。`_template.mjs` 在，但还没真按 checklist 走一遍计时 |
 
-**没做到的**：工具面没接进 provider 回路；UI 未消费事件流；`claude-cli` 的映射是
-按公开格式手写的，不是真实录制 —— 详见 [`agent-acl.md §13`](agent-acl.md)。
+**没做到的**：工具面没接进 provider 回路；设置页的 provider 选择与握手结果还没做；
+`claude-cli` 只验到「未登录」这条错误路径，成功路径没有真实录制 —— 详见 [`agent-acl.md §13`](agent-acl.md)。
 
 ---
 

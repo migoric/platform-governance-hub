@@ -284,7 +284,7 @@ UI 得特判某个工具名——这正是 §4 禁止的「按名字分支」，
 
 ---
 
-## 13. 实现进度（2026-11-07，M2 第一刀）
+## 13. 实现进度（2026-11-07）
 
 已落地（sidecar 侧）：
 
@@ -294,12 +294,13 @@ UI 得特判某个工具名——这正是 §4 禁止的「按名字分支」，
 | `sidecar/agent/provider.mjs` | Provider / StartRequest / Handshake 的类型注释，**没有实现** |
 | `sidecar/agent/providers/registry.mjs` | 注册表：数组顺序就是阶梯顺序 |
 | `sidecar/agent/providers/replay.mjs` | 回放 `sidecar/agent/fixtures/replay.jsonl`；`attribution() = { real: false }` |
-| `sidecar/agent/providers/claude-cli.mjs` | 本机 claude 的翻译层 + 进程层；**端到端未验证，见下** |
+| `sidecar/agent/providers/claude-cli.mjs` | 本机 claude 的翻译层 + 进程层；**只验到错误路径，见下** |
 | `sidecar/agent/providers/remote.mjs` | 空实现：一律 `E_REMOTE_NOT_CONFIGURED` / `E_REMOTE_NOT_IMPLEMENTED` |
 | `sidecar/agent/providers/_template.mjs` | 接入骨架，**故意不注册** |
 | `sidecar/agent/ladder.mjs` | `handshake()` + `resolveAgent()`，产出「用了谁 + 为什么」 |
 | `sidecar/agent/tools.mjs` | 4 个只读工具，统一脱敏 + 32KB 截断 |
-| `sidecar/cli/commands/agent.mjs` | `pgh agent list / handshake / run / tool` |
+| `sidecar/agent/session.mjs` | **会话投影**：事件流 → 界面可直接摆的事实；`validateSession` 从 `events` 重算比对 |
+| `sidecar/cli/commands/agent.mjs` | `pgh agent list / handshake / run / session / tool` |
 
 ### 13.1 两条设计选择的理由
 
@@ -316,19 +317,22 @@ UI 得特判某个工具名——这正是 §4 禁止的「按名字分支」，
 
 ### 13.2 没做到的事，写在这里
 
-1. **claude-cli 端到端未验证。** 开发机没装 `claude`，`translateLine` 的映射依据的是
-   公开输出格式，`sidecar/test/fixtures/agent/claude-cli.stream.jsonl` 是**手写样例，
-   不是真实录制**。它证明了「给定这样的行，翻译与收尾是对的」（进程层也用
-   `fake-claude.mjs` 跑过真 spawn），**没有**证明真实 claude 输出长这样。
-   验证路径：在有 claude 的机器上录一份真实交互替换该文件，再跑 conformance。
+1. **claude-cli 只验到错误路径。** 开发机装了 `claude`（v2.1.319）但**没登录**，
+   于是真实跑出来的流是「`Not logged in · Please run /login` + usage(0/0) + done(error)」——
+   这段是真的端到端，翻译层与收尾都没问题（`pgh agent session` 走阶梯时实际跑过）。
+   缺的是**成功路径**：`sidecar/test/fixtures/agent/claude-cli.stream.jsonl` 仍是
+   按公开格式**手写**的样例，不是真实录制。验证路径：登录后跑一次
+   `pgh agent session --provider claude-cli --prompt "..." --json`，用它替换该 fixture。
 2. **remote 是空壳。** 对端不存在，所以它只会失败，理由分别是「未配置」与「协议未接入」。
    故意不发请求 —— 一个没有对端的 HTTP 客户端会把「服务没上线」伪装成「网络抖了一下」。
 3. **工具面还没有接进 provider。** 4 个工具能通过 `pgh agent tool` 单独验证，
    但 provider 自己没有工具回路（模型请求工具 → 内核执行 → 回填）。
    现在的约定是「工具回路归 provider 自己」，`_template.mjs` 里写明了这条。
    接真实服务时若发现不适合，再改接口 —— 现在没有第二个实现，改了也无从验证。
-4. **UI 没接。** 任务详情仍读 M0 的静态投影（`agent/tasks.mjs`），没有消费事件流。
-   设置页的 provider 选择与握手结果也没做。这是 M2 的下一刀。
+4. **设置页没做。** 任务详情已接事件流（见 §13.4），但设置页的 provider 选择、
+   握手结果与「换服务」入口都还没有 —— 现在只能靠 `pgh agent handshake` 在终端看。
+   任务列表仍读 `agent/tasks.mjs` 的投影，没有按会话回填耗时/步数
+   （事件契约没有时间戳，回填不了耗时；这一层要在契约 v2 讨论）。
 
 ### 13.3 验证方式
 
@@ -336,8 +340,63 @@ UI 得特判某个工具名——这正是 §4 禁止的「按名字分支」，
 pgh agent list                    # 三个 provider 各自的握手结论
 pgh agent handshake               # 走阶梯，看降到了哪一层、为什么
 pgh agent run --prompt "..."      # 跑一次，事件流打到 stdout（--json 逐行）
+pgh agent session --prompt "..."  # 跑一次并落盘会话投影（UI 读这份）
 pgh agent tool rule_lookup --args '{"ruleId":"listing.title.absolute_terms"}'
 ```
 
 本机实测：`remote` 与 `claude-cli` 都握手失败并给出原因，自动降到 `replay`，
 `run` 输出 11 个事件 / 2 次工具 / 成本显示「—」（不是 0）。
+
+---
+
+## 13.4 会话投影：UI 到底读什么（2026-11-07 第二刀）
+
+### 为什么需要这一层
+
+界面上「AI 调了 4 次工具、其中 1 次失败、花了 $0.02」这句话，在此之前来自
+`fixtures/task-detail.json` 里手写的 `thought.tools` —— 它写得像真的，但没有任何东西量过它。
+这比「没有数据」更糟：用户会拿它做判断。
+
+现在分成两件东西：
+
+| | 是什么 | 谁产生 | 谁读 |
+|---|---|---|---|
+| `events` | 发生过什么（7 种封闭事件，原样） | provider 的事件流 | 校验器、审计 |
+| `timeline` | 界面怎么摆（合并后的段落 / 工具行 / 错误行） | `projectSession()` 从 events 算 | UI |
+
+两者一起落盘到 `~/.pgh/agent/session.json`（fixture 是 `GovernanceHub/fixtures/agent-session.json`）。
+`validateSession()` 会**从 `events` 重算一遍 `timeline` 逐字段比对**，不一致就报
+`E_SESSION_TIMELINE_DRIFT` —— 所以「投影手写」这件事有机器拦着，不靠自觉。
+这和快照里 `findings` 由 `evaluate()` 现算是同一个套路。
+
+### 三条比契约校验更严的规矩
+
+1. **不许丢事件。** `validateTimeline` 对未知类型是「忽略并计数」（流式场景必须如此，
+   否则一个多余心跳就能打断整条流）。但存档时把不认识的事件悄悄丢掉，等于交出一份
+   「看起来完整、其实删过」的记录，所以投影层直接拒绝。
+2. **必须有起点和终点。** 没有 `started` 拿不到会话身份（`validateTimeline` 只在
+   text / tool_call 之前才查这条，一条只有 `done` 的流它不拦）；没有 `done` 的流
+   存下来下次打开还是转圈。
+3. **不知道的要保持不知道。** 三处：`durationMs: null`（契约 v1 没有时间戳）、
+   `usage: null`（provider 没上报）、`costUsd: null`（拿不到成本）。UI 分别显示
+   「耗时未记录 / 用量未上报 / 成本 —」，**不许**落成 0。工具行的 `ok: null` 同理，
+   表示「没见过结果」，不是「失败」。
+
+### UI 侧
+
+| 文件 | 改动 |
+|---|---|
+| `crates/hub/src/models/session.rs` | 会话模型。`Step` 把 `kind` 收成四种语义，未知类型落到 `Unknown` 并**显示出来** |
+| `crates/hub/src/state/store.rs` | 多读一份 `agent-session.json`；读不到就是 `None`，不是错误 |
+| `crates/hub/src/features/task_detail.rs` | 折叠条改读 `timeline`；没有会话时给空状态，**不回落到旧的手写轨迹** |
+| `crates/hub/src/ui/kit.rs` | `tool_trace_row` 的 `ok` 改成三态（成功 / 失败 / 未返回） |
+
+归属行是这一屏最容易看错的地方：`[回放] 回放数据，不是真实分析 · replay · 正常结束 ·
+输入 1280 / 输出 96 token · 成本 — · 契约 v1`。徽章带文字，不靠颜色；
+免责原话**照抄 provider 的 `attribution().label`**，不改写成「模拟」之类的委婉说法。
+
+还有一个发现：`claude-cli` 未登录时给出 `done(error)` 却**没有 error 事件**。
+契约没禁止（`error_needs_done` 只规定 error 之后必须有 done），但界面不能只显示
+「错误结束」了事 —— 所以 `has_unexplained_error()` 会在这种情况下明说
+「适配器没给原因，排查只能看上游日志」。要不要把「done(error) 必须配 error 事件」
+写进契约 v2，等接第二个真实服务时再定。

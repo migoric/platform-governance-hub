@@ -8,22 +8,28 @@ import { readFileSync } from "node:fs"
 import { Event, CONTRACT_VERSION, sumCost, joinText, validateTimeline, toolTrace } from "../../agent/contract.mjs"
 import { resolveAgent, handshake } from "../../agent/ladder.mjs"
 import { listProviderIds, createProvider } from "../../agent/providers/registry.mjs"
+import { SessionProjectionError, SessionValidationError, assertValidSession, projectSession } from "../../agent/session.mjs"
 import { listTools, invokeTool } from "../../agent/tools.mjs"
 import { loadRuleSet } from "../../rules/load.mjs"
 import { parseFlags, UsageError } from "../args.mjs"
-import { snapshotPath } from "../fs.mjs"
+import { agentSessionPath, snapshotPath, stringify, writeAtomic } from "../fs.mjs"
 
 export const AGENT_USAGE = `用法：pgh agent <子命令> [参数]
 
   list                            列出注册的 provider 与各自握手结果
   handshake [--provider <id>]     只握手，看降级到哪一层（默认跑整条阶梯）
   run --prompt <文本>             跑一次会话，事件流打到 stdout
+  session --prompt <文本>         跑一次会话并落盘**投影**（界面读这份，不读事件流）
   tool <名字> [--args <JSON>]     直接调一个只读工具（调试用）
 
 公共参数：
   --provider <id>   指定 provider（${listProviderIds().join(" / ")}）；不给就走降级阶梯
   --json            机器可读输出（一行一个 JSON）
-  --snapshot <文件> 覆盖快照路径（默认 ~/.pgh/snapshot.json）`
+  --snapshot <文件> 覆盖快照路径（默认 ~/.pgh/snapshot.json）
+
+session 专有：
+  --out <文件>      写到指定路径（默认 ~/.pgh/agent/session.json）
+  --pretty          JSON 缩进输出（落盘仍是紧凑单行，除非重定向）`
 
 /** 读快照；读不到不算错，工具会自己报「没有这个分区」。 */
 function readSnapshot(env, file) {
@@ -113,6 +119,75 @@ async function runSession({ flags, stdout, stderr, env, config }) {
   return done?.reason === "ok" ? 0 : 1
 }
 
+/**
+ * `pgh agent session` —— 跑一次会话，落盘**投影**而不是事件流。
+ *
+ * 界面读这份文件。它与 `run` 的区别不是「跑法不同」，而是「存什么」：
+ * 事件流是过程，投影是结论。存过程会让界面自己聚合一遍（第二个计算处），
+ * 存结论又怕手写 —— 所以投影里同时带着 events，校验器从 events 重算比对
+ * （`validateSession` 的 E_SESSION_TIMELINE_DRIFT）。
+ */
+async function runRecordSession({ flags, stdout, stderr, env, config }) {
+  if (typeof flags.prompt !== "string" || flags.prompt.trim() === "") {
+    stderr("session 需要 --prompt")
+    stderr(AGENT_USAGE)
+    return 2
+  }
+
+  const { provider, degraded, reason } = await resolveAgent({ config, preferred: flags.provider })
+  if (!provider) {
+    stderr(reason ?? "没有可用的 agent 服务")
+    return 1
+  }
+  // 归属声明由 provider 给，写盘前后各说一次 —— 落到磁盘上的东西，看到终端的人都该知道它是什么。
+  // 降级原因和归属标签常常是同一句话（replay 的 reason 就是它的 label），只说一次。
+  const attribution = provider.attribution()
+  if (degraded && reason && reason !== attribution.label) stderr(`⚠ ${reason}（provider：${provider.id()}）`)
+
+  const events = []
+  for await (const event of provider.start({ prompt: flags.prompt })) events.push(event)
+
+  let session
+  try {
+    session = assertValidSession(projectSession(events, { prompt: flags.prompt, attribution }))
+  } catch (error) {
+    if (error instanceof SessionProjectionError) {
+      stderr(`拒绝落盘：${error.message}`)
+      for (const d of error.details) stderr(`  · ${d.rule}@${d.at}  ${d.detail ?? ""}`)
+      return 1
+    }
+    if (error instanceof SessionValidationError) {
+      stderr(error.message)
+      for (const e of error.errors) stderr(`  · ${e.path || "<root>"}  ${e.code}  ${e.message}`)
+      return 1
+    }
+    throw error
+  }
+
+  // 归属声明必须在写盘前说出来：落到磁盘上的东西，看过终端的人都该知道它是什么
+  if (session.attribution.real === false) stderr(`⚠ ${session.attribution.label}`)
+
+  const summary = `${session.eventCount} 个事件 · ${session.toolCount} 次工具 · 耗时未知 · 成本 ${session.usage?.costUsd === null || session.usage === null ? "—" : `$${session.usage.costUsd.toFixed(4)}`}`
+
+  if (flags.json === true) {
+    stdout(JSON.stringify(session))
+    return 0
+  }
+  if (typeof flags.out === "string") {
+    writeAtomic(flags.out, stringify(session, false))
+    stderr(`已写入 ${flags.out}（${summary}）`)
+    return 0
+  }
+  if (flags.pretty === true) {
+    stdout(stringify(session, true))
+    return 0
+  }
+  const target = agentSessionPath(env)
+  writeAtomic(target, stringify(session, false))
+  stderr(`已写入 ${target}（${summary}）`)
+  return 0
+}
+
 function runTool({ flags, stdout, stderr, env }) {
   const name = flags._?.[0]
   if (typeof name !== "string") {
@@ -157,8 +232,8 @@ export async function runAgent(argv, io = {}) {
   let parsed
   try {
     parsed = parseFlags(argv, {
-      booleans: ["json", "help"],
-      strings: ["provider", "prompt", "args", "snapshot"],
+      booleans: ["json", "help", "pretty"],
+      strings: ["provider", "prompt", "args", "snapshot", "out"],
     })
   } catch (error) {
     if (error instanceof UsageError) {
@@ -186,6 +261,8 @@ export async function runAgent(argv, io = {}) {
       return runHandshake(ctx)
     case "run":
       return runSession(ctx)
+    case "session":
+      return runRecordSession(ctx)
     case "tool":
       return runTool(ctx)
     default:

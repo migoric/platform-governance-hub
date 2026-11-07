@@ -5,7 +5,7 @@
 
 use std::path::{Path, PathBuf};
 
-use crate::models::{Snapshot, TaskDetail, TasksFile};
+use crate::models::{AgentSession, Snapshot, TaskDetail, TasksFile};
 
 /// 数据从哪来 —— 出图基准与真窗口的区别只体现在这里。
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -23,6 +23,8 @@ pub struct Store {
     pub snapshot: Option<Snapshot>,
     pub tasks: Option<TasksFile>,
     pub detail: Option<TaskDetail>,
+    /// 会话投影（事件流聚合后的结果）。`None` = 没跑过 / 跑失败 / 旧版本没有这个文件。
+    pub session: Option<AgentSession>,
     pub origin: Option<Origin>,
     /// 读失败的原因（不是「没有文件」，而是「文件坏了」）。
     pub load_error: Option<String>,
@@ -46,6 +48,7 @@ impl Store {
         store.snapshot = read_json::<Snapshot>(&dir.join("snapshot.json"), &mut store.load_error);
         store.tasks = read_json::<TasksFile>(&dir.join("tasks.json"), &mut store.load_error);
         store.detail = read_json::<TaskDetail>(&dir.join("task-detail.json"), &mut store.load_error);
+        store.session = read_json::<AgentSession>(&dir.join("agent-session.json"), &mut store.load_error);
         store
     }
 
@@ -63,7 +66,9 @@ impl Store {
         };
         store.snapshot = read_json::<Snapshot>(&home.join("snapshot.json"), &mut store.load_error);
         store.tasks = read_json::<TasksFile>(&home.join("agent/tasks.json"), &mut store.load_error);
-        // M0 的详情来自 fixture：真窗口也读仓库里的静态夹具，M2 换成 provider 回放
+        // 会话投影由 `pgh agent session` 落在 ~/.pgh/agent/session.json（不是事件流文件）
+        store.session = read_json::<AgentSession>(&home.join("agent/session.json"), &mut store.load_error);
+        // 任务记录仍是 fixture：M2 还没有「任务存档」这条链路，详情面板会自己说明这一点
         store.detail = read_json::<TaskDetail>(&fixtures_dir().join("task-detail.json"), &mut store.load_error);
         store
     }

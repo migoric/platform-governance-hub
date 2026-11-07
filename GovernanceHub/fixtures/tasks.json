@@ -7,7 +7,7 @@
   "tasks": [
     {
       "id": "tk_8c31",
-      "title": "把上周新增的 12 条 blocker 逐条解释一遍",
+      "title": "看下 it_8f21a 这条 blocker 到底怎么回事",
       "state": "running",
       "agents": [
         "条款研究员"

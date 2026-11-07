@@ -33,6 +33,11 @@ export function tasksPath(env = process.env) {
   return join(agentDir(env), "tasks.json")
 }
 
+/** 会话投影（界面读这份，不读事件流；见 sidecar/agent/session.mjs 文件头）。 */
+export function agentSessionPath(env = process.env) {
+  return join(agentDir(env), "session.json")
+}
+
 /**
  * 建目录并保证 0700。已存在也重新 chmod —— 之前被别的 umask 建过就补回来。
  * @param {string} dir

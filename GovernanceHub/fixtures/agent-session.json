@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "contractVersion": 1,
+  "sessionId": "sess-replay-8f21a",
+  "provider": "replay",
+  "attribution": {
+    "real": false,
+    "label": "回放数据，不是真实分析"
+  },
+  "prompt": "看下 it_8f21a 这条 blocker 到底怎么回事",
+  "capabilities": {
+    "streaming": true,
+    "tools": true,
+    "vision": false,
+    "cost": false,
+    "maxSteps": 6
+  },
+  "eventCount": 11,
+  "events": [
+    {
+      "kind": "started",
+      "sessionId": "sess-replay-8f21a",
+      "provider": "replay",
+      "capabilities": {
+        "streaming": true,
+        "tools": true,
+        "vision": false,
+        "cost": false,
+        "maxSteps": 6
+      }
+    },
+    {
+      "kind": "text",
+      "delta": "先把这个 SKU 的现状读出来。"
+    },
+    {
+      "kind": "tool_call",
+      "callId": "call-lookup-item",
+      "name": "snapshot_query",
+      "args": {
+        "section": "items",
+        "itemId": "it_8f21a"
+      }
+    },
+    {
+      "kind": "tool_result",
+      "callId": "call-lookup-item",
+      "ok": true,
+      "summary": "1 个 item：Best Women Summer Floral Midi Dress",
+      "bytes": 418
+    },
+    {
+      "kind": "text",
+      "delta": "标题里有 Best。这不是风格问题 —— 绝对化用语是硬拦的。"
+    },
+    {
+      "kind": "tool_call",
+      "callId": "call-lookup-rule",
+      "name": "rule_lookup",
+      "args": {
+        "ruleId": "listing.title.absolute_terms"
+      }
+    },
+    {
+      "kind": "tool_result",
+      "callId": "call-lookup-rule",
+      "ok": true,
+      "summary": "blocker · 条款出处为 draft（未核实）",
+      "bytes": 702
+    },
+    {
+      "kind": "text",
+      "delta": "这条规则的判据是确定性词典匹配，改完标题能直接复算，不需要再等人工核对。"
+    },
+    {
+      "kind": "text",
+      "delta": "另外提醒一句：这条规则的条款出处还没核实过，用它对外发合规声明之前要先对原文。"
+    },
+    {
+      "kind": "usage",
+      "inputTokens": 1280,
+      "outputTokens": 96,
+      "costUsd": null
+    },
+    {
+      "kind": "done",
+      "reason": "ok"
+    }
+  ],
+  "timeline": [
+    {
+      "kind": "text",
+      "text": "先把这个 SKU 的现状读出来。"
+    },
+    {
+      "kind": "tool",
+      "callId": "call-lookup-item",
+      "name": "snapshot_query",
+      "ok": true,
+      "bytes": 418,
+      "summary": "1 个 item：Best Women Summer Floral Midi Dress"
+    },
+    {
+      "kind": "text",
+      "text": "标题里有 Best。这不是风格问题 —— 绝对化用语是硬拦的。"
+    },
+    {
+      "kind": "tool",
+      "callId": "call-lookup-rule",
+      "name": "rule_lookup",
+      "ok": true,
+      "bytes": 702,
+      "summary": "blocker · 条款出处为 draft（未核实）"
+    },
+    {
+      "kind": "text",
+      "text": "这条规则的判据是确定性词典匹配，改完标题能直接复算，不需要再等人工核对。另外提醒一句：这条规则的条款出处还没核实过，用它对外发合规声明之前要先对原文。"
+    }
+  ],
+  "toolCount": 2,
+  "stepCount": 5,
+  "durationMs": null,
+  "usage": {
+    "inputTokens": 1280,
+    "outputTokens": 96,
+    "costUsd": null
+  },
+  "doneReason": "ok"
+}
+

@@ -5,10 +5,12 @@
 
 pub mod detail;
 pub mod format;
+pub mod session;
 pub mod snapshot;
 pub mod tasks;
 
-pub use detail::{TaskDetail, Thought, ToolTrace};
+pub use detail::TaskDetail;
+pub use session::{AgentSession, Attribution, Step, TimelineItem, Usage};
 pub use snapshot::{
     AgentState, Evidence, Finding, Item, RulePack, Scope, Severity, Snapshot, SnapshotSource,
     Summary, Unjudged,

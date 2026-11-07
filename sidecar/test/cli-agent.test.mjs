@@ -4,8 +4,12 @@
 // 所以结论在 CI 与开发机上一致。
 
 import assert from "node:assert/strict"
+import { mkdtempSync, readFileSync, readdirSync, rmSync } from "node:fs"
+import { tmpdir } from "node:os"
+import { join } from "node:path"
 import test from "node:test"
 
+import { validateSession } from "../agent/session.mjs"
 import { main } from "../pgh.mjs"
 
 /** 收集一次 CLI 调用的输出。agent 子命令是异步的，这里统一 await。 */
@@ -128,3 +132,64 @@ test("同步命令的退出码原样落下去", async () => {
   assert.equal(process.exitCode, 2)
   process.exitCode = before
 })
+
+// ── agent session：落盘的是投影，不是事件流 ───────────────────────────
+
+/** 与 run 一样，但可以注入 env（避免任何测试写到真实的 ~/.pgh）。 */
+async function runWithEnv(env, argv) {
+  const out = []
+  const err = []
+  const code = await main(argv, { env, stdout: (s) => out.push(s), stderr: (s) => err.push(s) })
+  return { code, out: out.join("\n"), err: err.join("\n") }
+}
+
+test("agent session --json 输出一份可校验的投影，并自报是回放", async () => {
+  const { code, out } = await run(["agent", "session", "--provider", "replay", "--prompt", "看下 it_8f21a", "--json"])
+  assert.equal(code, 0)
+  const session = JSON.parse(out)
+  assert.equal(session.attribution.real, false)
+  assert.match(session.attribution.label, /回放/)
+  assert.ok(Array.isArray(session.events) && session.events.length > 0, "事实要跟着投影一起存")
+  assert.equal(session.timeline.length, session.stepCount)
+  assert.equal(session.usage.costUsd, null, "回放拿不到成本")
+})
+
+test("agent session --out 落盘，且写完再校验一遍", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "pgh-session-"))
+  const file = join(dir, "session.json")
+  const { code, err } = await run(["agent", "session", "--provider", "replay", "--prompt", "看下 it_8f21a", "--out", file])
+  assert.equal(code, 0, err)
+  assert.match(err, /已写入/)
+  assert.match(err, /回放数据，不是真实分析/, "落盘前后都要说明这不是真实分析")
+  assert.match(err, /耗时未知/)
+
+  const saved = JSON.parse(readFileSync(file, "utf8"))
+  assert.deepEqual(validateSession(saved).errors, [])
+  rmSync(dir, { recursive: true, force: true })
+})
+
+test("agent session 缺 --prompt 是用法错误，不是跑一次空会话", async () => {
+  const { code, err } = await run(["agent", "session", "--provider", "replay"])
+  assert.equal(code, 2)
+  assert.match(err, /需要 --prompt/)
+})
+
+test("agent session 指定不可用的 provider 时失败，不静默换一个", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "pgh-session-bad-"))
+  const { code } = await runWithEnv(
+    { ...process.env, PGH_HOME: dir },
+    ["agent", "session", "--provider", "remote", "--prompt", "x"],
+  )
+  assert.equal(code, 1)
+  // 目录里不该有半截文件
+  assert.deepEqual(readDirectory(dir), [])
+  rmSync(dir, { recursive: true, force: true })
+})
+
+function readDirectory(dir) {
+  try {
+    return readdirSync(dir)
+  } catch {
+    return []
+  }
+}

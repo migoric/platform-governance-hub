@@ -211,10 +211,13 @@ Accio 的形态是「一切收进会话」：报告在对话里长出来，任�
 
 所以回归基准改成**结构快照**，M0 就按这个验收：
 
-1. `cargo run -p hub -- --render ./renders --appearance dark` 对每个视图输出一份 JSON：
-   节点树（类型 / 层级 / 关键样式）+ 可见文本 + 列表计数。
+1. `cargo run -p hub -- --render <目录> [--appearance dark]` 对每个视图输出一份 JSON：
+   节点树（类型 / 层级 / 关键样式）+ 可见文本 + 数据源条数。
    确定性来自固定 fixture（`fixtures/snapshot.json`、`fixtures/tasks.json`、`fixtures/task-detail.json`）。
-2. 比结构的方式：同一视图两份 JSON 做 diff。改版是自己想要的 → 重新生成基准；
+   已提交的基准在 `GovernanceHub/fixtures/structure/`，8 份、文件名字典序即视图顺序（全 ASCII，
+   Windows 上文件名编码不惹事）。`--check-baseline` 逐文件比字节，`scripts/check.sh rust` 会调它。
+2. 比结构的方式：同一视图两份 JSON 做 diff（`--check-baseline` 不一致时退出码 1）。
+   改版是自己想要的 → 重新生成基准（`--render fixtures/structure`）；
    不是 → 说明布局或文案被误改。**这比像素 diff 更抗字体光栅化差异**，本来就是跨平台唯一可行的那条。
 3. PNG 只在**人工核对**时出：起真窗口 → `screen-capture` 抓图。要屏幕录制权限，不入库、不进 CI。
 4. 基准只在 macOS 生成。Windows 侧跑同一个 `--render`，比 JSON——结构一致才是跨端的要求，

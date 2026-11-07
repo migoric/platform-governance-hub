@@ -21,8 +21,12 @@
 cd sidecar && node --test                        # 单测
 cd GovernanceHub && cargo build --workspace      # 编译（macOS 上同时验 Windows 交叉编译见下）
 cd GovernanceHub && cargo test --workspace       # 单测
+cd GovernanceHub && cargo run -p hub -- --check-baseline   # 结构快照回归
 bash scripts/check.sh                            # 全量（含门禁）
 ```
+
+改了 UI 之后基准会红——**先确认变化是不是你想要的**，再 `cargo run -p hub -- --render fixtures/structure`
+重生成基准并把 8 份 JSON 一起提交。
 
 Windows 目标不要求本机可跑，但**每次改动 UI 层至少跑一次**
 `cargo check --target x86_64-pc-windows-msvc`（需 `rustup target add`），否则「跨端」只是口号。
@@ -80,8 +84,10 @@ Windows 目标不要求本机可跑，但**每次改动 UI 层至少跑一次**
 
 ## 7. 当前阶段
 
-**M0 进行中。** 已落地：`sidecar/` 的 mock 快照 + mock 任务列表（schema、CLI、单测）与四条门禁。
-未开始：`GovernanceHub/` 的 GPUI 骨架。
+**M0 进行中。** 已落地：`sidecar/` 的 mock 快照 + mock 任务列表（schema、CLI、单测）、五条门禁、
+`GovernanceHub/` 的 Cargo workspace（`crates/hub` + `crates/hub-agent`）、设计系统骨架（面板 / 玻璃 /
+严重度徽章 / 任务卡）、四个只读视图与 **8 份结构快照基准**；CI 已接 `scripts/check.sh`。
+未开始：真实采集与规则引擎（M1）、provider（M2）。
 
 开代码前先确认 `docs/roadmap.md` 里对应档的验收标准，不要提前实现 M2 的东西
 （尤其是 remote provider，等真服务）。

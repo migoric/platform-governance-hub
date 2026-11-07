@@ -33,8 +33,9 @@ GovernanceHub.app  ──只读──▶  ~/.pgh/snapshot.json  ◀──写入�
 
 ## 现在到哪一步
 
-**M0 进行中。** `sidecar/` 已有 mock 快照与 mock 任务列表（schema + CLI + 单测 + 四条门禁）；
-`GovernanceHub/` 的 GPUI 骨架尚未开始。文档顺序阅读：
+**M0 进行中。** `sidecar/` 已有 mock 快照与 mock 任务列表（schema + CLI + 单测）；
+`GovernanceHub/` 已有 GPUI 骨架（四个只读视图 + 8 份结构快照基准）；五条门禁 + CI 已接。
+真实采集、规则引擎、provider 分别在 M1 / M2。文档顺序阅读：
 
 1. [`docs/architecture.md`](docs/architecture.md) — 三层怎么切、进程怎么跑、边界在哪、**为什么 UI 用 GPUI**
 2. [`docs/snapshot-contract.md`](docs/snapshot-contract.md) — App 与 sidecar 之间唯一的数据契约
@@ -42,6 +43,27 @@ GovernanceHub.app  ──只读──▶  ~/.pgh/snapshot.json  ◀──写入�
 4. [`docs/agent-acl.md`](docs/agent-acl.md) — 换一个 agent 服务要改几个文件
 5. [`docs/ui-ia.md`](docs/ui-ia.md) — 任务层与事实层怎么分、哪些控件要在 GPUI 里重建
 6. [`docs/roadmap.md`](docs/roadmap.md) — M0–M3 与验收标准
+
+## 跑起来
+
+```bash
+# 侧车：造一份 mock 数据（M0 唯一数据源）
+node sidecar/pgh.mjs snapshot --mock --out ~/.pgh/snapshot.json
+node sidecar/pgh.mjs tasks --mock
+
+# 桌面应用（需要 rustup + rustfmt + Metal Toolchain，见 AGENTS.md §2）
+cd GovernanceHub && cargo run -p hub
+
+# 结构快照：出图 / 与基准比对
+cargo run -p hub -- --render fixtures/structure
+cargo run -p hub -- --check-baseline
+
+# 全量门禁（本地与 CI 同一条命令）
+bash scripts/check.sh
+```
+
+出图为什么是结构不是 PNG：`gpui 0.2.2` 没有离屏出图 API，带权限的屏幕抓图进不了 CI
+（[`ui-ia.md §8`](docs/ui-ia.md)）。所以「改版前后比结构」——**比 JSON 比 PNG 更抗字体差异**。
 
 ## 命名
 

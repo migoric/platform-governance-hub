@@ -21,10 +21,12 @@ M2 的事件契约另行定义，**`tasks.json` 的字段形态不得作为反�
 **验收**
 
 1. `pgh snapshot --mock > ~/.pgh/snapshot.json` 与 `pgh tasks --mock` 均通过各自 schema 校验
-2. `cargo run -p hub -- --render ./renders` 出 **8 份结构快照**（节点树 + 可见文本 + 数据源计数）：
+2. `cargo run -p hub -- --render fixtures/structure` 出 **8 份结构快照**（节点树 + 可见文本 + 数据源计数）：
    总览、风险清单、任务列表（进行中 / 等待确认 / 已完成 / 已中断 各一份）、
    任务详情（折叠条收起 / 展开 各一份）。总览数字与 mock 一致，任务卡耗时与 fixture 一致
-   ——基准为什么是结构不是 PNG：gpui 0.2.2 没有离屏出图 API（`ui-ia.md §8` 已查源码确认）
+   ——基准为什么是结构不是 PNG：gpui 0.2.2 没有离屏出图 API（`ui-ia.md §8` 已查源码确认）。
+   基准随仓库提交在 `GovernanceHub/fixtures/structure/`，`--check-baseline` 做逐文件比对，
+   已挂进 `scripts/check.sh rust`，所以「布局被误改」会在本地和 CI 同时红。
 3. 两种空状态文案不同：删掉快照 → 「尚无数据，点这里采集」；
    删掉 `tasks.json` → 「还没有任务。任务要显式新建，点选列表不会自动开始」（`ui-ia.md §4.4`）
 4. `bash scripts/check.sh` 一条命令全绿

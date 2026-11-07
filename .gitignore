@@ -1,0 +1,37 @@
+# 本机平台 pack：字段映射、规则包、词典、脱敏样例 —— 绝不进 git
+packs/
+*.pack.json
+
+# 证据与业务数据
+evidence/
+snapshot.json
+actions.jsonl
+scan.json
+*.xlsx
+*.xls
+*.csv
+*.pdf
+*.docx
+
+# 本机配置（可能含 agent 服务地址与凭据）
+config.json
+.env
+.env.*
+
+# 构建产物
+build/
+dist/
+renders/
+node_modules/
+.pnpm-store/
+.swiftpm/
+target/
+.build/
+*.app
+*.dmg
+
+# 本机敏感词表（内网域名 / 平台名）：词表本身也是敏感信息，不进 git
+scripts/gates.local.json
+
+# 系统
+.DS_Store

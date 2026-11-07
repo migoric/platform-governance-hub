@@ -1,0 +1,13 @@
+{
+  "name": "pgh-sidecar",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "platform-governance-hub sidecar — 零第三方依赖（refactor-constraints §2.2）",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test"
+  }
+}

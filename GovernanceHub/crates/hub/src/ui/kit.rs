@@ -34,7 +34,7 @@ pub fn panel(palette: &Palette, title: &str, subtitle: &str, body: Node) -> Node
                         ),
                 )
                 .child(
-                    Node::label("M0 · 只读")
+                    Node::label("只读")
                         .size(text::CAPTION)
                         .color(palette.text_tertiary),
                 ),
@@ -65,6 +65,22 @@ pub fn severity_badge(palette: &Palette, severity: Severity) -> Node {
                 .size(text::CAPTION)
                 .weight(Weight::Medium)
                 .color(palette.severity(severity)),
+        )
+}
+
+/// 通用小标签：文字 + 语义色。严重度之外的三态（需整改 / 待判 / 可上架）用它。
+/// 和 `severity_badge` 一样**必须带文字** —— 颜色只做辅助。
+pub fn tag(palette: &Palette, label: &str, color: crate::ui::tokens::Paint) -> Node {
+    let _ = palette;
+    Node::new(Kind::Badge)
+        .pad_xy(space::SM, space::XS)
+        .radius(radius::SM)
+        .stroke(1.0, color)
+        .child(
+            Node::label(label.to_string())
+                .size(text::CAPTION)
+                .weight(Weight::Medium)
+                .color(color),
         )
 }
 

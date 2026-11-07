@@ -70,12 +70,12 @@ mod tests {
     use super::*;
 
     #[test]
-    fn 出图恰好八份且文件名固定() {
+    fn 出图恰好十份且文件名固定() {
         let store = Store::from_fixtures(crate::state::store::fixtures_dir());
         let dir = std::env::temp_dir().join("pgh-render-test-8");
         let _ = std::fs::remove_dir_all(&dir);
         let rendered = render_all(&store, &dir, Appearance::Light).unwrap();
-        assert_eq!(rendered.len(), 8);
+        assert_eq!(rendered.len(), 10);
         let names: Vec<String> = rendered
             .iter()
             .map(|r| r.path.file_name().unwrap().to_string_lossy().to_string())
@@ -91,6 +91,8 @@ mod tests {
                 "06-tasks-interrupted.json",
                 "07-task-detail-collapsed.json",
                 "08-task-detail-expanded.json",
+                "09-preflight.json",
+                "10-rule-library.json",
             ]
         );
         assert!(rendered.iter().all(|r| r.nodes > 10 && r.texts > 3));
@@ -119,7 +121,7 @@ mod tests {
         let store = Store::empty();
         let dir = std::env::temp_dir().join("pgh-render-empty");
         let rendered = render_all(&store, &dir, Appearance::Light).unwrap();
-        assert_eq!(rendered.len(), 8);
+        assert_eq!(rendered.len(), 10);
         let overview = std::fs::read_to_string(dir.join("01-overview.json")).unwrap();
         assert!(overview.contains("尚无数据"), "空状态文案要写清为什么空");
         let _ = std::fs::remove_dir_all(&dir);

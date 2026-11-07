@@ -22,11 +22,12 @@ cd sidecar && node --test                        # 单测
 cd GovernanceHub && cargo build --workspace      # 编译（macOS 上同时验 Windows 交叉编译见下）
 cd GovernanceHub && cargo test --workspace       # 单测
 cd GovernanceHub && cargo run -p hub -- --check-baseline   # 结构快照回归
+node sidecar/pgh.mjs check --mock                 # 引擎跑一遍（结论 + 判不了）
 bash scripts/check.sh                            # 全量（含门禁）
 ```
 
 改了 UI 之后基准会红——**先确认变化是不是你想要的**，再 `cargo run -p hub -- --render fixtures/structure`
-重生成基准并把 8 份 JSON 一起提交。
+重生成基准并把 10 份 JSON 一起提交。
 
 Windows 目标不要求本机可跑，但**每次改动 UI 层至少跑一次**
 `cargo check --target x86_64-pc-windows-msvc`（需 `rustup target add`），否则「跨端」只是口号。
@@ -90,10 +91,14 @@ Windows 目标不要求本机可跑，但**每次改动 UI 层至少跑一次**
 
 ## 7. 当前阶段
 
-**M0 进行中。** 已落地：`sidecar/` 的 mock 快照 + mock 任务列表（schema、CLI、单测）、五条门禁、
-`GovernanceHub/` 的 Cargo workspace（`crates/hub` + `crates/hub-agent`）、设计系统骨架（面板 / 玻璃 /
-严重度徽章 / 任务卡）、四个只读视图与 **8 份结构快照基准**；CI 已接 `scripts/check.sh`。
-未开始：真实采集与规则引擎（M1）、provider（M2）。
+**M1 进行中。** 已落地：`sidecar/` 的 mock 快照 / 任务列表 / **规则引擎**（六种 check、证据三态、
+正则静态拒绝与熔断）、规则库（3 个包 23 条规则 + 8 份词典）、`pgh check` 与 `pgh rules list|impact`；
+`GovernanceHub/` 的 Cargo workspace、设计系统骨架、**六个只读视图与 10 份结构快照基准**；
+五条门禁 + CI。
+未开始：真实采集（M3）、provider（M2）、`asset.meta` / `relation.exists` / `external.query` 三种判据。
+
+**规则口径尚未签字。** 23 条规则的 `source.clause` 目前是**虚构条款**，只用于跑通链路；
+要真正使用，必须逐条换成你手上的原文（`docs/rule-library.md §9`）。改口径是独立提交。
 
 开代码前先确认 `docs/roadmap.md` 里对应档的验收标准，不要提前实现 M2 的东西
 （尤其是 remote provider，等真服务）。

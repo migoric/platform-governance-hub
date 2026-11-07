@@ -113,6 +113,11 @@ Accio 的形态是「一切收进会话」：报告在对话里长出来，任�
 | 规则与证据 | 这条结论依据什么？ | `packs/<id>/rules/` + `evidence/` | 分段切换：规则（条款出处、正反例、impact）/ 证据（缩略图网格 + 被哪些 finding 引用） |
 
 **「上架前检查」和「在售巡检」用同一份规则、同一个引擎**，区别只是入参集合与差异呈现。
+
+M1 落地的是**只读第一版**：上架前检查按商品聚合成三态（需整改 / 待判 / 可上架），
+规则与证据显示包级信息 + 每条规则的命中/待判战绩 + 待判原因分布。
+点回原文、规则正文浏览、impact 预估的交互都还没做 —— 数据侧已经就绪（`pgh rules list --json`），
+差的是 UI 交互，别在文档里假装已经有了。
 这不是巧合，是为了保证口径唯一：同一条 SKU 在两个入口得到的结论必须逐字一致。
 
 （原「报告」面板已并入任务层，见 §2.1。）
@@ -214,7 +219,7 @@ Accio 的形态是「一切收进会话」：报告在对话里长出来，任�
 1. `cargo run -p hub -- --render <目录> [--appearance dark]` 对每个视图输出一份 JSON：
    节点树（类型 / 层级 / 关键样式）+ 可见文本 + 数据源条数。
    确定性来自固定 fixture（`fixtures/snapshot.json`、`fixtures/tasks.json`、`fixtures/task-detail.json`）。
-   已提交的基准在 `GovernanceHub/fixtures/structure/`，8 份、文件名字典序即视图顺序（全 ASCII，
+   已提交的基准在 `GovernanceHub/fixtures/structure/`，10 份、文件名字典序即视图顺序（全 ASCII，
    Windows 上文件名编码不惹事）。`--check-baseline` 逐文件比字节，`scripts/check.sh rust` 会调它。
 2. 比结构的方式：同一视图两份 JSON 做 diff（`--check-baseline` 不一致时退出码 1）。
    改版是自己想要的 → 重新生成基准（`--render fixtures/structure`）；

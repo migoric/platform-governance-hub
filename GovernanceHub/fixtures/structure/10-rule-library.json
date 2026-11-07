@@ -1,0 +1,2310 @@
+{
+  "kind": "window",
+  "style": {
+    "axis": "row",
+    "width": 1180.0,
+    "height": 760.0,
+    "fill": {
+      "token": "app_bg",
+      "hex": "#F5F6F8FF"
+    }
+  },
+  "children": [
+    {
+      "kind": "sidebar",
+      "style": {
+        "axis": "column",
+        "gap": 16.0,
+        "pad": [
+          12.0,
+          12.0,
+          12.0,
+          12.0
+        ],
+        "width": 196.0,
+        "fill": {
+          "token": "panel_bg",
+          "hex": "#FFFFFFFF"
+        },
+        "stroke": {
+          "width": 1.0,
+          "paint": {
+            "token": "divider",
+            "hex": "#0B122014"
+          }
+        }
+      },
+      "children": [
+        {
+          "kind": "sidebar_section",
+          "style": {
+            "axis": "column",
+            "gap": 4.0
+          },
+          "children": [
+            {
+              "kind": "text",
+              "style": {
+                "axis": "column",
+                "text_size": 12.0,
+                "text_color": {
+                  "token": "text_tertiary",
+                  "hex": "#6B7480FF"
+                },
+                "weight": "medium"
+              },
+              "text": "任务"
+            },
+            {
+              "kind": "sidebar_item",
+              "style": {
+                "axis": "row",
+                "pad": [
+                  4.0,
+                  8.0,
+                  4.0,
+                  8.0
+                ],
+                "width": 172.0,
+                "fill": {
+                  "token": "glass_fill",
+                  "hex": "#FFFFFFB8"
+                },
+                "radius": 6.0,
+                "align": "space_between"
+              },
+              "children": [
+                {
+                  "kind": "text",
+                  "style": {
+                    "axis": "column",
+                    "text_size": 14.0,
+                    "text_color": {
+                      "token": "text_secondary",
+                      "hex": "#4C5666FF"
+                    }
+                  },
+                  "text": "进行中"
+                },
+                {
+                  "kind": "text",
+                  "style": {
+                    "axis": "column",
+                    "text_size": 12.0,
+                    "text_color": {
+                      "token": "text_tertiary",
+                      "hex": "#6B7480FF"
+                    }
+                  },
+                  "text": "⌘1"
+                }
+              ]
+            },
+            {
+              "kind": "sidebar_item",
+              "style": {
+                "axis": "row",
+                "pad": [
+                  4.0,
+                  8.0,
+                  4.0,
+                  8.0
+                ],
+                "width": 172.0,
+                "fill": {
+                  "token": "glass_fill",
+                  "hex": "#FFFFFFB8"
+                },
+                "radius": 6.0,
+                "align": "space_between"
+              },
+              "children": [
+                {
+                  "kind": "text",
+                  "style": {
+                    "axis": "column",
+                    "text_size": 14.0,
+                    "text_color": {
+                      "token": "text_secondary",
+                      "hex": "#4C5666FF"
+                    }
+                  },
+                  "text": "已完成"
+                },
+                {
+                  "kind": "text",
+                  "style": {
+                    "axis": "column",
+                    "text_size": 12.0,
+                    "text_color": {
+                      "token": "text_tertiary",
+                      "hex": "#6B7480FF"
+                    }
+                  },
+                  "text": "⌘0"
+                }
+              ]
+            },
+            {
+              "kind": "sidebar_item",
+              "style": {
+                "axis": "row",
+                "pad": [
+                  4.0,
+                  8.0,
+                  4.0,
+                  8.0
+                ],
+                "width": 172.0,
+                "fill": {
+                  "token": "glass_fill",
+                  "hex": "#FFFFFFB8"
+                },
+                "radius": 6.0,
+                "align": "space_between"
+              },
+              "children": [
+                {
+                  "kind": "text",
+                  "style": {
+                    "axis": "column",
+                    "text_size": 14.0,
+                    "text_color": {
+                      "token": "text_secondary",
+                      "hex": "#4C5666FF"
+                    }
+                  },
+                  "text": "定时任务"
+                },
+                {
+                  "kind": "text",
+                  "style": {
+                    "axis": "column",
+                    "text_size": 12.0,
+                    "text_color": {
+                      "token": "text_tertiary",
+                      "hex": "#6B7480FF"
+                    }
+                  },
+                  "text": "⌘⇧S"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "sidebar_section",
+          "style": {
+            "axis": "column",
+            "gap": 4.0
+          },
+          "children": [
+            {
+              "kind": "text",
+              "style": {
+                "axis": "column",
+                "text_size": 12.0,
+                "text_color": {
+                  "token": "text_tertiary",
+                  "hex": "#6B7480FF"
+                },
+                "weight": "medium"
+              },
+              "text": "事实"
+            },
+            {
+              "kind": "sidebar_item",
+              "style": {
+                "axis": "row",
+                "pad": [
+                  4.0,
+                  8.0,
+                  4.0,
+                  8.0
+                ],
+                "width": 172.0,
+                "fill": {
+                  "token": "glass_fill",
+                  "hex": "#FFFFFFB8"
+                },
+                "radius": 6.0,
+                "align": "space_between"
+              },
+              "children": [
+                {
+                  "kind": "text",
+                  "style": {
+                    "axis": "column",
+                    "text_size": 14.0,
+                    "text_color": {
+                      "token": "text_secondary",
+                      "hex": "#4C5666FF"
+                    }
+                  },
+                  "text": "总览"
+                },
+                {
+                  "kind": "text",
+                  "style": {
+                    "axis": "column",
+                    "text_size": 12.0,
+                    "text_color": {
+                      "token": "text_tertiary",
+                      "hex": "#6B7480FF"
+                    }
+                  },
+                  "text": "⌘2"
+                }
+              ]
+            },
+            {
+              "kind": "sidebar_item",
+              "style": {
+                "axis": "row",
+                "pad": [
+                  4.0,
+                  8.0,
+                  4.0,
+                  8.0
+                ],
+                "width": 172.0,
+                "fill": {
+                  "token": "glass_fill",
+                  "hex": "#FFFFFFB8"
+                },
+                "radius": 6.0,
+                "align": "space_between"
+              },
+              "children": [
+                {
+                  "kind": "text",
+                  "style": {
+                    "axis": "column",
+                    "text_size": 14.0,
+                    "text_color": {
+                      "token": "text_secondary",
+                      "hex": "#4C5666FF"
+                    }
+                  },
+                  "text": "风险清单"
+                },
+                {
+                  "kind": "text",
+                  "style": {
+                    "axis": "column",
+                    "text_size": 12.0,
+                    "text_color": {
+                      "token": "text_tertiary",
+                      "hex": "#6B7480FF"
+                    }
+                  },
+                  "text": "⌘3"
+                }
+              ]
+            },
+            {
+              "kind": "sidebar_item",
+              "style": {
+                "axis": "row",
+                "pad": [
+                  4.0,
+                  8.0,
+                  4.0,
+                  8.0
+                ],
+                "width": 172.0,
+                "fill": {
+                  "token": "glass_fill",
+                  "hex": "#FFFFFFB8"
+                },
+                "radius": 6.0,
+                "align": "space_between"
+              },
+              "children": [
+                {
+                  "kind": "text",
+                  "style": {
+                    "axis": "column",
+                    "text_size": 14.0,
+                    "text_color": {
+                      "token": "text_secondary",
+                      "hex": "#4C5666FF"
+                    }
+                  },
+                  "text": "上架前检查"
+                },
+                {
+                  "kind": "text",
+                  "style": {
+                    "axis": "column",
+                    "text_size": 12.0,
+                    "text_color": {
+                      "token": "text_tertiary",
+                      "hex": "#6B7480FF"
+                    }
+                  },
+                  "text": "⌘4"
+                }
+              ]
+            },
+            {
+              "kind": "sidebar_item",
+              "style": {
+                "axis": "row",
+                "pad": [
+                  4.0,
+                  8.0,
+                  4.0,
+                  8.0
+                ],
+                "width": 172.0,
+                "fill": {
+                  "token": "glass_fill",
+                  "hex": "#FFFFFFB8"
+                },
+                "radius": 6.0,
+                "align": "space_between"
+              },
+              "children": [
+                {
+                  "kind": "text",
+                  "style": {
+                    "axis": "column",
+                    "text_size": 14.0,
+                    "text_color": {
+                      "token": "text_secondary",
+                      "hex": "#4C5666FF"
+                    }
+                  },
+                  "text": "在售巡检"
+                },
+                {
+                  "kind": "text",
+                  "style": {
+                    "axis": "column",
+                    "text_size": 12.0,
+                    "text_color": {
+                      "token": "text_tertiary",
+                      "hex": "#6B7480FF"
+                    }
+                  },
+                  "text": "⌘5"
+                }
+              ]
+            },
+            {
+              "kind": "sidebar_item",
+              "style": {
+                "axis": "row",
+                "pad": [
+                  4.0,
+                  8.0,
+                  4.0,
+                  8.0
+                ],
+                "width": 172.0,
+                "fill": {
+                  "token": "glass_fill",
+                  "hex": "#FFFFFFB8"
+                },
+                "radius": 6.0,
+                "align": "space_between"
+              },
+              "children": [
+                {
+                  "kind": "text",
+                  "style": {
+                    "axis": "column",
+                    "text_size": 14.0,
+                    "text_color": {
+                      "token": "text_secondary",
+                      "hex": "#4C5666FF"
+                    }
+                  },
+                  "text": "整改与复核"
+                },
+                {
+                  "kind": "text",
+                  "style": {
+                    "axis": "column",
+                    "text_size": 12.0,
+                    "text_color": {
+                      "token": "text_tertiary",
+                      "hex": "#6B7480FF"
+                    }
+                  },
+                  "text": "⌘6"
+                }
+              ]
+            },
+            {
+              "kind": "sidebar_item",
+              "style": {
+                "axis": "row",
+                "pad": [
+                  4.0,
+                  8.0,
+                  4.0,
+                  8.0
+                ],
+                "width": 172.0,
+                "fill": {
+                  "token": "accent_soft",
+                  "hex": "#2A5BD71F"
+                },
+                "radius": 6.0,
+                "align": "space_between"
+              },
+              "children": [
+                {
+                  "kind": "text",
+                  "style": {
+                    "axis": "column",
+                    "text_size": 14.0,
+                    "text_color": {
+                      "token": "accent",
+                      "hex": "#2A5BD7FF"
+                    }
+                  },
+                  "text": "规则与证据"
+                },
+                {
+                  "kind": "text",
+                  "style": {
+                    "axis": "column",
+                    "text_size": 12.0,
+                    "text_color": {
+                      "token": "text_tertiary",
+                      "hex": "#6B7480FF"
+                    }
+                  },
+                  "text": "⌘7"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "sidebar_section",
+          "style": {
+            "axis": "column",
+            "gap": 4.0
+          },
+          "children": [
+            {
+              "kind": "text",
+              "style": {
+                "axis": "column",
+                "text_size": 12.0,
+                "text_color": {
+                  "token": "text_tertiary",
+                  "hex": "#6B7480FF"
+                },
+                "weight": "medium"
+              },
+              "text": "设置"
+            },
+            {
+              "kind": "sidebar_item",
+              "style": {
+                "axis": "row",
+                "pad": [
+                  4.0,
+                  8.0,
+                  4.0,
+                  8.0
+                ],
+                "width": 172.0,
+                "fill": {
+                  "token": "glass_fill",
+                  "hex": "#FFFFFFB8"
+                },
+                "radius": 6.0,
+                "align": "space_between"
+              },
+              "children": [
+                {
+                  "kind": "text",
+                  "style": {
+                    "axis": "column",
+                    "text_size": 14.0,
+                    "text_color": {
+                      "token": "text_secondary",
+                      "hex": "#4C5666FF"
+                    }
+                  },
+                  "text": "设置"
+                },
+                {
+                  "kind": "text",
+                  "style": {
+                    "axis": "column",
+                    "text_size": 12.0,
+                    "text_color": {
+                      "token": "text_tertiary",
+                      "hex": "#6B7480FF"
+                    }
+                  },
+                  "text": "⌘,"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "main",
+      "style": {
+        "axis": "column",
+        "gap": 16.0,
+        "grow": true
+      },
+      "children": [
+        {
+          "kind": "panel",
+          "style": {
+            "axis": "column",
+            "gap": 16.0,
+            "pad": [
+              24.0,
+              24.0,
+              24.0,
+              24.0
+            ]
+          },
+          "children": [
+            {
+              "kind": "panel_header",
+              "style": {
+                "axis": "row",
+                "gap": 12.0,
+                "align": "space_between"
+              },
+              "children": [
+                {
+                  "kind": "column",
+                  "style": {
+                    "axis": "column",
+                    "gap": 4.0
+                  },
+                  "children": [
+                    {
+                      "kind": "text",
+                      "style": {
+                        "axis": "column",
+                        "text_size": 19.0,
+                        "text_color": {
+                          "token": "text_primary",
+                          "hex": "#14181FFF"
+                        },
+                        "weight": "semibold"
+                      },
+                      "text": "规则库与证据"
+                    },
+                    {
+                      "kind": "text",
+                      "style": {
+                        "axis": "column",
+                        "text_size": 12.0,
+                        "text_color": {
+                          "token": "text_secondary",
+                          "hex": "#4C5666FF"
+                        }
+                      },
+                      "text": "3 个包 · 23 条规则 · 命中 7 条 · 待判 6 条"
+                    }
+                  ]
+                },
+                {
+                  "kind": "text",
+                  "style": {
+                    "axis": "column",
+                    "text_size": 12.0,
+                    "text_color": {
+                      "token": "text_tertiary",
+                      "hex": "#6B7480FF"
+                    }
+                  },
+                  "text": "只读"
+                }
+              ]
+            },
+            {
+              "kind": "divider",
+              "style": {
+                "axis": "column",
+                "height": 1.0,
+                "fill": {
+                  "token": "divider",
+                  "hex": "#0B122014"
+                }
+              }
+            },
+            {
+              "kind": "column",
+              "style": {
+                "axis": "column",
+                "gap": 12.0
+              },
+              "children": [
+                {
+                  "kind": "section_title",
+                  "style": {
+                    "axis": "column",
+                    "pad": [
+                      8.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ]
+                  },
+                  "children": [
+                    {
+                      "kind": "text",
+                      "style": {
+                        "axis": "column",
+                        "text_size": 14.0,
+                        "text_color": {
+                          "token": "text_primary",
+                          "hex": "#14181FFF"
+                        },
+                        "weight": "semibold"
+                      },
+                      "text": "规则包"
+                    }
+                  ]
+                },
+                {
+                  "kind": "rule_pack_table",
+                  "style": {
+                    "axis": "column",
+                    "gap": 4.0
+                  },
+                  "data": {
+                    "source": "rulePacks",
+                    "total": 3
+                  },
+                  "children": [
+                    {
+                      "kind": "row",
+                      "style": {
+                        "axis": "row",
+                        "gap": 8.0,
+                        "pad": [
+                          0.0,
+                          0.0,
+                          4.0,
+                          0.0
+                        ]
+                      },
+                      "children": [
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 220.0,
+                            "text_size": 12.0,
+                            "text_color": {
+                              "token": "text_tertiary",
+                              "hex": "#6B7480FF"
+                            },
+                            "weight": "medium"
+                          },
+                          "text": "包"
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 110.0,
+                            "text_size": 12.0,
+                            "text_color": {
+                              "token": "text_tertiary",
+                              "hex": "#6B7480FF"
+                            },
+                            "weight": "medium"
+                          },
+                          "text": "版本"
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 56.0,
+                            "text_size": 12.0,
+                            "text_color": {
+                              "token": "text_tertiary",
+                              "hex": "#6B7480FF"
+                            },
+                            "weight": "medium"
+                          },
+                          "text": "条数"
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "text_size": 12.0,
+                            "text_color": {
+                              "token": "text_tertiary",
+                              "hex": "#6B7480FF"
+                            },
+                            "weight": "medium"
+                          },
+                          "text": "生效期"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "rule_pack_row",
+                      "style": {
+                        "axis": "row",
+                        "gap": 8.0,
+                        "pad": [
+                          8.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ]
+                      },
+                      "children": [
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 220.0,
+                            "text_size": 14.0,
+                            "text_color": {
+                              "token": "text_primary",
+                              "hex": "#14181FFF"
+                            },
+                            "weight": "medium"
+                          },
+                          "text": "baseline"
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 110.0,
+                            "text_size": 12.5,
+                            "text_color": {
+                              "token": "text_secondary",
+                              "hex": "#4C5666FF"
+                            },
+                            "mono": true
+                          },
+                          "text": "2026.11.1"
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 56.0,
+                            "text_size": 12.5,
+                            "text_color": {
+                              "token": "text_secondary",
+                              "hex": "#4C5666FF"
+                            },
+                            "mono": true
+                          },
+                          "text": "16 条"
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "text_size": 12.0,
+                            "text_color": {
+                              "token": "text_tertiary",
+                              "hex": "#6B7480FF"
+                            }
+                          },
+                          "text": "2026-11-01 起生效"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "rule_pack_row",
+                      "style": {
+                        "axis": "row",
+                        "gap": 8.0,
+                        "pad": [
+                          8.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ]
+                      },
+                      "children": [
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 220.0,
+                            "text_size": 14.0,
+                            "text_color": {
+                              "token": "text_primary",
+                              "hex": "#14181FFF"
+                            },
+                            "weight": "medium"
+                          },
+                          "text": "category-certs"
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 110.0,
+                            "text_size": 12.5,
+                            "text_color": {
+                              "token": "text_secondary",
+                              "hex": "#4C5666FF"
+                            },
+                            "mono": true
+                          },
+                          "text": "2026.10.15"
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 56.0,
+                            "text_size": 12.5,
+                            "text_color": {
+                              "token": "text_secondary",
+                              "hex": "#4C5666FF"
+                            },
+                            "mono": true
+                          },
+                          "text": "4 条"
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "text_size": 12.0,
+                            "text_color": {
+                              "token": "text_tertiary",
+                              "hex": "#6B7480FF"
+                            }
+                          },
+                          "text": "2026-10-15 起生效"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "rule_pack_row",
+                      "style": {
+                        "axis": "row",
+                        "gap": 8.0,
+                        "pad": [
+                          8.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ]
+                      },
+                      "children": [
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 220.0,
+                            "text_size": 14.0,
+                            "text_color": {
+                              "token": "text_primary",
+                              "hex": "#14181FFF"
+                            },
+                            "weight": "medium"
+                          },
+                          "text": "eu-market"
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 110.0,
+                            "text_size": 12.5,
+                            "text_color": {
+                              "token": "text_secondary",
+                              "hex": "#4C5666FF"
+                            },
+                            "mono": true
+                          },
+                          "text": "2026.09.01"
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 56.0,
+                            "text_size": 12.5,
+                            "text_color": {
+                              "token": "text_secondary",
+                              "hex": "#4C5666FF"
+                            },
+                            "mono": true
+                          },
+                          "text": "3 条"
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "text_size": 12.0,
+                            "text_color": {
+                              "token": "text_tertiary",
+                              "hex": "#6B7480FF"
+                            }
+                          },
+                          "text": "2026-09-01 起生效"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "divider",
+                  "style": {
+                    "axis": "column",
+                    "height": 1.0,
+                    "fill": {
+                      "token": "divider",
+                      "hex": "#0B122014"
+                    }
+                  }
+                },
+                {
+                  "kind": "section_title",
+                  "style": {
+                    "axis": "column",
+                    "pad": [
+                      8.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ]
+                  },
+                  "children": [
+                    {
+                      "kind": "text",
+                      "style": {
+                        "axis": "column",
+                        "text_size": 14.0,
+                        "text_color": {
+                          "token": "text_primary",
+                          "hex": "#14181FFF"
+                        },
+                        "weight": "semibold"
+                      },
+                      "text": "命中分布（10 条规则有战绩）"
+                    }
+                  ]
+                },
+                {
+                  "kind": "rule_stat_table",
+                  "style": {
+                    "axis": "column",
+                    "gap": 4.0
+                  },
+                  "data": {
+                    "source": "ruleStats",
+                    "total": 10
+                  },
+                  "children": [
+                    {
+                      "kind": "row",
+                      "style": {
+                        "axis": "row",
+                        "gap": 8.0,
+                        "pad": [
+                          0.0,
+                          0.0,
+                          4.0,
+                          0.0
+                        ]
+                      },
+                      "children": [
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 320.0,
+                            "text_size": 12.0,
+                            "text_color": {
+                              "token": "text_tertiary",
+                              "hex": "#6B7480FF"
+                            },
+                            "weight": "medium"
+                          },
+                          "text": "规则"
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 56.0,
+                            "text_size": 12.0,
+                            "text_color": {
+                              "token": "text_tertiary",
+                              "hex": "#6B7480FF"
+                            },
+                            "weight": "medium"
+                          },
+                          "text": "命中"
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 56.0,
+                            "text_size": 12.0,
+                            "text_color": {
+                              "token": "text_tertiary",
+                              "hex": "#6B7480FF"
+                            },
+                            "weight": "medium"
+                          },
+                          "text": "待判"
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "text_size": 12.0,
+                            "text_color": {
+                              "token": "text_tertiary",
+                              "hex": "#6B7480FF"
+                            },
+                            "weight": "medium"
+                          },
+                          "text": "严重度"
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "text_size": 12.0,
+                            "text_color": {
+                              "token": "text_tertiary",
+                              "hex": "#6B7480FF"
+                            },
+                            "weight": "medium"
+                          },
+                          "text": "版本"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "rule_stat_row",
+                      "style": {
+                        "axis": "row",
+                        "gap": 8.0,
+                        "pad": [
+                          8.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ]
+                      },
+                      "children": [
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 320.0,
+                            "text_size": 12.5,
+                            "text_color": {
+                              "token": "text_primary",
+                              "hex": "#14181FFF"
+                            },
+                            "mono": true
+                          },
+                          "text": "listing.image.watermark"
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 56.0,
+                            "text_size": 12.5,
+                            "text_color": {
+                              "token": "text_secondary",
+                              "hex": "#4C5666FF"
+                            },
+                            "mono": true
+                          },
+                          "text": "0"
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 56.0,
+                            "text_size": 12.5,
+                            "text_color": {
+                              "token": "state_awaiting",
+                              "hex": "#8A5A00FF"
+                            },
+                            "mono": true
+                          },
+                          "text": "3"
+                        },
+                        {
+                          "kind": "badge",
+                          "style": {
+                            "axis": "column",
+                            "pad": [
+                              4.0,
+                              8.0,
+                              4.0,
+                              8.0
+                            ],
+                            "stroke": {
+                              "width": 1.0,
+                              "paint": {
+                                "token": "text_tertiary",
+                                "hex": "#6B7480FF"
+                              }
+                            },
+                            "radius": 6.0
+                          },
+                          "children": [
+                            {
+                              "kind": "text",
+                              "style": {
+                                "axis": "column",
+                                "text_size": 12.0,
+                                "text_color": {
+                                  "token": "text_tertiary",
+                                  "hex": "#6B7480FF"
+                                },
+                                "weight": "medium"
+                              },
+                              "text": "未定"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "text_size": 12.0,
+                            "text_color": {
+                              "token": "text_tertiary",
+                              "hex": "#6B7480FF"
+                            }
+                          },
+                          "text": ""
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "rule_stat_row",
+                      "style": {
+                        "axis": "row",
+                        "gap": 8.0,
+                        "pad": [
+                          8.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ]
+                      },
+                      "children": [
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 320.0,
+                            "text_size": 12.5,
+                            "text_color": {
+                              "token": "text_primary",
+                              "hex": "#14181FFF"
+                            },
+                            "mono": true
+                          },
+                          "text": "listing.description.efficacy_claim"
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 56.0,
+                            "text_size": 12.5,
+                            "text_color": {
+                              "token": "text_secondary",
+                              "hex": "#4C5666FF"
+                            },
+                            "mono": true
+                          },
+                          "text": "0"
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 56.0,
+                            "text_size": 12.5,
+                            "text_color": {
+                              "token": "state_awaiting",
+                              "hex": "#8A5A00FF"
+                            },
+                            "mono": true
+                          },
+                          "text": "2"
+                        },
+                        {
+                          "kind": "badge",
+                          "style": {
+                            "axis": "column",
+                            "pad": [
+                              4.0,
+                              8.0,
+                              4.0,
+                              8.0
+                            ],
+                            "stroke": {
+                              "width": 1.0,
+                              "paint": {
+                                "token": "text_tertiary",
+                                "hex": "#6B7480FF"
+                              }
+                            },
+                            "radius": 6.0
+                          },
+                          "children": [
+                            {
+                              "kind": "text",
+                              "style": {
+                                "axis": "column",
+                                "text_size": 12.0,
+                                "text_color": {
+                                  "token": "text_tertiary",
+                                  "hex": "#6B7480FF"
+                                },
+                                "weight": "medium"
+                              },
+                              "text": "未定"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "text_size": 12.0,
+                            "text_color": {
+                              "token": "text_tertiary",
+                              "hex": "#6B7480FF"
+                            }
+                          },
+                          "text": ""
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "rule_stat_row",
+                      "style": {
+                        "axis": "row",
+                        "gap": 8.0,
+                        "pad": [
+                          8.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ]
+                      },
+                      "children": [
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 320.0,
+                            "text_size": 12.5,
+                            "text_color": {
+                              "token": "text_primary",
+                              "hex": "#14181FFF"
+                            },
+                            "mono": true
+                          },
+                          "text": "eu.market.ce_mark_required"
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 56.0,
+                            "text_size": 12.5,
+                            "text_color": {
+                              "token": "text_secondary",
+                              "hex": "#4C5666FF"
+                            },
+                            "mono": true
+                          },
+                          "text": "0"
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 56.0,
+                            "text_size": 12.5,
+                            "text_color": {
+                              "token": "state_awaiting",
+                              "hex": "#8A5A00FF"
+                            },
+                            "mono": true
+                          },
+                          "text": "1"
+                        },
+                        {
+                          "kind": "badge",
+                          "style": {
+                            "axis": "column",
+                            "pad": [
+                              4.0,
+                              8.0,
+                              4.0,
+                              8.0
+                            ],
+                            "stroke": {
+                              "width": 1.0,
+                              "paint": {
+                                "token": "text_tertiary",
+                                "hex": "#6B7480FF"
+                              }
+                            },
+                            "radius": 6.0
+                          },
+                          "children": [
+                            {
+                              "kind": "text",
+                              "style": {
+                                "axis": "column",
+                                "text_size": 12.0,
+                                "text_color": {
+                                  "token": "text_tertiary",
+                                  "hex": "#6B7480FF"
+                                },
+                                "weight": "medium"
+                              },
+                              "text": "未定"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "text_size": 12.0,
+                            "text_color": {
+                              "token": "text_tertiary",
+                              "hex": "#6B7480FF"
+                            }
+                          },
+                          "text": ""
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "rule_stat_row",
+                      "style": {
+                        "axis": "row",
+                        "gap": 8.0,
+                        "pad": [
+                          8.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ]
+                      },
+                      "children": [
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 320.0,
+                            "text_size": 12.5,
+                            "text_color": {
+                              "token": "text_primary",
+                              "hex": "#14181FFF"
+                            },
+                            "mono": true
+                          },
+                          "text": "listing.claim.battery"
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 56.0,
+                            "text_size": 12.5,
+                            "text_color": {
+                              "token": "text_secondary",
+                              "hex": "#4C5666FF"
+                            },
+                            "mono": true
+                          },
+                          "text": "1"
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 56.0,
+                            "text_size": 12.5,
+                            "text_color": {
+                              "token": "text_tertiary",
+                              "hex": "#6B7480FF"
+                            },
+                            "mono": true
+                          },
+                          "text": "0"
+                        },
+                        {
+                          "kind": "badge",
+                          "style": {
+                            "axis": "column",
+                            "pad": [
+                              4.0,
+                              8.0,
+                              4.0,
+                              8.0
+                            ],
+                            "stroke": {
+                              "width": 1.0,
+                              "paint": {
+                                "token": "severity_required",
+                                "hex": "#8A5A00FF"
+                              }
+                            },
+                            "radius": 6.0
+                          },
+                          "children": [
+                            {
+                              "kind": "text",
+                              "style": {
+                                "axis": "column",
+                                "text_size": 12.0,
+                                "text_color": {
+                                  "token": "severity_required",
+                                  "hex": "#8A5A00FF"
+                                },
+                                "weight": "medium"
+                              },
+                              "text": "必改"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "text_size": 12.0,
+                            "text_color": {
+                              "token": "text_tertiary",
+                              "hex": "#6B7480FF"
+                            }
+                          },
+                          "text": "2026.11.1"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "rule_stat_row",
+                      "style": {
+                        "axis": "row",
+                        "gap": 8.0,
+                        "pad": [
+                          8.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ]
+                      },
+                      "children": [
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 320.0,
+                            "text_size": 12.5,
+                            "text_color": {
+                              "token": "text_primary",
+                              "hex": "#14181FFF"
+                            },
+                            "mono": true
+                          },
+                          "text": "listing.claim.composition"
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 56.0,
+                            "text_size": 12.5,
+                            "text_color": {
+                              "token": "text_secondary",
+                              "hex": "#4C5666FF"
+                            },
+                            "mono": true
+                          },
+                          "text": "1"
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 56.0,
+                            "text_size": 12.5,
+                            "text_color": {
+                              "token": "text_tertiary",
+                              "hex": "#6B7480FF"
+                            },
+                            "mono": true
+                          },
+                          "text": "0"
+                        },
+                        {
+                          "kind": "badge",
+                          "style": {
+                            "axis": "column",
+                            "pad": [
+                              4.0,
+                              8.0,
+                              4.0,
+                              8.0
+                            ],
+                            "stroke": {
+                              "width": 1.0,
+                              "paint": {
+                                "token": "severity_required",
+                                "hex": "#8A5A00FF"
+                              }
+                            },
+                            "radius": 6.0
+                          },
+                          "children": [
+                            {
+                              "kind": "text",
+                              "style": {
+                                "axis": "column",
+                                "text_size": 12.0,
+                                "text_color": {
+                                  "token": "severity_required",
+                                  "hex": "#8A5A00FF"
+                                },
+                                "weight": "medium"
+                              },
+                              "text": "必改"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "text_size": 12.0,
+                            "text_color": {
+                              "token": "text_tertiary",
+                              "hex": "#6B7480FF"
+                            }
+                          },
+                          "text": "2026.11.1"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "rule_stat_row",
+                      "style": {
+                        "axis": "row",
+                        "gap": 8.0,
+                        "pad": [
+                          8.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ]
+                      },
+                      "children": [
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 320.0,
+                            "text_size": 12.5,
+                            "text_color": {
+                              "token": "text_primary",
+                              "hex": "#14181FFF"
+                            },
+                            "mono": true
+                          },
+                          "text": "listing.claim.medical"
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 56.0,
+                            "text_size": 12.5,
+                            "text_color": {
+                              "token": "text_secondary",
+                              "hex": "#4C5666FF"
+                            },
+                            "mono": true
+                          },
+                          "text": "1"
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 56.0,
+                            "text_size": 12.5,
+                            "text_color": {
+                              "token": "text_tertiary",
+                              "hex": "#6B7480FF"
+                            },
+                            "mono": true
+                          },
+                          "text": "0"
+                        },
+                        {
+                          "kind": "badge",
+                          "style": {
+                            "axis": "column",
+                            "pad": [
+                              4.0,
+                              8.0,
+                              4.0,
+                              8.0
+                            ],
+                            "stroke": {
+                              "width": 1.0,
+                              "paint": {
+                                "token": "severity_required",
+                                "hex": "#8A5A00FF"
+                              }
+                            },
+                            "radius": 6.0
+                          },
+                          "children": [
+                            {
+                              "kind": "text",
+                              "style": {
+                                "axis": "column",
+                                "text_size": 12.0,
+                                "text_color": {
+                                  "token": "severity_required",
+                                  "hex": "#8A5A00FF"
+                                },
+                                "weight": "medium"
+                              },
+                              "text": "必改"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "text_size": 12.0,
+                            "text_color": {
+                              "token": "text_tertiary",
+                              "hex": "#6B7480FF"
+                            }
+                          },
+                          "text": "2026.11.1"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "rule_stat_row",
+                      "style": {
+                        "axis": "row",
+                        "gap": 8.0,
+                        "pad": [
+                          8.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ]
+                      },
+                      "children": [
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 320.0,
+                            "text_size": 12.5,
+                            "text_color": {
+                              "token": "text_primary",
+                              "hex": "#14181FFF"
+                            },
+                            "mono": true
+                          },
+                          "text": "listing.claim.organic"
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 56.0,
+                            "text_size": 12.5,
+                            "text_color": {
+                              "token": "text_secondary",
+                              "hex": "#4C5666FF"
+                            },
+                            "mono": true
+                          },
+                          "text": "1"
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 56.0,
+                            "text_size": 12.5,
+                            "text_color": {
+                              "token": "text_tertiary",
+                              "hex": "#6B7480FF"
+                            },
+                            "mono": true
+                          },
+                          "text": "0"
+                        },
+                        {
+                          "kind": "badge",
+                          "style": {
+                            "axis": "column",
+                            "pad": [
+                              4.0,
+                              8.0,
+                              4.0,
+                              8.0
+                            ],
+                            "stroke": {
+                              "width": 1.0,
+                              "paint": {
+                                "token": "severity_required",
+                                "hex": "#8A5A00FF"
+                              }
+                            },
+                            "radius": 6.0
+                          },
+                          "children": [
+                            {
+                              "kind": "text",
+                              "style": {
+                                "axis": "column",
+                                "text_size": 12.0,
+                                "text_color": {
+                                  "token": "severity_required",
+                                  "hex": "#8A5A00FF"
+                                },
+                                "weight": "medium"
+                              },
+                              "text": "必改"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "text_size": 12.0,
+                            "text_color": {
+                              "token": "text_tertiary",
+                              "hex": "#6B7480FF"
+                            }
+                          },
+                          "text": "2026.11.1"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "rule_stat_row",
+                      "style": {
+                        "axis": "row",
+                        "gap": 8.0,
+                        "pad": [
+                          8.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ]
+                      },
+                      "children": [
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 320.0,
+                            "text_size": 12.5,
+                            "text_color": {
+                              "token": "text_primary",
+                              "hex": "#14181FFF"
+                            },
+                            "mono": true
+                          },
+                          "text": "listing.status.blocked_review"
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 56.0,
+                            "text_size": 12.5,
+                            "text_color": {
+                              "token": "text_secondary",
+                              "hex": "#4C5666FF"
+                            },
+                            "mono": true
+                          },
+                          "text": "1"
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 56.0,
+                            "text_size": 12.5,
+                            "text_color": {
+                              "token": "text_tertiary",
+                              "hex": "#6B7480FF"
+                            },
+                            "mono": true
+                          },
+                          "text": "0"
+                        },
+                        {
+                          "kind": "badge",
+                          "style": {
+                            "axis": "column",
+                            "pad": [
+                              4.0,
+                              8.0,
+                              4.0,
+                              8.0
+                            ],
+                            "stroke": {
+                              "width": 1.0,
+                              "paint": {
+                                "token": "severity_observe",
+                                "hex": "#556070FF"
+                              }
+                            },
+                            "radius": 6.0
+                          },
+                          "children": [
+                            {
+                              "kind": "text",
+                              "style": {
+                                "axis": "column",
+                                "text_size": 12.0,
+                                "text_color": {
+                                  "token": "severity_observe",
+                                  "hex": "#556070FF"
+                                },
+                                "weight": "medium"
+                              },
+                              "text": "留意"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "text_size": 12.0,
+                            "text_color": {
+                              "token": "text_tertiary",
+                              "hex": "#6B7480FF"
+                            }
+                          },
+                          "text": "2026.11.1"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "rule_stat_row",
+                      "style": {
+                        "axis": "row",
+                        "gap": 8.0,
+                        "pad": [
+                          8.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ]
+                      },
+                      "children": [
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 320.0,
+                            "text_size": 12.5,
+                            "text_color": {
+                              "token": "text_primary",
+                              "hex": "#14181FFF"
+                            },
+                            "mono": true
+                          },
+                          "text": "listing.title.absolute_terms"
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 56.0,
+                            "text_size": 12.5,
+                            "text_color": {
+                              "token": "text_secondary",
+                              "hex": "#4C5666FF"
+                            },
+                            "mono": true
+                          },
+                          "text": "1"
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 56.0,
+                            "text_size": 12.5,
+                            "text_color": {
+                              "token": "text_tertiary",
+                              "hex": "#6B7480FF"
+                            },
+                            "mono": true
+                          },
+                          "text": "0"
+                        },
+                        {
+                          "kind": "badge",
+                          "style": {
+                            "axis": "column",
+                            "pad": [
+                              4.0,
+                              8.0,
+                              4.0,
+                              8.0
+                            ],
+                            "stroke": {
+                              "width": 1.0,
+                              "paint": {
+                                "token": "severity_blocker",
+                                "hex": "#B3261EFF"
+                              }
+                            },
+                            "radius": 6.0
+                          },
+                          "children": [
+                            {
+                              "kind": "text",
+                              "style": {
+                                "axis": "column",
+                                "text_size": 12.0,
+                                "text_color": {
+                                  "token": "severity_blocker",
+                                  "hex": "#B3261EFF"
+                                },
+                                "weight": "medium"
+                              },
+                              "text": "阻断"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "text_size": 12.0,
+                            "text_color": {
+                              "token": "text_tertiary",
+                              "hex": "#6B7480FF"
+                            }
+                          },
+                          "text": "2026.11.1"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "rule_stat_row",
+                      "style": {
+                        "axis": "row",
+                        "gap": 8.0,
+                        "pad": [
+                          8.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ]
+                      },
+                      "children": [
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 320.0,
+                            "text_size": 12.5,
+                            "text_color": {
+                              "token": "text_primary",
+                              "hex": "#14181FFF"
+                            },
+                            "mono": true
+                          },
+                          "text": "listing.title.promo_expression"
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 56.0,
+                            "text_size": 12.5,
+                            "text_color": {
+                              "token": "text_secondary",
+                              "hex": "#4C5666FF"
+                            },
+                            "mono": true
+                          },
+                          "text": "1"
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 56.0,
+                            "text_size": 12.5,
+                            "text_color": {
+                              "token": "text_tertiary",
+                              "hex": "#6B7480FF"
+                            },
+                            "mono": true
+                          },
+                          "text": "0"
+                        },
+                        {
+                          "kind": "badge",
+                          "style": {
+                            "axis": "column",
+                            "pad": [
+                              4.0,
+                              8.0,
+                              4.0,
+                              8.0
+                            ],
+                            "stroke": {
+                              "width": 1.0,
+                              "paint": {
+                                "token": "severity_suggest",
+                                "hex": "#1F5FA8FF"
+                              }
+                            },
+                            "radius": 6.0
+                          },
+                          "children": [
+                            {
+                              "kind": "text",
+                              "style": {
+                                "axis": "column",
+                                "text_size": 12.0,
+                                "text_color": {
+                                  "token": "severity_suggest",
+                                  "hex": "#1F5FA8FF"
+                                },
+                                "weight": "medium"
+                              },
+                              "text": "建议"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "text_size": 12.0,
+                            "text_color": {
+                              "token": "text_tertiary",
+                              "hex": "#6B7480FF"
+                            }
+                          },
+                          "text": "2026.11.1"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "divider",
+                  "style": {
+                    "axis": "column",
+                    "height": 1.0,
+                    "fill": {
+                      "token": "divider",
+                      "hex": "#0B122014"
+                    }
+                  }
+                },
+                {
+                  "kind": "section_title",
+                  "style": {
+                    "axis": "column",
+                    "pad": [
+                      8.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ]
+                  },
+                  "children": [
+                    {
+                      "kind": "text",
+                      "style": {
+                        "axis": "column",
+                        "text_size": 14.0,
+                        "text_color": {
+                          "token": "text_primary",
+                          "hex": "#14181FFF"
+                        },
+                        "weight": "semibold"
+                      },
+                      "text": "判不了的原因（6 条）"
+                    }
+                  ]
+                },
+                {
+                  "kind": "column",
+                  "style": {
+                    "axis": "column",
+                    "gap": 4.0
+                  },
+                  "data": {
+                    "source": "unjudgedReasons",
+                    "total": 2
+                  },
+                  "children": [
+                    {
+                      "kind": "reason_row",
+                      "style": {
+                        "axis": "row",
+                        "gap": 8.0,
+                        "pad": [
+                          4.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ]
+                      },
+                      "children": [
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 160.0,
+                            "text_size": 12.0,
+                            "text_color": {
+                              "token": "text_secondary",
+                              "hex": "#4C5666FF"
+                            }
+                          },
+                          "text": "需语义判定"
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 200.0,
+                            "text_size": 12.5,
+                            "text_color": {
+                              "token": "text_tertiary",
+                              "hex": "#6B7480FF"
+                            },
+                            "mono": true
+                          },
+                          "text": "requires_semantic"
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "text_size": 12.5,
+                            "text_color": {
+                              "token": "state_awaiting",
+                              "hex": "#8A5A00FF"
+                            },
+                            "mono": true
+                          },
+                          "text": "5 条"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "reason_row",
+                      "style": {
+                        "axis": "row",
+                        "gap": 8.0,
+                        "pad": [
+                          4.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ]
+                      },
+                      "children": [
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 160.0,
+                            "text_size": 12.0,
+                            "text_color": {
+                              "token": "text_secondary",
+                              "hex": "#4C5666FF"
+                            }
+                          },
+                          "text": "需人工核对"
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "width": 200.0,
+                            "text_size": 12.5,
+                            "text_color": {
+                              "token": "text_tertiary",
+                              "hex": "#6B7480FF"
+                            },
+                            "mono": true
+                          },
+                          "text": "requires_manual"
+                        },
+                        {
+                          "kind": "text",
+                          "style": {
+                            "axis": "column",
+                            "text_size": 12.5,
+                            "text_color": {
+                              "token": "state_awaiting",
+                              "hex": "#8A5A00FF"
+                            },
+                            "mono": true
+                          },
+                          "text": "1 条"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

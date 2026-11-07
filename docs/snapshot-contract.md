@@ -49,6 +49,7 @@
 | `source.kind` | `export` / `browser` / `mock` / `local` | `mock` | UI 顶部角标显示来源，**不同来源的数字不可比较** |
 | `scope` | object | `{}` | 本次采集的筛选条件，UI 原样显示，不反推 |
 | `summary.unjudged` | int | 0 | 规则判不了的条数（不是「通过」，是「没说」） |
+| `unjudged` | array | 省略 | 待判明细（`ruleId` / `itemId` / `reason` / `detail`）。只增字段，旧 App 忽略即可 |
 | `agent` | object | 空对象 | 仅描述当前 agent 能力，**不含模型名**（换供应商不改契约） |
 
 `summary` 是冗余字段，但它是「面板数字只有一个计算处」的落点：sidecar 算一次，App 直接显示。App 端 `DashboardSelector` 只做分组与排序，不重算计数。
@@ -100,6 +101,7 @@
   "kind": "deterministic",
   "message": "标题含极限词「最」",
   "evidence": {
+    "kind": "quote",
     "field": "title",
     "quote": "Best",
     "offset": 0,
@@ -117,9 +119,21 @@
 |---|---|
 | `severity` | `blocker` / `required` / `suggest` / `observe`，四档，**没有第二套叫法** |
 | `kind` | `deterministic`（规则引擎）/ `semantic`（agent）/ `manual`（人）—— 决定 UI 角标与是否可复算 |
+| `evidence.kind` | `quote` / `absence` / `element`，缺省 `quote`（旧快照不写这个字段也照常读） |
 | `evidence.field` | 指向 item 内路径；`quote` 必须能在该值里按 `offset/length` 命中，否则校验失败 |
 | `evidence.sourceRef` | `rule:<id>` 或 `doc:<evidenceId>`，二选一，不能为空 |
 | `status` | `open` / `fixed` / `waived` / `stale`（规则或商品变了，旧结论失效） |
+
+**证据三态**（M1 起）：
+
+| kind | 用在什么结论上 | 约束 |
+|---|---|---|
+| `quote` | 字段里有原文可引（极限词、正则命中、长度越界） | `quote` 必须是 `field` 值里 `[offset, offset+length)` 那一段 |
+| `absence` | 字段没填（必填缺失、白名单里一个词都没有） | `quote` 为空串，`offset` 与 `length` 为 0，且 `field` 必须**真的**没填 |
+| `element` | 数组里的某个元素（禁售类目、禁用标签） | `elementIndex` 必须有效，`quote` 必须等于该元素，`offset` 为 0 |
+
+`absence` 的存在是为了不撒谎：缺字段时没有原文可引，硬编一个 quote 等于伪造证据。校验器会拒绝
+「字段有值却用 absence」的 finding —— 这是把证据链守住的那条线。
 
 「证据对不上」是硬失败：组装快照时若 `quote` 在 `field` 值里找不到，这条 finding 丢弃并计入 `summary.unjudged`，**不降级为模糊描述**。这是防止「结论漂移」的唯一闸门。
 
@@ -148,6 +162,8 @@ validate(snapshot) -> { ok, errors: [] }
 4. `evidence.quote` 在 `item[evidence.field]` 里按 offset 命中
 5. `summary.bySeverity` 之和 === `findings.length`
 6. 顶层无 `undefined`、无非有限数（`NaN` / `Infinity` 一律拒绝）
+7. `evidence.kind` 在封闭集内，且三态各自的约束成立
+8. 若给了 `unjudged` 明细数组，其长度必须等于 `summary.unjudged`（计数与明细不许打架）
 
 不过就抛错，`pgh` 命令非零退出，**不写盘**。
 

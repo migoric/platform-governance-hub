@@ -78,7 +78,7 @@
 
 | 字段 | 必填 | 说明 |
 |---|---|---|
-| `id` | 是 | `<域>.<字段>.<判据>`，全局唯一且**不带平台前缀**，**永不改名**（改名 = 新规则，旧 finding 会失联） |
+| `id` | 是 | `<域>.<字段>.<判据>`，**至少三段**（校验器强制），全局唯一且**不带平台前缀**，**永不改名**（改名 = 新规则，旧 finding 会失联） |
 | `severity` | 是 | 四档见 §4 |
 | `kind` | 是 | `deterministic` 必须能由 checks 复算；`semantic` / `manual` 的 checks 为空 |
 | `scope` | 否 | 缺省 = 全匹配。`"*"` 是通配，不是字符串字面量 |
@@ -115,13 +115,26 @@
 
 - **路径语法**：`a.b.c`，数组下标不写（一律「任一元素满足」语义），要精确匹配就在值里比较。
 - **不读整份文档**。规则只读 item 字段，不做跨商品推断（跨商品的事归 domain 里的独立分析器，不归规则）。
-- **正则不许回溯爆炸**：引擎对单条 pattern 设 20ms 上限，超时记 `unjudged` 而不是卡死。
+- **只支持 AND，不支持条件**。`checks` 全部通过才算通过，所以「标题宣称 Organic 但缺证书」这类
+  **跨字段条件**在 M1 表达不出来。处理方式只有两种：拆成两条独立规则，或标成 `semantic` 只产待判占位。
+  M1 选了后者 —— 一条规则说清一件事，比一条规则假装能判两件事更可靠。
+- **`list.contains` 只有 `any`（黑名单）**。白名单需要「缺哪一项」的证据，而 M1 的证据只能指向
+  字符串位置、未填字段、数组元素三种，「缺的第 N 项」不在其中。白名单场景用 `field.enum` 或 semantic。
+- **正则不许回溯爆炸**：同步 JS 没有抢占点，「20ms 就中断」是做不到的 —— 只能在跑完之后才发现超时，
+  那时卡顿已经发生。实际是两道闸：
+  1. **入库静态拒绝**（`rules/schema.mjs`）：嵌套量词 `(a+)+`、连续三个以上 `.*`、超过 200 字符的
+     pattern 一律不入库。这是唯一能在执行前拦住回溯爆炸的办法。
+  2. **运行时熔断**：万一带病上线，第一次超预算后这条 pattern 在本次判定里被标记，
+     后续 item 直接记 `unjudged` 不再执行 —— 慢一次，不会慢 N 次。
+  实测 `(a+)+$` 在静态检查阶段就被拒绝，对 2000 字符攻击串的整次判定耗时 < 1ms（有单测守）。
 
 ## 6. 判定引擎
 
 ```js
 // domain/rules-engine.mjs —— 纯函数，无 IO
-evaluate({ items, rules, dicts }) -> { findings, unjudged }
+evaluate({ items, rules, dicts, judgedAt }) -> { findings, unjudged }
+// rules: [{ packId, packVersion, rule }]（loader 拍平后的形态）
+// judgedAt: 由调用方注入的带时区 ISO 时间 —— 引擎不读时钟
 ```
 
 规则：
@@ -129,6 +142,9 @@ evaluate({ items, rules, dicts }) -> { findings, unjudged }
 1. **输入不可变**：不修改传进来的 item / rule。
 2. **顺序无关**：finding 最终按 `(severity, itemId, ruleId)` 排序，不依赖遍历顺序。
 3. **单条规则失败不影响其他**：try/catch 包住每条 check，异常记 `unjudged` 并带 `ruleId`。
+   `unjudged` 的 `reason` 是封闭集：`requires_semantic` / `requires_manual` / `dict_missing` /
+   `pattern_rejected` / `check_type_unsupported` / `check_threw` / `field_missing` / `field_not_string` /
+   `field_not_array` / `value_not_string`。
 4. **可复算**：同一份输入跑一百次，输出字节级一致（时间戳由调用方注入）。
 5. **纯同步**。异步的只有 `external.query`，它在引擎外面先跑完，结果作为参数传进来。
 
@@ -166,7 +182,8 @@ else {                                        // semantic / manual
 
 新加一条规则，必须同时提供：
 
-1. **正例与反例各一个 fixture**（在 `sidecar/test/fixtures/rules/`），否则测试里有一条会挂
+1. **正例与反例各一个 fixture**（在 `sidecar/test/fixtures/rules/<rule-id>.json`），
+   `rule-fixtures.test.mjs` 会遍历规则库逐个跑：缺 fixture 直接失败，反例被误判也失败
 2. **误报成本说明**写在 `source.note` 里：「这条判严了会怎样」
 3. **impact 预估**：`pgh rules impact <id>` 用当前快照回放，告诉你这条规则会新增多少条 finding
 

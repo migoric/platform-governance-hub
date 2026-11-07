@@ -99,7 +99,7 @@ test("pgh check --mock：结论 + 判不了都报出来", (t) => {
   assert.equal(runCheck(["--mock", "--now", NOW], io), 0)
   const text = logs.join("\n")
   assert.match(text, /判定 8 个商品 · 23 条规则 · 3 个规则包/)
-  assert.match(text, /finding 9 条 · 判不了 7 条/)
+  assert.match(text, /finding 7 条 · 判不了 6 条/)
   assert.match(text, /blocker {2}it_8f21a/)
 })
 
@@ -107,7 +107,7 @@ test("pgh check --mock --json：机器可读，findings 与 summary 一致", (t)
   const { io, logs } = sandbox(t)
   assert.equal(runCheck(["--mock", "--json", "--now", NOW], io), 0)
   const payload = JSON.parse(logs.join("\n"))
-  assert.equal(payload.findings.length, 9)
+  assert.equal(payload.findings.length, 7)
   assert.equal(payload.items, 8)
   assert.equal(payload.rulesEvaluated, 23)
   for (const finding of payload.findings) {

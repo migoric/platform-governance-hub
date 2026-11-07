@@ -1,6 +1,6 @@
 # 架构
 
-> 状态：M0 进行中（sidecar 已落地；UI 栈定为 **Rust + GPUI**，见 §2.1）。
+> 状态：M1 进行中（sidecar 的规则引擎与规则库已落地；采集与 provider 分别在 M3 / M2）。
 > 改动前先读 [`refactor-constraints`](refactor-constraints.md)。
 
 ## 1. 一句话

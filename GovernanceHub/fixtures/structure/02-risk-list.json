@@ -612,7 +612,7 @@
                           "hex": "#4C5666FF"
                         }
                       },
-                      "text": "9 条 · 按严重度排序 · marketplace-a · 规则 23 条"
+                      "text": "7 条 · 按严重度排序 · marketplace-a · 规则 23 条"
                     }
                   ]
                 },
@@ -626,7 +626,7 @@
                       "hex": "#6B7480FF"
                     }
                   },
-                  "text": "M0 · 只读"
+                  "text": "只读"
                 }
               ]
             },
@@ -838,7 +838,7 @@
                   },
                   "data": {
                     "source": "summary.findings",
-                    "total": 9
+                    "total": 7
                   },
                   "children": [
                     {
@@ -1506,110 +1506,6 @@
                             },
                             "mono": true
                           },
-                          "text": "be2405-dryer-006"
-                        },
-                        {
-                          "kind": "text",
-                          "style": {
-                            "axis": "column",
-                            "width": 120.0,
-                            "text_size": 12.5,
-                            "text_color": {
-                              "token": "text_tertiary",
-                              "hex": "#6B7480FF"
-                            },
-                            "mono": true
-                          },
-                          "text": "title"
-                        },
-                        {
-                          "kind": "text",
-                          "style": {
-                            "axis": "column",
-                            "grow": true,
-                            "text_size": 14.0,
-                            "text_color": {
-                              "token": "text_primary",
-                              "hex": "#14181FFF"
-                            }
-                          },
-                          "text": "「Professional / Salon」属专业级宣称，建议注明适用场景"
-                        },
-                        {
-                          "kind": "text",
-                          "style": {
-                            "axis": "column",
-                            "text_size": 12.0,
-                            "text_color": {
-                              "token": "text_tertiary",
-                              "hex": "#6B7480FF"
-                            }
-                          },
-                          "text": "「Professional」title @0+12"
-                        }
-                      ]
-                    },
-                    {
-                      "kind": "risk_row",
-                      "style": {
-                        "axis": "row",
-                        "gap": 8.0,
-                        "pad": [
-                          8.0,
-                          0.0,
-                          0.0,
-                          0.0
-                        ]
-                      },
-                      "children": [
-                        {
-                          "kind": "badge",
-                          "style": {
-                            "axis": "column",
-                            "pad": [
-                              4.0,
-                              8.0,
-                              4.0,
-                              8.0
-                            ],
-                            "width": 64.0,
-                            "stroke": {
-                              "width": 1.0,
-                              "paint": {
-                                "token": "severity_suggest",
-                                "hex": "#1F5FA8FF"
-                              }
-                            },
-                            "radius": 6.0
-                          },
-                          "children": [
-                            {
-                              "kind": "text",
-                              "style": {
-                                "axis": "column",
-                                "text_size": 12.0,
-                                "text_color": {
-                                  "token": "severity_suggest",
-                                  "hex": "#1F5FA8FF"
-                                },
-                                "weight": "medium"
-                              },
-                              "text": "建议"
-                            }
-                          ]
-                        },
-                        {
-                          "kind": "text",
-                          "style": {
-                            "axis": "column",
-                            "width": 190.0,
-                            "text_size": 12.5,
-                            "text_color": {
-                              "token": "text_secondary",
-                              "hex": "#4C5666FF"
-                            },
-                            "mono": true
-                          },
                           "text": "ot2410-jacket-021"
                         },
                         {
@@ -1754,110 +1650,6 @@
                             }
                           },
                           "text": "「blocked」status @0+7"
-                        }
-                      ]
-                    },
-                    {
-                      "kind": "risk_row",
-                      "style": {
-                        "axis": "row",
-                        "gap": 8.0,
-                        "pad": [
-                          8.0,
-                          0.0,
-                          0.0,
-                          0.0
-                        ]
-                      },
-                      "children": [
-                        {
-                          "kind": "badge",
-                          "style": {
-                            "axis": "column",
-                            "pad": [
-                              4.0,
-                              8.0,
-                              4.0,
-                              8.0
-                            ],
-                            "width": 64.0,
-                            "stroke": {
-                              "width": 1.0,
-                              "paint": {
-                                "token": "severity_observe",
-                                "hex": "#556070FF"
-                              }
-                            },
-                            "radius": 6.0
-                          },
-                          "children": [
-                            {
-                              "kind": "text",
-                              "style": {
-                                "axis": "column",
-                                "text_size": 12.0,
-                                "text_color": {
-                                  "token": "severity_observe",
-                                  "hex": "#556070FF"
-                                },
-                                "weight": "medium"
-                              },
-                              "text": "留意"
-                            }
-                          ]
-                        },
-                        {
-                          "kind": "text",
-                          "style": {
-                            "axis": "column",
-                            "width": 190.0,
-                            "text_size": 12.5,
-                            "text_color": {
-                              "token": "text_secondary",
-                              "hex": "#4C5666FF"
-                            },
-                            "mono": true
-                          },
-                          "text": "hm2408-bottle-017"
-                        },
-                        {
-                          "kind": "text",
-                          "style": {
-                            "axis": "column",
-                            "width": 120.0,
-                            "text_size": 12.5,
-                            "text_color": {
-                              "token": "text_tertiary",
-                              "hex": "#6B7480FF"
-                            },
-                            "mono": true
-                          },
-                          "text": "title"
-                        },
-                        {
-                          "kind": "text",
-                          "style": {
-                            "axis": "column",
-                            "grow": true,
-                            "text_size": 14.0,
-                            "text_color": {
-                              "token": "text_primary",
-                              "hex": "#14181FFF"
-                            }
-                          },
-                          "text": "容量/重量只用了单一单位，部分站点要求双单位"
-                        },
-                        {
-                          "kind": "text",
-                          "style": {
-                            "axis": "column",
-                            "text_size": 12.0,
-                            "text_color": {
-                              "token": "text_tertiary",
-                              "hex": "#6B7480FF"
-                            }
-                          },
-                          "text": "「1L」title @29+2"
                         }
                       ]
                     }

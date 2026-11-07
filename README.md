@@ -33,9 +33,10 @@ GovernanceHub.app  ──只读──▶  ~/.pgh/snapshot.json  ◀──写入�
 
 ## 现在到哪一步
 
-**M0 进行中。** `sidecar/` 已有 mock 快照与 mock 任务列表（schema + CLI + 单测）；
-`GovernanceHub/` 已有 GPUI 骨架（四个只读视图 + 8 份结构快照基准）；五条门禁 + CI 已接。
-真实采集、规则引擎、provider 分别在 M1 / M2。文档顺序阅读：
+**M1 进行中。** `sidecar/` 已有 mock 快照、任务列表投影，以及**判定引擎 + 规则库**
+（3 个包 23 条规则、8 份词典、六种 check）；`GovernanceHub/` 已有六个只读视图与 10 份结构快照基准
+（含「上架前检查」与「规则库与证据」）；五条门禁 + CI 已接。真实采集在 M3，provider 在 M2。
+文档顺序阅读：
 
 1. [`docs/architecture.md`](docs/architecture.md) — 三层怎么切、进程怎么跑、边界在哪、**为什么 UI 用 GPUI**
 2. [`docs/snapshot-contract.md`](docs/snapshot-contract.md) — App 与 sidecar 之间唯一的数据契约
@@ -47,9 +48,14 @@ GovernanceHub.app  ──只读──▶  ~/.pgh/snapshot.json  ◀──写入�
 ## 跑起来
 
 ```bash
-# 侧车：造一份 mock 数据（M0 唯一数据源）
+# 侧车：造一份 mock 数据（M1 唯一数据源）
 node sidecar/pgh.mjs snapshot --mock --out ~/.pgh/snapshot.json
 node sidecar/pgh.mjs tasks --mock
+
+# 规则：看库、跑判定、上线前估影响
+node sidecar/pgh.mjs rules list
+node sidecar/pgh.mjs check --mock
+node sidecar/pgh.mjs rules impact listing.claim.organic
 
 # 桌面应用（需要 rustup + rustfmt + Metal Toolchain，见 AGENTS.md §2）
 cd GovernanceHub && cargo run -p hub

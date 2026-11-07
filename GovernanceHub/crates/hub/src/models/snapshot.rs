@@ -75,6 +75,8 @@ pub struct Snapshot {
     pub rule_packs: Vec<RulePack>,
     pub items: Vec<Item>,
     pub findings: Vec<Finding>,
+    /// 待判明细（snapshot-contract §2）：规则说「判不了」的那条，不是通过。
+    pub unjudged: Vec<Unjudged>,
     pub agent: AgentState,
 }
 
@@ -151,15 +153,67 @@ pub struct Finding {
     pub status: String,
 }
 
+/// 一条「规则判不了」的记录。`reason` 是 sidecar 的封闭集，UI 只展示不解释。
+#[derive(Clone, Debug, Default, Deserialize)]
+#[serde(rename_all = "camelCase", default)]
+pub struct Unjudged {
+    pub rule_id: String,
+    pub item_id: String,
+    pub reason: String,
+    pub detail: String,
+}
+
+impl Unjudged {
+    /// 人话版原因。封闭集之外的值原样显示 —— 不猜，也不吞。
+    pub fn reason_label(&self) -> &str {
+        match self.reason.as_str() {
+            "requires_semantic" => "需语义判定",
+            "requires_manual" => "需人工核对",
+            "dict_missing" => "词典缺失",
+            "pattern_rejected" => "正则被拒绝",
+            "check_type_unsupported" => "判据未实现",
+            "check_threw" => "判据异常",
+            "field_missing" => "字段不存在",
+            "field_not_string" => "字段不是文本",
+            "field_not_array" => "字段不是数组",
+            "value_not_string" => "值不是文本",
+            other => other,
+        }
+    }
+}
+
 #[derive(Clone, Debug, Default, Deserialize)]
 #[serde(rename_all = "camelCase", default)]
 pub struct Evidence {
+    /// `quote` / `absence` / `element`；旧快照不写这个字段，空串按 `quote` 处理。
+    pub kind: String,
     pub field: String,
     pub quote: String,
     pub offset: usize,
     pub length: usize,
+    /// 只有 `kind == "element"` 时有意义：出问题的是数组里第几个元素。
+    pub element_index: Option<usize>,
     pub asset_ref: Option<String>,
     pub source_ref: String,
+}
+
+impl Evidence {
+    pub fn kind_slug(&self) -> &str {
+        if self.kind.is_empty() {
+            "quote"
+        } else {
+            self.kind.as_str()
+        }
+    }
+
+    /// 屏幕上给人看的证据：缺字段时不能显示一对空引号，那等于假装有引文。
+    pub fn quote_display(&self) -> String {
+        match self.kind_slug() {
+            "absence" => "（字段未填）".to_string(),
+            "element" => format!("「{}」[{}]", self.quote, self.element_index.unwrap_or(0)),
+            _ => format!("「{}」", self.quote),
+        }
+    }
 }
 
 #[derive(Clone, Debug, Default, Deserialize)]

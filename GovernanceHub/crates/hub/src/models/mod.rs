@@ -11,6 +11,6 @@ pub mod tasks;
 pub use detail::{TaskDetail, Thought, ToolTrace};
 pub use snapshot::{
     AgentState, Evidence, Finding, Item, RulePack, Scope, Severity, Snapshot, SnapshotSource,
-    Summary,
+    Summary, Unjudged,
 };
 pub use tasks::{TaskCard, TaskState, TasksFile};

@@ -1,0 +1,602 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-06T09:00:00+08:00",
+  "durationMs": 0,
+  "source": {
+    "kind": "mock",
+    "label": "mock 数据（虚构）"
+  },
+  "scope": {
+    "platform": "marketplace-a",
+    "sites": [
+      "US",
+      "DE"
+    ],
+    "categories": [
+      "女装",
+      "家居",
+      "美妆",
+      "童装"
+    ]
+  },
+  "summary": {
+    "items": 8,
+    "findings": 7,
+    "bySeverity": {
+      "blocker": 1,
+      "required": 4,
+      "suggest": 1,
+      "observe": 1
+    },
+    "unjudged": 6,
+    "rulesEvaluated": 23,
+    "rulePacks": 3
+  },
+  "rulePacks": [
+    {
+      "id": "baseline",
+      "platform": "marketplace-a",
+      "version": "2026.11.1",
+      "ruleCount": 16,
+      "effectiveFrom": "2026-11-01",
+      "effectiveTo": null
+    },
+    {
+      "id": "category-certs",
+      "platform": "marketplace-a",
+      "version": "2026.10.15",
+      "ruleCount": 4,
+      "effectiveFrom": "2026-10-15",
+      "effectiveTo": null
+    },
+    {
+      "id": "eu-market",
+      "platform": "marketplace-a",
+      "version": "2026.09.01",
+      "ruleCount": 3,
+      "effectiveFrom": "2026-09-01",
+      "effectiveTo": null
+    }
+  ],
+  "items": [
+    {
+      "id": "it_8f21a",
+      "sku": "sh2309-dress-001",
+      "spuCode": "SPU-88213",
+      "title": "Best Women Summer Floral Midi Dress",
+      "category": [
+        "女装",
+        "连衣裙"
+      ],
+      "site": "US",
+      "status": "on_sale",
+      "updatedAt": "2026-11-05T09:00:00+08:00",
+      "attrs": {
+        "material": "95% Polyester, 5% Elastane",
+        "origin": "CN",
+        "ageGroup": "adult"
+      },
+      "assets": [
+        {
+          "kind": "main_image",
+          "ref": "ev_9c1",
+          "width": 1000,
+          "height": 1000,
+          "hasText": false,
+          "background": "white"
+        }
+      ],
+      "listing": {
+        "bullets": 5,
+        "description": "Lightweight midi dress for daily wear.",
+        "price": {
+          "current": 12.99,
+          "compareAt": 24.99,
+          "currency": "USD"
+        },
+        "titleLen": 35
+      }
+    },
+    {
+      "id": "it_3c702",
+      "sku": "sh2310-tee-014",
+      "spuCode": "SPU-88214",
+      "title": "100% Pure Cotton Slim Fit Tee",
+      "category": [
+        "女装",
+        "T恤"
+      ],
+      "site": "US",
+      "status": "on_sale",
+      "updatedAt": "2026-11-05T09:10:00+08:00",
+      "attrs": {
+        "material": "100% Cotton",
+        "origin": "CN",
+        "ageGroup": "adult"
+      },
+      "assets": [
+        {
+          "kind": "main_image",
+          "ref": "ev_9c2",
+          "width": 1000,
+          "height": 1000,
+          "hasText": false,
+          "background": "white"
+        }
+      ],
+      "listing": {
+        "bullets": 4,
+        "description": "Soft cotton tee with a slim cut.",
+        "price": {
+          "current": 9.5,
+          "compareAt": 9.5,
+          "currency": "USD"
+        },
+        "titleLen": 29
+      }
+    },
+    {
+      "id": "it_5d18b",
+      "sku": "be2401-cream-002",
+      "spuCode": "SPU-88215",
+      "title": "Skin Repair Cream for Sensitive Skin",
+      "category": [
+        "美妆",
+        "面霜"
+      ],
+      "site": "US",
+      "status": "on_sale",
+      "updatedAt": "2026-11-05T09:20:00+08:00",
+      "attrs": {
+        "material": "Aqua, Glycerin",
+        "origin": "CN",
+        "ageGroup": "adult"
+      },
+      "assets": [
+        {
+          "kind": "main_image",
+          "ref": "ev_9c3",
+          "width": 1200,
+          "height": 1200,
+          "hasText": false,
+          "background": "white"
+        }
+      ],
+      "listing": {
+        "bullets": 6,
+        "description": "Daily moisturizer, fragrance free.",
+        "price": {
+          "current": 18,
+          "compareAt": 22,
+          "currency": "USD"
+        },
+        "titleLen": 36
+      }
+    },
+    {
+      "id": "it_b204e",
+      "sku": "hm2402-towel-008",
+      "spuCode": "SPU-88216",
+      "title": "Organic Bamboo Kitchen Towel Set",
+      "category": [
+        "家居",
+        "厨房"
+      ],
+      "site": "DE",
+      "status": "on_sale",
+      "updatedAt": "2026-11-04T18:20:00+08:00",
+      "attrs": {
+        "material": "70% Bamboo, 30% Cotton",
+        "origin": "CN",
+        "ageGroup": "adult"
+      },
+      "assets": [
+        {
+          "kind": "main_image",
+          "ref": "ev_9c4",
+          "width": 1000,
+          "height": 1000,
+          "hasText": false,
+          "background": "white"
+        }
+      ],
+      "listing": {
+        "bullets": 3,
+        "description": "Pack of three absorbent kitchen towels.",
+        "price": {
+          "current": 7.99,
+          "compareAt": 11.99,
+          "currency": "EUR"
+        },
+        "titleLen": 32
+      }
+    },
+    {
+      "id": "it_7a9f1",
+      "sku": "ot2410-jacket-021",
+      "spuCode": "SPU-88217",
+      "title": "Winter Puffer Jacket -50% Off",
+      "category": [
+        "女装",
+        "外套"
+      ],
+      "site": "US",
+      "status": "on_sale",
+      "updatedAt": "2026-11-03T11:00:00+08:00",
+      "attrs": {
+        "material": "100% Nylon",
+        "origin": "CN",
+        "ageGroup": "adult"
+      },
+      "assets": [
+        {
+          "kind": "main_image",
+          "ref": "ev_9c5",
+          "width": 1000,
+          "height": 1000,
+          "hasText": true,
+          "background": "gray"
+        }
+      ],
+      "listing": {
+        "bullets": 5,
+        "description": "Warm puffer for winter commutes.",
+        "price": {
+          "current": 39.99,
+          "compareAt": 79.98,
+          "currency": "USD"
+        },
+        "titleLen": 29
+      }
+    },
+    {
+      "id": "it_c61aa",
+      "sku": "kd2409-shoes-033",
+      "spuCode": "SPU-88218",
+      "title": "Kids LED Sneakers with Battery",
+      "category": [
+        "童装",
+        "鞋"
+      ],
+      "site": "US",
+      "status": "blocked",
+      "updatedAt": "2026-11-02T16:40:00+08:00",
+      "attrs": {
+        "material": "Synthetic Leather",
+        "origin": "CN",
+        "ageGroup": "kids"
+      },
+      "assets": [
+        {
+          "kind": "main_image",
+          "ref": "ev_9c6",
+          "width": 1000,
+          "height": 1000,
+          "hasText": false,
+          "background": "white"
+        },
+        {
+          "kind": "certificate",
+          "ref": "ev_4d7",
+          "docType": "BATTERY_MSDS"
+        }
+      ],
+      "listing": {
+        "bullets": 4,
+        "description": "Light-up sneakers with replaceable cell.",
+        "price": {
+          "current": 24.99,
+          "compareAt": 29.99,
+          "currency": "USD"
+        },
+        "titleLen": 30
+      }
+    },
+    {
+      "id": "it_e13b7",
+      "sku": "hm2408-bottle-017",
+      "spuCode": "SPU-88219",
+      "title": "Stainless Steel Water Bottle",
+      "category": [
+        "家居",
+        "水具"
+      ],
+      "site": "US",
+      "status": "on_sale",
+      "updatedAt": "2026-11-01T10:10:00+08:00",
+      "attrs": {
+        "material": "304 Stainless Steel",
+        "origin": "CN",
+        "ageGroup": "adult"
+      },
+      "assets": [
+        {
+          "kind": "main_image",
+          "ref": "ev_9c7",
+          "width": 1000,
+          "height": 1000,
+          "hasText": false,
+          "background": "white"
+        }
+      ],
+      "listing": {
+        "bullets": 3,
+        "description": "Insulated bottle keeps drinks cold.",
+        "price": {
+          "current": 15.5,
+          "compareAt": 15.5,
+          "currency": "EUR"
+        },
+        "titleLen": 28
+      }
+    },
+    {
+      "id": "it_9f4c2",
+      "sku": "be2405-dryer-006",
+      "spuCode": "SPU-88220",
+      "title": "Hair Dryer 2200W with Diffuser",
+      "category": [
+        "美妆",
+        "工具"
+      ],
+      "site": "US",
+      "status": "on_sale",
+      "updatedAt": "2026-10-31T09:30:00+08:00",
+      "attrs": {
+        "material": "ABS",
+        "origin": "CN",
+        "ageGroup": "adult"
+      },
+      "assets": [
+        {
+          "kind": "main_image",
+          "ref": "ev_9c8",
+          "width": 1000,
+          "height": 1000,
+          "hasText": false,
+          "background": "white"
+        },
+        {
+          "kind": "certificate",
+          "ref": "ev_4d8",
+          "docType": "CE_DOC"
+        }
+      ],
+      "listing": {
+        "bullets": 5,
+        "description": "Fast drying with three heat settings.",
+        "price": {
+          "current": 45,
+          "compareAt": 59,
+          "currency": "USD"
+        },
+        "titleLen": 30
+      }
+    }
+  ],
+  "findings": [
+    {
+      "id": "fd_listing.title.absolute_terms@it_8f21a",
+      "itemId": "it_8f21a",
+      "ruleId": "listing.title.absolute_terms",
+      "ruleVersion": "2026.11.1",
+      "severity": "blocker",
+      "kind": "deterministic",
+      "message": "标题使用了绝对化用语，平台按违规严重度扣分",
+      "evidence": {
+        "kind": "quote",
+        "field": "title",
+        "quote": "Best",
+        "offset": 0,
+        "length": 4,
+        "sourceRef": "rule:listing.title.absolute_terms"
+      },
+      "remediation": {
+        "hint": "删除 Best / No.1 / 保证 这类绝对化表述",
+        "autoFixable": false
+      },
+      "judgedAt": "2026-11-06T09:00:00+08:00",
+      "status": "open"
+    },
+    {
+      "id": "fd_listing.claim.composition@it_3c702",
+      "itemId": "it_3c702",
+      "ruleId": "listing.claim.composition",
+      "ruleVersion": "2026.11.1",
+      "severity": "required",
+      "kind": "deterministic",
+      "message": "「100%」属成分宣称，需与材质字段一致并附检测报告",
+      "evidence": {
+        "kind": "quote",
+        "field": "title",
+        "quote": "100%",
+        "offset": 0,
+        "length": 4,
+        "sourceRef": "rule:listing.claim.composition"
+      },
+      "remediation": {
+        "hint": "核对 attrs.material，补齐检测报告；做不到就删掉 100%",
+        "autoFixable": false
+      },
+      "judgedAt": "2026-11-06T09:00:00+08:00",
+      "status": "open"
+    },
+    {
+      "id": "fd_listing.claim.medical@it_5d18b",
+      "itemId": "it_5d18b",
+      "ruleId": "listing.claim.medical",
+      "ruleVersion": "2026.11.1",
+      "severity": "required",
+      "kind": "deterministic",
+      "message": "含医疗功效表述，化妆品与服饰类目不允许",
+      "evidence": {
+        "kind": "quote",
+        "field": "title",
+        "quote": "Repair",
+        "offset": 5,
+        "length": 6,
+        "sourceRef": "rule:listing.claim.medical"
+      },
+      "remediation": {
+        "hint": "改为保湿 / 舒缓这类非医疗表述",
+        "autoFixable": false
+      },
+      "judgedAt": "2026-11-06T09:00:00+08:00",
+      "status": "open"
+    },
+    {
+      "id": "fd_listing.claim.organic@it_b204e",
+      "itemId": "it_b204e",
+      "ruleId": "listing.claim.organic",
+      "ruleVersion": "2026.11.1",
+      "severity": "required",
+      "kind": "deterministic",
+      "message": "标题宣称有机，需在资质中登记有机认证编号",
+      "evidence": {
+        "kind": "quote",
+        "field": "title",
+        "quote": "Organic",
+        "offset": 0,
+        "length": 7,
+        "sourceRef": "rule:listing.claim.organic"
+      },
+      "remediation": {
+        "hint": "补认证编号，或删掉 Organic 字样",
+        "autoFixable": false
+      },
+      "judgedAt": "2026-11-06T09:00:00+08:00",
+      "status": "open"
+    },
+    {
+      "id": "fd_listing.claim.battery@it_c61aa",
+      "itemId": "it_c61aa",
+      "ruleId": "listing.claim.battery",
+      "ruleVersion": "2026.11.1",
+      "severity": "required",
+      "kind": "deterministic",
+      "message": "含电池商品需提供 MSDS 与运输声明",
+      "evidence": {
+        "kind": "quote",
+        "field": "title",
+        "quote": "Battery",
+        "offset": 23,
+        "length": 7,
+        "sourceRef": "rule:listing.claim.battery"
+      },
+      "remediation": {
+        "hint": "上传电池 MSDS 与 UN38.3 运输声明",
+        "autoFixable": false
+      },
+      "judgedAt": "2026-11-06T09:00:00+08:00",
+      "status": "open"
+    },
+    {
+      "id": "fd_listing.title.promo_expression@it_7a9f1",
+      "itemId": "it_7a9f1",
+      "ruleId": "listing.title.promo_expression",
+      "ruleVersion": "2026.11.1",
+      "severity": "suggest",
+      "kind": "deterministic",
+      "message": "标题含折扣表达式，需并列展示原价与折扣依据",
+      "evidence": {
+        "kind": "quote",
+        "field": "title",
+        "quote": "-50%",
+        "offset": 21,
+        "length": 4,
+        "sourceRef": "rule:listing.title.promo_expression"
+      },
+      "remediation": {
+        "hint": "把折扣放到促销字段，标题只留商品信息",
+        "autoFixable": false
+      },
+      "judgedAt": "2026-11-06T09:00:00+08:00",
+      "status": "open"
+    },
+    {
+      "id": "fd_listing.status.blocked_review@it_c61aa",
+      "itemId": "it_c61aa",
+      "ruleId": "listing.status.blocked_review",
+      "ruleVersion": "2026.11.1",
+      "severity": "observe",
+      "kind": "deterministic",
+      "message": "商品处于 blocked 状态，确认是待整改还是该下架",
+      "evidence": {
+        "kind": "quote",
+        "field": "status",
+        "quote": "blocked",
+        "offset": 0,
+        "length": 7,
+        "sourceRef": "rule:listing.status.blocked_review"
+      },
+      "remediation": {
+        "hint": "整改后改回 draft 重新提交，或直接下架",
+        "autoFixable": false
+      },
+      "judgedAt": "2026-11-06T09:00:00+08:00",
+      "status": "open"
+    }
+  ],
+  "unjudged": [
+    {
+      "ruleId": "listing.image.watermark",
+      "itemId": "it_3c702",
+      "packId": "eu-market",
+      "severity": "required",
+      "reason": "requires_semantic",
+      "detail": "主图是否含水印或文字：semantic 判定不在引擎职责内"
+    },
+    {
+      "ruleId": "listing.description.efficacy_claim",
+      "itemId": "it_5d18b",
+      "packId": "eu-market",
+      "severity": "required",
+      "reason": "requires_semantic",
+      "detail": "描述是否含功效宣称：semantic 判定不在引擎职责内"
+    },
+    {
+      "ruleId": "listing.image.watermark",
+      "itemId": "it_7a9f1",
+      "packId": "eu-market",
+      "severity": "required",
+      "reason": "requires_semantic",
+      "detail": "主图是否含水印或文字：semantic 判定不在引擎职责内"
+    },
+    {
+      "ruleId": "listing.image.watermark",
+      "itemId": "it_8f21a",
+      "packId": "eu-market",
+      "severity": "required",
+      "reason": "requires_semantic",
+      "detail": "主图是否含水印或文字：semantic 判定不在引擎职责内"
+    },
+    {
+      "ruleId": "listing.description.efficacy_claim",
+      "itemId": "it_9f4c2",
+      "packId": "eu-market",
+      "severity": "required",
+      "reason": "requires_semantic",
+      "detail": "描述是否含功效宣称：semantic 判定不在引擎职责内"
+    },
+    {
+      "ruleId": "eu.market.ce_mark_required",
+      "itemId": "it_b204e",
+      "packId": "eu-market",
+      "severity": "blocker",
+      "reason": "requires_manual",
+      "detail": "欧盟站点需 CE 符合性声明：manual 判定不在引擎职责内"
+    }
+  ],
+  "agent": {
+    "provider": "replay",
+    "capabilities": {
+      "streaming": true,
+      "tools": true,
+      "vision": false,
+      "cost": true
+    },
+    "degraded": false,
+    "reason": null
+  }
+}
+

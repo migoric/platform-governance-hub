@@ -3,7 +3,9 @@
 //! 两条硬规矩：数字只能来自 Selector（不在这里 filter+count），文案只能来自 models::format。
 
 pub mod dashboard;
+pub mod preflight;
 pub mod risk_list;
+pub mod rule_library;
 pub mod shell;
 pub mod task_detail;
 pub mod task_list;
@@ -24,11 +26,13 @@ impl<'a> ViewCtx<'a> {
     }
 }
 
-/// M0 的四个面板 + 五个出图视图名。
+/// 六个面板 + 十个出图视图名。M1 新增上架前检查与规则库两个只读面板。
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum View {
     Dashboard,
     RiskList,
+    Preflight,
+    RuleLibrary,
     TaskList(crate::models::TaskState),
     TaskDetail { expanded: bool },
 }
@@ -39,6 +43,8 @@ impl View {
         match self {
             View::Dashboard => "总览",
             View::RiskList => "风险清单",
+            View::Preflight => "上架前检查",
+            View::RuleLibrary => "规则与证据",
             View::TaskList(_) => "进行中",
             View::TaskDetail { .. } => "任务",
         }
@@ -49,13 +55,15 @@ impl View {
         match self {
             View::Dashboard => "01-overview.json".to_string(),
             View::RiskList => "02-risk-list.json".to_string(),
+            View::Preflight => "09-preflight.json".to_string(),
+            View::RuleLibrary => "10-rule-library.json".to_string(),
             View::TaskList(state) => format!("0{}-tasks-{}.json", 3 + state_index(state), state.slug()),
             View::TaskDetail { expanded: false } => "07-task-detail-collapsed.json".to_string(),
             View::TaskDetail { expanded: true } => "08-task-detail-expanded.json".to_string(),
         }
     }
 
-    /// 8 份快照的固定顺序：四态任务列表各一份 + 详情两态 + 总览 + 风险清单。
+    /// 10 份快照的固定顺序：总览 / 风险清单 / 四态任务列表 / 详情两态 / 上架前检查 / 规则库。
     pub fn all() -> Vec<View> {
         use crate::models::TaskState;
         vec![
@@ -67,6 +75,8 @@ impl View {
             View::TaskList(TaskState::Interrupted),
             View::TaskDetail { expanded: false },
             View::TaskDetail { expanded: true },
+            View::Preflight,
+            View::RuleLibrary,
         ]
     }
 
@@ -75,6 +85,8 @@ impl View {
         match self {
             View::Dashboard => dashboard::build(ctx),
             View::RiskList => risk_list::build(ctx),
+            View::Preflight => preflight::build(ctx),
+            View::RuleLibrary => rule_library::build(ctx),
             View::TaskList(state) => task_list::build(ctx, state),
             View::TaskDetail { expanded } => task_detail::build(ctx, expanded),
         }

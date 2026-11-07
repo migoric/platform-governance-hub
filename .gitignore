@@ -5,6 +5,9 @@ packs/
 # 证据与业务数据
 evidence/
 snapshot.json
+# 例外：这份是 UI 结构快照的测试输入（虚构数据），必须随仓库走，
+# 否则新克隆 / CI 上 `include_str!` 找不到文件，Rust 测试直接编译失败。
+!GovernanceHub/fixtures/snapshot.json
 actions.jsonl
 scan.json
 *.xlsx

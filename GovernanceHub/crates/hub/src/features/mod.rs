@@ -19,11 +19,26 @@ use crate::ui::Palette;
 pub struct ViewCtx<'a> {
     pub store: &'a Store,
     pub palette: Palette,
+    /// 当前选中的任务 id（详情页用）。`None` = 没有选中态，出图走这一支。
+    pub selected_task: Option<&'a str>,
 }
 
 impl<'a> ViewCtx<'a> {
     pub fn new(store: &'a Store, palette: Palette) -> Self {
-        Self { store, palette }
+        Self {
+            store,
+            palette,
+            selected_task: None,
+        }
+    }
+
+    /// 真窗口用：带上「现在选的是哪个任务」。
+    pub fn with_task(store: &'a Store, palette: Palette, task: Option<&'a str>) -> Self {
+        Self {
+            store,
+            palette,
+            selected_task: task,
+        }
     }
 }
 
@@ -48,9 +63,70 @@ impl View {
             View::Preflight => "上架前检查",
             View::RuleLibrary => "规则与证据",
             View::Settings => "设置",
+            // 「已完成」只亮已完成的那个入口；等待确认与已中断都还在进行中的活儿里
+            View::TaskList(crate::models::TaskState::Done) => "已完成",
             View::TaskList(_) => "进行中",
             View::TaskDetail { .. } => "任务",
         }
+    }
+
+    /// 动作 id：侧栏条目挂的就是它。改名等于改接口，`from_action` 必须同步。
+    pub fn action(self) -> &'static str {
+        match self {
+            View::Dashboard => "overview",
+            View::RiskList => "risks",
+            View::Preflight => "preflight",
+            View::RuleLibrary => "rules",
+            View::Settings => "settings",
+            View::TaskList(state) => match state {
+                crate::models::TaskState::Running => "tasks.running",
+                crate::models::TaskState::Awaiting => "tasks.awaiting",
+                crate::models::TaskState::Done => "tasks.done",
+                crate::models::TaskState::Interrupted => "tasks.interrupted",
+            },
+            View::TaskDetail { .. } => "task.detail",
+        }
+    }
+
+    /// 侧栏展示的键位标签（不含修饰键）。`None` = 没有入口快捷键。
+    ///
+    /// 侧栏写什么键、窗口绑什么键，都从这里来 —— 两边各写一份，迟早出现「标签写着 ⌘4，
+    /// 按下去没反应」。
+    pub fn shortcut_key(self) -> Option<&'static str> {
+        match self {
+            View::TaskList(crate::models::TaskState::Running) => Some("1"),
+            View::TaskList(crate::models::TaskState::Done) => Some("0"),
+            View::Dashboard => Some("2"),
+            View::RiskList => Some("3"),
+            View::Preflight => Some("4"),
+            View::RuleLibrary => Some("7"),
+            View::Settings => Some(","),
+            _ => None,
+        }
+    }
+
+    /// 交给 gpui 的键位串（含修饰键）。修饰键跟侧栏标签同一套说法：macOS 是 ⌘，其余是 Ctrl。
+    pub fn keystroke(self) -> Option<String> {
+        let modifier = if cfg!(target_os = "macos") { "cmd" } else { "ctrl" };
+        self.shortcut_key().map(|key| format!("{modifier}-{key}"))
+    }
+
+    /// 动作 id → 视图。**认不出来的返回 `None`**：宁可什么都不做，也不要猜一个视图糊弄过去。
+    pub fn from_action(action: &str) -> Option<View> {
+        use crate::models::TaskState;
+        Some(match action {
+            "overview" => View::Dashboard,
+            "risks" => View::RiskList,
+            "preflight" => View::Preflight,
+            "rules" => View::RuleLibrary,
+            "settings" => View::Settings,
+            "tasks.running" => View::TaskList(TaskState::Running),
+            "tasks.awaiting" => View::TaskList(TaskState::Awaiting),
+            "tasks.done" => View::TaskList(TaskState::Done),
+            "tasks.interrupted" => View::TaskList(TaskState::Interrupted),
+            "task.detail" => View::TaskDetail { expanded: false },
+            _ => return None,
+        })
     }
 
     /// 结构快照的文件名。全 ASCII：Windows 上也别指望文件名编码一致。
@@ -107,5 +183,43 @@ fn state_index(state: crate::models::TaskState) -> u32 {
         TaskState::Awaiting => 1,
         TaskState::Done => 2,
         TaskState::Interrupted => 3,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// 动作 id 与视图一一对应：改名字忘了改另一边，这条先红。
+    #[test]
+    fn 动作_id_能往返() {
+        for view in View::all() {
+            let back = View::from_action(view.action())
+                .unwrap_or_else(|| panic!("{} 的 id 认不回来", view.snapshot_file()));
+            // 详情只记得住「打开」，记不住展开态 —— 展开是选中之后的第二次动作
+            if matches!(view, View::TaskDetail { .. }) {
+                assert_eq!(back, View::TaskDetail { expanded: false });
+            } else {
+                assert_eq!(back, view);
+            }
+        }
+    }
+
+    /// 键位标签与绑定串同源：侧栏写 ⌘4，绑定就是 cmd-4（非 macOS 是 ctrl-4）。
+    #[test]
+    fn 快捷键标签与绑定串同源() {
+        let modifier = if cfg!(target_os = "macos") { "cmd" } else { "ctrl" };
+        let mut with_key = 0;
+        for view in View::all() {
+            match (view.shortcut_key(), view.keystroke()) {
+                (Some(key), Some(keystroke)) => {
+                    with_key += 1;
+                    assert_eq!(keystroke, format!("{modifier}-{key}"));
+                }
+                (None, None) => {}
+                other => panic!("{} 的键位只配了一半：{other:?}", view.snapshot_file()),
+            }
+        }
+        assert_eq!(with_key, 7, "侧栏七个入口各有一条键位");
     }
 }

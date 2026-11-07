@@ -5,8 +5,8 @@
 //! 里只有折叠条在 M0 用得上。
 
 use crate::models::{format, Severity, TaskCard, TaskState};
-use crate::ui::scene::{Align, Axis, Kind, Node};
-use crate::ui::tokens::{self, radius, space, text, Palette, Weight};
+use crate::ui::scene::{Action, Align, Axis, Kind, Node};
+use crate::ui::tokens::{radius, space, text, Palette, Weight};
 
 /// 面板骨架：标题 + 副标题 + 主体。`RenderMode` 的两条渲染路径（真窗口 / 结构快照）
 /// 都吃这一个函数产出的树，所以布局不会分叉。
@@ -120,7 +120,7 @@ pub fn task_card(palette: &Palette, card: &TaskCard) -> Node {
         format::duration(card.duration_ms),
         card.agents_line()
     );
-    Node::new(Kind::TaskCard)
+    let mut node = Node::new(Kind::TaskCard)
         .gap(space::XS)
         .pad(space::MD)
         .radius(radius::MD)
@@ -151,7 +151,12 @@ pub fn task_card(palette: &Palette, card: &TaskCard) -> Node {
                 } else {
                     palette.replay_data
                 }),
-        )
+        );
+    // 卡片能点：点开是这个任务的详情。没有 id 的卡不给动作 —— 点了也说不清打开的是谁。
+    if !card.id.is_empty() {
+        node = node.action(Action::OpenTask(card.id.clone()));
+    }
+    node
 }
 
 /// KPI 卡：数字 + 标签 + 一句解释（解释写清「这个数字不算什么」）。
@@ -282,55 +287,6 @@ pub fn segment(palette: &Palette, items: &[&str], active: usize) -> Node {
     bar
 }
 
-/// 侧栏：三段（任务 / 事实 / 设置），标签按平台换快捷键写法。
-pub fn sidebar(palette: &Palette, sections: &[(&str, &[(&str, &str)])], active: &str) -> Node {
-    let mut bar = Node::new(Kind::Sidebar)
-        .axis(Axis::Column)
-        .gap(space::LG)
-        .pad(space::MD)
-        .width(tokens::SIDEBAR_WIDTH)
-        .fill(palette.panel_bg)
-        .stroke(1.0, palette.divider);
-    for (title, items) in sections {
-        let mut section = Node::new(Kind::SidebarSection).gap(space::XS).child(
-            Node::label(*title)
-                .size(text::CAPTION)
-                .weight(Weight::Medium)
-                .color(palette.text_tertiary),
-        );
-        for (label, key) in *items {
-            let is_active = *label == active;
-            section = section.child(
-                Node::new(Kind::SidebarItem)
-                    .pad_xy(space::SM, space::XS)
-                    .radius(radius::SM)
-                    .axis(Axis::Row)
-                    .align(Align::SpaceBetween)
-                    .width(tokens::SIDEBAR_WIDTH - space::MD * 2.0)
-                    .fill(if is_active {
-                        palette.accent_soft
-                    } else {
-                        palette.glass_fill
-                    })
-                    .child(
-                        Node::label(*label).size(text::BODY).color(if is_active {
-                            palette.accent
-                        } else {
-                            palette.text_secondary
-                        }),
-                    )
-                    .child(
-                        Node::label(tokens::shortcut(key))
-                            .size(text::CAPTION)
-                            .color(palette.text_tertiary),
-                    ),
-            );
-        }
-        bar = bar.child(section);
-    }
-    bar
-}
-
 /// 一条工具轨迹：`name · summary`，失败要能一眼看出（ok=false 用状态色）。
 ///
 /// `ok` 是三态而不是布尔：`None` = 事件流里没见过这条调用的结果。
@@ -451,12 +407,6 @@ mod tests {
         assert!(texts.contains(&"未返回".to_string()), "{texts:?}");
         assert!(!texts.iter().any(|t| t == "失败"));
         assert!(!texts.iter().any(|t| t.contains("0 B")));
-    }
-
-    #[test]
-    fn 侧栏快捷键按平台换标签() {
-        let bar = sidebar(&LIGHT, &[("事实", &[("总览", "2")])], "总览");
-        assert!(bar.visible_text().contains(&tokens::shortcut("2")));
     }
 
     #[test]

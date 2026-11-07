@@ -6,7 +6,7 @@ use std::path::PathBuf;
 use std::process::ExitCode;
 
 use hub::app::{render, window};
-use hub::features::{shell, View, ViewCtx};
+use hub::features::View;
 use hub::state::{store as store_dir, Store};
 use hub::ui::{Appearance, Palette};
 
@@ -103,8 +103,7 @@ fn run(options: Options) -> ExitCode {
     // 真窗口读本机数据；fixture 只给 --render 与 UI 测试用（AGENTS.md §3.7）
     let store = Store::from_home();
     let palette = Palette::for_appearance(options.appearance);
-    let tree = shell::build(View::Dashboard, &ViewCtx::new(&store, palette));
-    window::run(tree);
+    window::run(store, palette, View::Dashboard);
     ExitCode::SUCCESS
 }
 

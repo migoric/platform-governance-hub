@@ -67,11 +67,14 @@
                 ],
                 "width": 172.0,
                 "fill": {
-                  "token": "accent_soft",
-                  "hex": "#2A5BD71F"
+                  "token": "glass_fill",
+                  "hex": "#FFFFFFB8"
                 },
                 "radius": 6.0,
                 "align": "space_between"
+              },
+              "action": {
+                "nav": "tasks.running"
               },
               "children": [
                 {
@@ -80,8 +83,8 @@
                     "axis": "column",
                     "text_size": 14.0,
                     "text_color": {
-                      "token": "accent",
-                      "hex": "#2A5BD7FF"
+                      "token": "text_secondary",
+                      "hex": "#4C5666FF"
                     }
                   },
                   "text": "进行中"
@@ -112,11 +115,14 @@
                 ],
                 "width": 172.0,
                 "fill": {
-                  "token": "glass_fill",
-                  "hex": "#FFFFFFB8"
+                  "token": "accent_soft",
+                  "hex": "#2A5BD71F"
                 },
                 "radius": 6.0,
                 "align": "space_between"
+              },
+              "action": {
+                "nav": "tasks.done"
               },
               "children": [
                 {
@@ -125,8 +131,8 @@
                     "axis": "column",
                     "text_size": 14.0,
                     "text_color": {
-                      "token": "text_secondary",
-                      "hex": "#4C5666FF"
+                      "token": "accent",
+                      "hex": "#2A5BD7FF"
                     }
                   },
                   "text": "已完成"
@@ -186,7 +192,7 @@
                       "hex": "#6B7480FF"
                     }
                   },
-                  "text": "⌘⇧S"
+                  "text": "未实现"
                 }
               ]
             }
@@ -229,6 +235,9 @@
                 },
                 "radius": 6.0,
                 "align": "space_between"
+              },
+              "action": {
+                "nav": "overview"
               },
               "children": [
                 {
@@ -275,6 +284,9 @@
                 "radius": 6.0,
                 "align": "space_between"
               },
+              "action": {
+                "nav": "risks"
+              },
               "children": [
                 {
                   "kind": "text",
@@ -319,6 +331,9 @@
                 },
                 "radius": 6.0,
                 "align": "space_between"
+              },
+              "action": {
+                "nav": "preflight"
               },
               "children": [
                 {
@@ -388,7 +403,7 @@
                       "hex": "#6B7480FF"
                     }
                   },
-                  "text": "⌘5"
+                  "text": "未实现"
                 }
               ]
             },
@@ -433,7 +448,7 @@
                       "hex": "#6B7480FF"
                     }
                   },
-                  "text": "⌘6"
+                  "text": "未实现"
                 }
               ]
             },
@@ -454,6 +469,9 @@
                 },
                 "radius": 6.0,
                 "align": "space_between"
+              },
+              "action": {
+                "nav": "rules"
               },
               "children": [
                 {
@@ -521,6 +539,9 @@
                 },
                 "radius": 6.0,
                 "align": "space_between"
+              },
+              "action": {
+                "nav": "settings"
               },
               "children": [
                 {
@@ -676,6 +697,9 @@
                       }
                     },
                     "radius": 10.0
+                  },
+                  "action": {
+                    "open_task": "tk_9b05"
                   },
                   "children": [
                     {

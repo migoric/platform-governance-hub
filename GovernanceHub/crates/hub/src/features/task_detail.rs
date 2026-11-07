@@ -11,15 +11,30 @@
 
 use crate::models::{AgentSession, Step, TimelineItem};
 use crate::ui::tokens::{space, text, Weight};
-use crate::ui::{kit, Align, Axis, Kind, Node};
+use crate::ui::{kit, Action, Align, Axis, Kind, Node};
 
 use super::ViewCtx;
 
 pub fn build(ctx: &ViewCtx, expanded: bool) -> Node {
     let palette = ctx.palette;
-    let detail = match ctx.store.detail.as_ref() {
-        Some(detail) => detail,
-        None => {
+    // 选中了谁、这台机器上有没有谁的详情，是两件事。对不上时不许拿唯一那份详情顶上：
+    // 界面会变成「标题写着 A、内容讲着 B」，而这两份都像真的。
+    let detail = match (ctx.selected_task, ctx.store.detail.as_ref()) {
+        (Some(id), Some(detail)) if detail.task_id == id => detail,
+        (Some(id), _) => {
+            return kit::panel(
+                &palette,
+                &format!("任务 · {id}"),
+                "没有这个任务的记录",
+                kit::empty_state(
+                    &palette,
+                    &format!("这台机器上没有 {id} 的详情"),
+                    "详情读 ~/.pgh/agent/task-detail.json（pgh agent session 写）；没有就不画，不拿别的任务顶上",
+                ),
+            )
+        }
+        (None, Some(detail)) => detail,
+        (None, None) => {
             return kit::panel(
                 &palette,
                 "任务详情",
@@ -68,12 +83,16 @@ pub fn build(ctx: &ViewCtx, expanded: bool) -> Node {
                 );
             }
             body = body
-                .child(kit::collapsible(
-                    &palette,
-                    &session.summary_line(),
-                    expanded,
-                    timeline_rows(&palette, session),
-                ))
+                .child(
+                    kit::collapsible(
+                        &palette,
+                        &session.summary_line(),
+                        expanded,
+                        timeline_rows(&palette, session),
+                    )
+                    // 折叠条上画了 ▸ / ▾ 就得能点，否则那个三角是个谎
+                    .action(Action::ToggleTimeline),
+                )
                 .child(attribution_row(&palette, session));
             if session.has_unexplained_error() {
                 body = body.child(

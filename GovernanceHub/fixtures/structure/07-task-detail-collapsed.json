@@ -73,6 +73,9 @@
                 "radius": 6.0,
                 "align": "space_between"
               },
+              "action": {
+                "nav": "tasks.running"
+              },
               "children": [
                 {
                   "kind": "text",
@@ -117,6 +120,9 @@
                 },
                 "radius": 6.0,
                 "align": "space_between"
+              },
+              "action": {
+                "nav": "tasks.done"
               },
               "children": [
                 {
@@ -186,7 +192,7 @@
                       "hex": "#6B7480FF"
                     }
                   },
-                  "text": "⌘⇧S"
+                  "text": "未实现"
                 }
               ]
             }
@@ -229,6 +235,9 @@
                 },
                 "radius": 6.0,
                 "align": "space_between"
+              },
+              "action": {
+                "nav": "overview"
               },
               "children": [
                 {
@@ -275,6 +284,9 @@
                 "radius": 6.0,
                 "align": "space_between"
               },
+              "action": {
+                "nav": "risks"
+              },
               "children": [
                 {
                   "kind": "text",
@@ -319,6 +331,9 @@
                 },
                 "radius": 6.0,
                 "align": "space_between"
+              },
+              "action": {
+                "nav": "preflight"
               },
               "children": [
                 {
@@ -388,7 +403,7 @@
                       "hex": "#6B7480FF"
                     }
                   },
-                  "text": "⌘5"
+                  "text": "未实现"
                 }
               ]
             },
@@ -433,7 +448,7 @@
                       "hex": "#6B7480FF"
                     }
                   },
-                  "text": "⌘6"
+                  "text": "未实现"
                 }
               ]
             },
@@ -454,6 +469,9 @@
                 },
                 "radius": 6.0,
                 "align": "space_between"
+              },
+              "action": {
+                "nav": "rules"
               },
               "children": [
                 {
@@ -521,6 +539,9 @@
                 },
                 "radius": 6.0,
                 "align": "space_between"
+              },
+              "action": {
+                "nav": "settings"
               },
               "children": [
                 {
@@ -736,6 +757,7 @@
                     },
                     "radius": 10.0
                   },
+                  "action": "toggle_timeline",
                   "children": [
                     {
                       "kind": "row",

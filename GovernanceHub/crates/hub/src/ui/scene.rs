@@ -56,6 +56,22 @@ pub enum Kind {
     Spacer,
 }
 
+/// 点了会发生什么。
+///
+/// 只记**标识**，不记 `features::View`：ui 层不认识 features 层，翻译放在 `app::window`。
+/// 进快照是有意的 —— 「哪些位置可点、指向哪里」和文案一样是可回归的事实，
+/// 把某处改成不可点、或者指错地方，基准要拦得住。
+#[derive(Clone, Debug, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum Action {
+    /// 切视图，值是 `features::View::action()` 给出的那个 slug
+    Nav(&'static str),
+    /// 打开某个任务的详情
+    OpenTask(String),
+    /// 展开 / 收起详情里的会话时间线
+    ToggleTimeline,
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Axis {
@@ -167,6 +183,9 @@ pub struct Node {
     pub text: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub data: Option<DataMeta>,
+    /// 没有就是不可点（还没做的入口、纯展示的行）。
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub action: Option<Action>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub children: Vec<Node>,
 }
@@ -178,6 +197,7 @@ impl Node {
             style: Style::default(),
             text: None,
             data: None,
+            action: None,
             children: Vec::new(),
         }
     }
@@ -288,6 +308,12 @@ impl Node {
         self
     }
 
+    /// 挂一个点击意图。没有 action 的节点点不动 —— 这是判断「能不能点」的唯一依据。
+    pub fn action(mut self, action: Action) -> Self {
+        self.action = Some(action);
+        self
+    }
+
     pub fn child(mut self, node: Node) -> Self {
         self.children.push(node);
         self
@@ -370,6 +396,23 @@ mod tests {
         let a = serde_json::to_string(&sample()).unwrap();
         let b = serde_json::to_string(&sample()).unwrap();
         assert_eq!(a, b);
+    }
+
+    /// 可点与不可点必须能从快照里看出来：`action` 是「这里点了会怎样」的唯一记录。
+    #[test]
+    fn 动作进快照而不可点的节点不写字() {
+        let clickable = Node::new(Kind::SidebarItem).action(Action::Nav("overview"));
+        let plain = Node::new(Kind::SidebarItem);
+        assert_eq!(
+            clickable.to_json()["action"],
+            serde_json::json!({ "nav": "overview" })
+        );
+        assert!(plain.to_json().get("action").is_none());
+        let task = Node::new(Kind::TaskCard).action(Action::OpenTask("tk_8c31".into()));
+        assert_eq!(
+            task.to_json()["action"],
+            serde_json::json!({ "open_task": "tk_8c31" })
+        );
     }
 
     #[test]

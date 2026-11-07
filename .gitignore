@@ -1,6 +1,10 @@
 # 本机平台 pack：字段映射、规则包、词典、脱敏样例 —— 绝不进 git
 packs/
 *.pack.json
+# 例外：`sidecar/rules/packs/` 是仓库内置的演示规则库（虚构条款），不是本机平台 pack。
+# `packs/` 会匹配任意层级，这条例外必须写成目录 + 文件两层，否则整个规则库会被静默挡掉。
+!sidecar/rules/packs/
+!sidecar/rules/packs/*.json
 
 # 证据与业务数据
 evidence/

@@ -1,0 +1,563 @@
+{
+  "packId": "baseline",
+  "platform": "marketplace-a",
+  "version": "2026.11.1",
+  "effectiveFrom": "2026-11-01",
+  "effectiveTo": null,
+  "source": {
+    "doc": "《商品信息发布规范》（虚构，用于本机演示）",
+    "clause": "第 3 章 商品标题与描述",
+    "url": "（本机 pack 内配置，不写死域名）",
+    "retrievedAt": "2026-11-06"
+  },
+  "rules": [
+    {
+      "id": "listing.title.absolute_terms",
+      "title": "标题不得使用绝对化用语",
+      "message": "标题使用了绝对化用语，平台按违规严重度扣分",
+      "severity": "blocker",
+      "kind": "deterministic",
+      "scope": {
+        "sites": [
+          "*"
+        ],
+        "categories": [
+          "*"
+        ],
+        "status": [
+          "draft",
+          "on_sale"
+        ]
+      },
+      "checks": [
+        {
+          "type": "text.dictionary",
+          "path": "title",
+          "dict": "absolutes.en",
+          "mode": "any"
+        }
+      ],
+      "evidence": {
+        "quote": true,
+        "locate": "offset"
+      },
+      "remediation": {
+        "hint": "删除 Best / No.1 / 保证 这类绝对化表述",
+        "autoFixable": false
+      },
+      "source": {
+        "clause": "3.2.1",
+        "note": "判严了的代价：标题少几个形容词；判松了：直接下架"
+      }
+    },
+    {
+      "id": "listing.title.extreme_words",
+      "title": "标题不得使用中文极限词",
+      "message": "标题含中文极限词，属广告法明令禁止的绝对化表述",
+      "severity": "blocker",
+      "kind": "deterministic",
+      "scope": {
+        "sites": [
+          "*"
+        ],
+        "categories": [
+          "*"
+        ],
+        "status": [
+          "draft",
+          "on_sale"
+        ]
+      },
+      "checks": [
+        {
+          "type": "text.dictionary",
+          "path": "title",
+          "dict": "extreme-words.zh",
+          "mode": "any"
+        }
+      ],
+      "evidence": {
+        "quote": true,
+        "locate": "offset"
+      },
+      "remediation": {
+        "hint": "换成描述性表述，例如「加厚」而非「史上最厚」",
+        "autoFixable": false
+      },
+      "source": {
+        "clause": "3.2.2",
+        "note": "中文按子串命中，「最」会误伤「最近」这类词，需人工确认"
+      }
+    },
+    {
+      "id": "listing.title.length",
+      "title": "标题长度需在 10–80 字符之间",
+      "message": "标题长度不在 10–80 字符之间",
+      "severity": "required",
+      "kind": "deterministic",
+      "scope": {
+        "sites": [
+          "*"
+        ]
+      },
+      "checks": [
+        {
+          "type": "text.length",
+          "path": "title",
+          "min": 10,
+          "max": 80
+        }
+      ],
+      "evidence": {
+        "quote": true,
+        "locate": "offset"
+      },
+      "remediation": {
+        "hint": "把核心信息（品类 + 材质 + 关键属性）放进前 80 字符",
+        "autoFixable": false
+      },
+      "source": {
+        "clause": "3.1.4",
+        "note": "字符数按码点计，一个 emoji 算 1 个字"
+      }
+    },
+    {
+      "id": "listing.title.promo_expression",
+      "title": "标题内不宜出现折扣表达式",
+      "message": "标题含折扣表达式，需并列展示原价与折扣依据",
+      "severity": "suggest",
+      "kind": "deterministic",
+      "scope": {
+        "sites": [
+          "*"
+        ],
+        "status": [
+          "on_sale"
+        ]
+      },
+      "checks": [
+        {
+          "type": "text.match",
+          "path": "title",
+          "pattern": "-\\s?\\d{1,2}\\s?%"
+        }
+      ],
+      "evidence": {
+        "quote": true,
+        "locate": "offset"
+      },
+      "remediation": {
+        "hint": "把折扣放到促销字段，标题只留商品信息",
+        "autoFixable": false
+      },
+      "source": {
+        "clause": "3.2.5",
+        "note": "部分站点允许标题写折扣，所以只给 suggest"
+      }
+    },
+    {
+      "id": "listing.title.unit_dual",
+      "title": "容量与重量建议双单位",
+      "message": "容量/重量只用了单一单位，部分站点要求双单位",
+      "severity": "observe",
+      "kind": "deterministic",
+      "scope": {
+        "sites": [
+          "US",
+          "DE"
+        ]
+      },
+      "checks": [
+        {
+          "type": "text.match",
+          "path": "title",
+          "pattern": "\\b\\d+(?:\\.\\d+)?\\s?(?:L|ml|mL|oz|kg|g)\\b"
+        }
+      ],
+      "evidence": {
+        "quote": true,
+        "locate": "offset"
+      },
+      "remediation": {
+        "hint": "补标另一个单位，例如 1L（33.8 oz）",
+        "autoFixable": false
+      },
+      "source": {
+        "clause": "3.3.1",
+        "note": "只记一笔，不催：双单位是体验问题不是合规问题"
+      }
+    },
+    {
+      "id": "listing.claim.composition",
+      "title": "成分比例宣称需可核验",
+      "message": "「100%」属成分宣称，需与材质字段一致并附检测报告",
+      "severity": "required",
+      "kind": "deterministic",
+      "scope": {
+        "sites": [
+          "*"
+        ],
+        "categories": [
+          "女装",
+          "家居"
+        ]
+      },
+      "checks": [
+        {
+          "type": "text.match",
+          "path": "title",
+          "pattern": "\\b100\\s?%"
+        }
+      ],
+      "evidence": {
+        "quote": true,
+        "locate": "offset"
+      },
+      "remediation": {
+        "hint": "核对 attrs.material，补齐检测报告；做不到就删掉 100%",
+        "autoFixable": false
+      },
+      "source": {
+        "clause": "4.1.3",
+        "note": "本条只标出宣称，比例与材质字段的一致性靠人工核对"
+      }
+    },
+    {
+      "id": "listing.claim.medical",
+      "title": "不得出现医疗功效表述",
+      "message": "含医疗功效表述，化妆品与服饰类目不允许",
+      "severity": "required",
+      "kind": "deterministic",
+      "scope": {
+        "sites": [
+          "*"
+        ],
+        "categories": [
+          "美妆",
+          "女装",
+          "家居"
+        ]
+      },
+      "checks": [
+        {
+          "type": "text.dictionary",
+          "path": "title",
+          "dict": "medical-claims.en",
+          "mode": "any"
+        }
+      ],
+      "evidence": {
+        "quote": true,
+        "locate": "offset"
+      },
+      "remediation": {
+        "hint": "改为保湿 / 舒缓这类非医疗表述",
+        "autoFixable": false
+      },
+      "source": {
+        "clause": "4.2.1",
+        "note": "Repair 在英文里既可能是「修复」也可能是「修缮」，按严判"
+      }
+    },
+    {
+      "id": "listing.claim.professional",
+      "title": "专业级宣称需注明适用场景",
+      "message": "「Professional / Salon」属专业级宣称，建议注明适用场景",
+      "severity": "suggest",
+      "kind": "deterministic",
+      "scope": {
+        "sites": [
+          "*"
+        ]
+      },
+      "checks": [
+        {
+          "type": "text.dictionary",
+          "path": "title",
+          "dict": "professional-claims.en",
+          "mode": "any"
+        }
+      ],
+      "evidence": {
+        "quote": true,
+        "locate": "offset"
+      },
+      "remediation": {
+        "hint": "补一句适用人群或场景说明",
+        "autoFixable": false
+      },
+      "source": {
+        "clause": "4.2.4",
+        "note": "不禁售，只是容易被审核问「凭什么说专业」"
+      }
+    },
+    {
+      "id": "listing.claim.organic",
+      "title": "有机宣称需登记认证编号",
+      "message": "标题宣称有机，需在资质中登记有机认证编号",
+      "severity": "required",
+      "kind": "deterministic",
+      "scope": {
+        "sites": [
+          "*"
+        ]
+      },
+      "checks": [
+        {
+          "type": "text.dictionary",
+          "path": "title",
+          "dict": "organic-claims.en",
+          "mode": "any"
+        }
+      ],
+      "evidence": {
+        "quote": true,
+        "locate": "offset"
+      },
+      "remediation": {
+        "hint": "补认证编号，或删掉 Organic 字样",
+        "autoFixable": false
+      },
+      "source": {
+        "clause": "4.3.2",
+        "note": "本条只负责标出宣称；证书是否真的存在由人工清单核对"
+      }
+    },
+    {
+      "id": "listing.claim.battery",
+      "title": "含电池商品需提供运输文件",
+      "message": "含电池商品需提供 MSDS 与运输声明",
+      "severity": "required",
+      "kind": "deterministic",
+      "scope": {
+        "sites": [
+          "*"
+        ]
+      },
+      "checks": [
+        {
+          "type": "text.dictionary",
+          "path": "title",
+          "dict": "battery-terms.en",
+          "mode": "any"
+        }
+      ],
+      "evidence": {
+        "quote": true,
+        "locate": "offset"
+      },
+      "remediation": {
+        "hint": "上传电池 MSDS 与 UN38.3 运输声明",
+        "autoFixable": false
+      },
+      "source": {
+        "clause": "5.1.2",
+        "note": "只认标题与属性里的电池信号，包材里的电池查不到"
+      }
+    },
+    {
+      "id": "listing.price.currency_present",
+      "title": "价格必须带币种",
+      "message": "价格缺币种，结算与合规计算都无法进行",
+      "severity": "required",
+      "kind": "deterministic",
+      "scope": {
+        "sites": [
+          "*"
+        ]
+      },
+      "checks": [
+        {
+          "type": "field.required",
+          "path": "listing.price.currency"
+        }
+      ],
+      "evidence": {
+        "quote": true,
+        "locate": "offset"
+      },
+      "remediation": {
+        "hint": "按站点补上币种（USD / EUR）",
+        "autoFixable": false
+      },
+      "source": {
+        "clause": "6.1.1",
+        "note": "缺字段时没有原文可引，证据记为 absence"
+      }
+    },
+    {
+      "id": "listing.status.blocked_review",
+      "title": "已拦截商品需要复核",
+      "message": "商品处于 blocked 状态，确认是待整改还是该下架",
+      "severity": "observe",
+      "kind": "deterministic",
+      "scope": {
+        "sites": [
+          "*"
+        ],
+        "status": [
+          "blocked"
+        ]
+      },
+      "checks": [
+        {
+          "type": "field.enum",
+          "path": "status",
+          "values": [
+            "draft",
+            "on_sale",
+            "off_sale"
+          ]
+        }
+      ],
+      "evidence": {
+        "quote": true,
+        "locate": "offset"
+      },
+      "remediation": {
+        "hint": "整改后改回 draft 重新提交，或直接下架",
+        "autoFixable": false
+      },
+      "source": {
+        "clause": "2.1.3",
+        "note": "scope 只覆盖 blocked：在售商品走其他规则，不在这里重复报"
+      }
+    },
+    {
+      "id": "listing.title.placeholder_text",
+      "title": "标题不得残留占位文案",
+      "message": "标题含占位文案，说明这条商品还没写完就上线了",
+      "severity": "required",
+      "kind": "deterministic",
+      "scope": {
+        "sites": [
+          "*"
+        ]
+      },
+      "checks": [
+        {
+          "type": "text.dictionary",
+          "path": "title",
+          "dict": "placeholder-terms",
+          "mode": "any"
+        }
+      ],
+      "evidence": {
+        "quote": true,
+        "locate": "offset"
+      },
+      "remediation": {
+        "hint": "改成品名 + 核心属性",
+        "autoFixable": false
+      },
+      "source": {
+        "clause": "3.1.1",
+        "note": "批量导入最容易把占位文案带到线上"
+      }
+    },
+    {
+      "id": "listing.description.required",
+      "title": "描述字段必填",
+      "message": "缺商品描述，买家看不到关键信息",
+      "severity": "required",
+      "kind": "deterministic",
+      "scope": {
+        "sites": [
+          "*"
+        ],
+        "status": [
+          "draft",
+          "on_sale"
+        ]
+      },
+      "checks": [
+        {
+          "type": "field.required",
+          "path": "listing.description"
+        }
+      ],
+      "evidence": {
+        "quote": true,
+        "locate": "offset"
+      },
+      "remediation": {
+        "hint": "至少写清材质、尺寸、使用场景",
+        "autoFixable": false
+      },
+      "source": {
+        "clause": "3.4.1",
+        "note": "只查非空，不判质量；质量归语义判定"
+      }
+    },
+    {
+      "id": "listing.attrs.material_required",
+      "title": "材质字段必填",
+      "message": "缺材质字段，纤维成分无法核验",
+      "severity": "required",
+      "kind": "deterministic",
+      "scope": {
+        "sites": [
+          "*"
+        ],
+        "categories": [
+          "女装",
+          "家居"
+        ]
+      },
+      "checks": [
+        {
+          "type": "field.required",
+          "path": "attrs.material"
+        }
+      ],
+      "evidence": {
+        "quote": true,
+        "locate": "offset"
+      },
+      "remediation": {
+        "hint": "按实际面料填 attrs.material",
+        "autoFixable": false
+      },
+      "source": {
+        "clause": "7.2.1",
+        "note": "美妆不走这条：成分表格式不同"
+      }
+    },
+    {
+      "id": "listing.attrs.origin_enum",
+      "title": "产地需在允许集合内",
+      "message": "产地不在允许集合内，原产地标识需人工确认",
+      "severity": "observe",
+      "kind": "deterministic",
+      "scope": {
+        "sites": [
+          "*"
+        ]
+      },
+      "checks": [
+        {
+          "type": "field.enum",
+          "path": "attrs.origin",
+          "values": [
+            "CN",
+            "VN",
+            "TR",
+            "KR"
+          ]
+        }
+      ],
+      "evidence": {
+        "quote": true,
+        "locate": "offset"
+      },
+      "remediation": {
+        "hint": "确认产地编码是否用了 ISO 两位码",
+        "autoFixable": false
+      },
+      "source": {
+        "clause": "7.2.3",
+        "note": "集合外的产地不一定是错，可能只是没维护进白名单"
+      }
+    }
+  ]
+}

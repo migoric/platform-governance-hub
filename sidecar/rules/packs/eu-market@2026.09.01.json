@@ -1,0 +1,51 @@
+{
+  "packId": "eu-market",
+  "platform": "marketplace-a",
+  "version": "2026.09.01",
+  "effectiveFrom": "2026-09-01",
+  "effectiveTo": null,
+  "source": {
+    "doc": "《欧盟市场准入要求》（虚构，用于本机演示）",
+    "clause": "第 1 章 CE / REACH / 标签",
+    "url": "（本机 pack 内配置，不写死域名）",
+    "retrievedAt": "2026-11-06"
+  },
+  "rules": [
+    {
+      "id": "eu.market.ce_mark_required",
+      "title": "欧盟站点需 CE 符合性声明",
+      "message": "欧盟站点商品需 CE 符合性声明，需人工核对证书",
+      "severity": "blocker",
+      "kind": "manual",
+      "scope": { "sites": ["DE"] },
+      "checks": [],
+      "evidence": { "quote": true, "locate": "offset" },
+      "remediation": { "hint": "上传 CE DoC 与测试报告", "autoFixable": false },
+      "source": { "clause": "1.2.1", "note": "证书是否覆盖该型号，机器判不了，只能人工核对" }
+    },
+    {
+      "id": "listing.description.efficacy_claim",
+      "title": "描述是否含功效宣称",
+      "message": "描述可能含功效宣称，需语义判定",
+      "severity": "required",
+      "kind": "semantic",
+      "scope": { "sites": ["*"], "categories": ["美妆"] },
+      "checks": [],
+      "evidence": { "quote": true, "locate": "offset" },
+      "remediation": { "hint": "改为非功效表述，或补齐功效评价报告", "autoFixable": false },
+      "source": { "clause": "1.4.3", "note": "词典永远漏，所以交语义判定；判不出来就留在待判，不算通过" }
+    },
+    {
+      "id": "listing.image.watermark",
+      "title": "主图是否含水印或文字",
+      "message": "主图可能含水印/文字，需视觉判定",
+      "severity": "required",
+      "kind": "semantic",
+      "scope": { "sites": ["*"], "categories": ["女装"] },
+      "checks": [],
+      "evidence": { "quote": true, "locate": "offset" },
+      "remediation": { "hint": "换白底无水印主图", "autoFixable": false },
+      "source": { "clause": "1.5.2", "note": "需要 vision 能力；provider 不支持时保持待判" }
+    }
+  ]
+}

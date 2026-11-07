@@ -1,0 +1,63 @@
+{
+  "packId": "category-certs",
+  "platform": "marketplace-a",
+  "version": "2026.10.15",
+  "effectiveFrom": "2026-10-15",
+  "effectiveTo": null,
+  "source": {
+    "doc": "《类目资质与禁限售规则》（虚构，用于本机演示）",
+    "clause": "第 2 章 类目挂载与资质",
+    "url": "（本机 pack 内配置，不写死域名）",
+    "retrievedAt": "2026-11-06"
+  },
+  "rules": [
+    {
+      "id": "category.path.required",
+      "title": "商品必须挂到类目上",
+      "message": "缺类目，规则无法按类目取资质要求",
+      "severity": "required",
+      "kind": "deterministic",
+      "scope": { "sites": ["*"] },
+      "checks": [{ "type": "field.required", "path": "category" }],
+      "evidence": { "quote": true, "locate": "offset" },
+      "remediation": { "hint": "补一级 + 二级类目", "autoFixable": false },
+      "source": { "clause": "2.1.1", "note": "类目缺失时后续规则全部无法 scope，属阻断项" }
+    },
+    {
+      "id": "category.material.forbidden",
+      "title": "材质不得命中禁限售清单",
+      "message": "材质命中禁限售清单，不是审核问题而是法律问题",
+      "severity": "blocker",
+      "kind": "deterministic",
+      "scope": { "sites": ["*"], "categories": ["*"] },
+      "checks": [{ "type": "text.dictionary", "path": "attrs.material", "dict": "forbidden-materials", "mode": "any" }],
+      "evidence": { "quote": true, "locate": "offset" },
+      "remediation": { "hint": "立即下架，并核对 CITES 许可", "autoFixable": false },
+      "source": { "clause": "2.4.1", "note": "清单本身不完整，漏报风险靠人工巡检兜底" }
+    },
+    {
+      "id": "category.age_group.enum",
+      "title": "年龄段需为已知枚举",
+      "message": "年龄段不在允许集合内，儿童品类资质无法匹配",
+      "severity": "required",
+      "kind": "deterministic",
+      "scope": { "sites": ["*"], "categories": ["童装"] },
+      "checks": [{ "type": "field.enum", "path": "attrs.ageGroup", "values": ["adult", "kids", "infant"] }],
+      "evidence": { "quote": true, "locate": "offset" },
+      "remediation": { "hint": "改为 adult / kids / infant", "autoFixable": false },
+      "source": { "clause": "2.3.2", "note": "童装的资质要求按年龄段分档，枚举错了会取错档位" }
+    },
+    {
+      "id": "category.region.blocked",
+      "title": "类目不得属于站点禁售范围",
+      "message": "该类目在目标站点禁售",
+      "severity": "blocker",
+      "kind": "deterministic",
+      "scope": { "sites": ["US", "DE"] },
+      "checks": [{ "type": "list.contains", "path": "category", "values": ["武器", "仿真枪", "处方药"], "mode": "any" }],
+      "evidence": { "quote": true, "locate": "offset" },
+      "remediation": { "hint": "下架或换站点", "autoFixable": false },
+      "source": { "clause": "2.5.1", "note": "证据指向 category 数组里的那一个元素" }
+    }
+  ]
+}

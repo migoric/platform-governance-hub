@@ -5,7 +5,7 @@
 // 紧凑单行、0600、目录 0700、schema 合法、重复生成字节一致。少一条，App 侧就可能读到半截数据。
 
 import { spawnSync } from "node:child_process"
-import { mkdtempSync, readFileSync, rmSync, statSync } from "node:fs"
+import { mkdtempSync, readdirSync, readFileSync, rmSync, statSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 import { fileURLToPath } from "node:url"
@@ -74,6 +74,23 @@ try {
   })
 
   check("缺 --mock 时拒绝执行（exit 2）", () => assertEqual(run(["snapshot"]).code, 2, "exit"))
+
+  // 测试与运行依赖的文件必须在 git 里。`.gitignore` 的 `packs/` 曾经把整个内置规则库挡掉：
+  // 本地测试全绿，新克隆一跑就是 ENOENT —— 这种「只在自己机器上成立的绿」最危险。
+  check("测试依赖的文件都已入库", () => {
+    const tracked = spawnSync("git", ["-C", ROOT, "ls-files"], { encoding: "utf8" })
+    if (tracked.status !== 0) throw new Error("不是 git 仓库（归档导出？）——这条要在仓库内跑")
+    const files = new Set(tracked.stdout.split("\n").filter(Boolean))
+    const dirs = ["sidecar/rules/packs", "sidecar/rules/dicts", "GovernanceHub/fixtures"]
+    const missing = []
+    for (const dir of dirs) {
+      for (const name of readdirSync(join(ROOT, dir), { recursive: true })) {
+        const rel = `${dir}/${name}`.split("\\").join("/")
+        if (name.includes(".") && !files.has(rel)) missing.push(rel)
+      }
+    }
+    if (missing.length > 0) throw new Error(`未入库：${missing.slice(0, 5).join(", ")}`)
+  })
   check("未知命令时拒绝执行（exit 2）", () => assertEqual(run(["nope"]).code, 2, "exit"))
 } finally {
   rmSync(dir, { recursive: true, force: true })

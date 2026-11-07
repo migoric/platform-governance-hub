@@ -1,0 +1,5 @@
+{
+  "name": "organic-claims.en",
+  "description": "有机宣称。出现即要求登记认证编号；规则只负责标出宣称，证书核对见人工清单。",
+  "terms": ["organic", "bio", "eco-certified", "usda organic"]
+}

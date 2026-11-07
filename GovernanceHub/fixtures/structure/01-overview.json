@@ -612,7 +612,7 @@
                           "hex": "#4C5666FF"
                         }
                       },
-                      "text": "出图基准 · fixture · 8 条 finding · 快照 2026-11-06T09:00:00+08:00"
+                      "text": "出图基准 · fixture · 9 条 finding · 快照 2026-11-06T09:00:00+08:00"
                     }
                   ]
                 },
@@ -758,7 +758,7 @@
                             },
                             "weight": "semibold"
                           },
-                          "text": "8"
+                          "text": "9"
                         },
                         {
                           "kind": "text",
@@ -824,7 +824,7 @@
                             },
                             "weight": "semibold"
                           },
-                          "text": "3"
+                          "text": "1"
                         },
                         {
                           "kind": "text",
@@ -890,7 +890,7 @@
                             },
                             "weight": "semibold"
                           },
-                          "text": "2"
+                          "text": "7"
                         },
                         {
                           "kind": "text",
@@ -956,7 +956,7 @@
                   },
                   "data": {
                     "source": "dashboard.must_intervene",
-                    "total": 5
+                    "total": 4
                   },
                   "children": [
                     {
@@ -1052,7 +1052,7 @@
                                   "hex": "#14181FFF"
                                 }
                               },
-                              "text": "标题含绝对化用词「Best」"
+                              "text": "标题使用了绝对化用语，平台按违规严重度扣分"
                             },
                             {
                               "kind": "text",
@@ -1116,8 +1116,8 @@
                                 "stroke": {
                                   "width": 1.0,
                                   "paint": {
-                                    "token": "severity_blocker",
-                                    "hex": "#B3261EFF"
+                                    "token": "severity_required",
+                                    "hex": "#8A5A00FF"
                                   }
                                 },
                                 "radius": 6.0
@@ -1129,12 +1129,12 @@
                                     "axis": "column",
                                     "text_size": 12.0,
                                     "text_color": {
-                                      "token": "severity_blocker",
-                                      "hex": "#B3261EFF"
+                                      "token": "severity_required",
+                                      "hex": "#8A5A00FF"
                                     },
                                     "weight": "medium"
                                   },
-                                  "text": "阻断"
+                                  "text": "必改"
                                 }
                               ]
                             },
@@ -1163,7 +1163,7 @@
                                   "hex": "#14181FFF"
                                 }
                               },
-                              "text": "含电池类目未提供 MSDS"
+                              "text": "含电池商品需提供 MSDS 与运输声明"
                             },
                             {
                               "kind": "text",
@@ -1176,117 +1176,6 @@
                                 }
                               },
                               "text": "「Battery」title @23+7"
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "kind": "glass_card",
-                      "style": {
-                        "axis": "column",
-                        "gap": 8.0,
-                        "fill": {
-                          "token": "glass_fill",
-                          "hex": "#FFFFFFB8"
-                        },
-                        "stroke": {
-                          "width": 1.0,
-                          "paint": {
-                            "token": "glass_highlight",
-                            "hex": "#FFFFFFE0"
-                          }
-                        },
-                        "radius": 14.0
-                      },
-                      "children": [
-                        {
-                          "kind": "row",
-                          "style": {
-                            "axis": "column",
-                            "gap": 8.0,
-                            "pad": [
-                              8.0,
-                              8.0,
-                              8.0,
-                              8.0
-                            ],
-                            "radius": 10.0
-                          },
-                          "children": [
-                            {
-                              "kind": "badge",
-                              "style": {
-                                "axis": "column",
-                                "pad": [
-                                  4.0,
-                                  8.0,
-                                  4.0,
-                                  8.0
-                                ],
-                                "stroke": {
-                                  "width": 1.0,
-                                  "paint": {
-                                    "token": "severity_blocker",
-                                    "hex": "#B3261EFF"
-                                  }
-                                },
-                                "radius": 6.0
-                              },
-                              "children": [
-                                {
-                                  "kind": "text",
-                                  "style": {
-                                    "axis": "column",
-                                    "text_size": 12.0,
-                                    "text_color": {
-                                      "token": "severity_blocker",
-                                      "hex": "#B3261EFF"
-                                    },
-                                    "weight": "medium"
-                                  },
-                                  "text": "阻断"
-                                }
-                              ]
-                            },
-                            {
-                              "kind": "text",
-                              "style": {
-                                "axis": "column",
-                                "width": 150.0,
-                                "text_size": 12.5,
-                                "text_color": {
-                                  "token": "text_secondary",
-                                  "hex": "#4C5666FF"
-                                },
-                                "mono": true
-                              },
-                              "text": "hm2402-towel-008"
-                            },
-                            {
-                              "kind": "text",
-                              "style": {
-                                "axis": "column",
-                                "grow": true,
-                                "text_size": 14.0,
-                                "text_color": {
-                                  "token": "text_primary",
-                                  "hex": "#14181FFF"
-                                }
-                              },
-                              "text": "宣称 Organic 但未附有机认证"
-                            },
-                            {
-                              "kind": "text",
-                              "style": {
-                                "axis": "column",
-                                "text_size": 12.0,
-                                "text_color": {
-                                  "token": "text_tertiary",
-                                  "hex": "#6B7480FF"
-                                }
-                              },
-                              "text": "「Organic」title @0+7"
                             }
                           ]
                         }
@@ -1385,7 +1274,7 @@
                                   "hex": "#14181FFF"
                                 }
                               },
-                              "text": "成分宣称 100% 需与材质字段一致并附检测报告"
+                              "text": "「100%」属成分宣称，需与材质字段一致并附检测报告"
                             },
                             {
                               "kind": "text",
@@ -1496,7 +1385,7 @@
                                   "hex": "#14181FFF"
                                 }
                               },
-                              "text": "「Repair」属医疗功效表述，化妆品类目不允许"
+                              "text": "含医疗功效表述，化妆品与服饰类目不允许"
                             },
                             {
                               "kind": "text",
@@ -1559,7 +1448,7 @@
                           "hex": "#4C5666FF"
                         }
                       },
-                      "text": "marketplace-a · 站点 US · DE · 类目 女装 / 家居 / 美妆 · 规则 32 条（1 个包）· 严重度 阻断 3 · 必改 2 · 建议 2 · 留意 1"
+                      "text": "marketplace-a · 站点 US · DE · 类目 女装 / 家居 / 美妆 / 童装 · 规则 23 条（3 个包）· 严重度 阻断 1 · 必改 4 · 建议 2 · 留意 2"
                     },
                     {
                       "kind": "text",

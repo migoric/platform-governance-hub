@@ -128,10 +128,11 @@ mod tests {
         let s = snapshot();
         let kpis = Dashboard::new(&s).kpis();
         assert_eq!(kpis.items, 8);
-        assert_eq!(kpis.findings, 8);
-        assert_eq!(kpis.blocker, 3);
-        assert_eq!(kpis.required, 2);
-        assert_eq!(kpis.unjudged, 2);
+        assert_eq!(kpis.findings, 9);
+        assert_eq!(kpis.blocker, 1);
+        assert_eq!(kpis.required, 4);
+        // 判不了不是通过：7 条语义/人工判定留在待判
+        assert_eq!(kpis.unjudged, 7);
         // 与 findings 实算一致，说明 sidecar 的聚合没错
         assert_eq!(kpis.findings as usize, s.findings.len());
     }
@@ -140,7 +141,7 @@ mod tests {
     fn 最该介入最多六条且_blocker_在前() {
         let s = snapshot();
         let pick = Dashboard::new(&s).must_intervene();
-        assert_eq!(pick.len(), 5, "mock 是 3 blocker + 2 required");
+        assert_eq!(pick.len(), 4, "mock 是 1 blocker + 4 required，required 截到 3 条");
         assert_eq!(pick[0].severity, Severity::Blocker);
         assert_eq!(pick[3].severity, Severity::Required);
     }
@@ -149,7 +150,7 @@ mod tests {
     fn 风险清单排序是严重度优先且稳定() {
         let s = snapshot();
         let sorted = Dashboard::new(&s).findings_sorted();
-        assert_eq!(sorted.len(), 8);
+        assert_eq!(sorted.len(), 9);
         let severities: Vec<Severity> = sorted.iter().map(|f| f.severity).collect();
         let mut expected = severities.clone();
         expected.sort();

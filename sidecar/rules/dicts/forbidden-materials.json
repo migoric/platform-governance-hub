@@ -1,0 +1,5 @@
+{
+  "name": "forbidden-materials",
+  "description": "禁限售材质。命中即 blocker：不是审核不过，是可能违法（CITES 等）。",
+  "terms": ["ivory", "rhino horn", "tiger bone", "fur", "coral", "象牙", "犀牛角", "虎骨", "皮草"]
+}

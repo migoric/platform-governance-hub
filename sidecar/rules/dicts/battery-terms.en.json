@@ -1,0 +1,5 @@
+{
+  "name": "battery-terms.en",
+  "description": "含电池信号词。命中即要求 MSDS 与运输声明（UN38.3 等）。",
+  "terms": ["battery", "lithium", "rechargeable", "power bank", "button cell"]
+}

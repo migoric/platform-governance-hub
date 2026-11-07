@@ -101,9 +101,9 @@ test("pgh tasks 缺 --mock → 退出码 2", (t) => {
 test("main：help / version / 未知命令", (t) => {
   const { logs, io } = sandbox(t)
   assert.equal(main([], io), 0)
-  assert.match(logs.join("\n"), /pgh 0\.1\.0-m0/)
+  assert.match(logs.join("\n"), /pgh 0\.2\.0-m1/)
   assert.equal(main(["--version"], io), 0)
-  assert.match(logs.at(-1), /^0\.1\.0-m0$/)
+  assert.match(logs.at(-1), /^0\.2\.0-m1$/)
   assert.equal(main(["nope"], io), 2)
   assert.equal(main(["snapshot", "--help"], io), 0)
 })

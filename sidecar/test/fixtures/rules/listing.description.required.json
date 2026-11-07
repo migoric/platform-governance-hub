@@ -1,0 +1,78 @@
+{
+  "ruleId": "listing.description.required",
+  "note": "描述为空 → absence 证据",
+  "positive": [
+    {
+      "id": "it_fx001",
+      "sku": "fx-0001",
+      "title": "Plain Cotton T Shirt Unisex",
+      "category": [
+        "女装",
+        "T恤"
+      ],
+      "site": "US",
+      "status": "on_sale",
+      "attrs": {
+        "material": "100% Cotton",
+        "origin": "CN",
+        "ageGroup": "adult"
+      },
+      "assets": [
+        {
+          "kind": "main_image",
+          "ref": "ev_fx1",
+          "width": 1000,
+          "height": 1000,
+          "hasText": false,
+          "background": "white"
+        }
+      ],
+      "listing": {
+        "bullets": 4,
+        "description": "",
+        "price": {
+          "current": 9.9,
+          "compareAt": 12.9,
+          "currency": "USD"
+        }
+      }
+    }
+  ],
+  "negative": [
+    {
+      "id": "it_fx001",
+      "sku": "fx-0001",
+      "title": "Plain Cotton T Shirt Unisex",
+      "category": [
+        "女装",
+        "T恤"
+      ],
+      "site": "US",
+      "status": "on_sale",
+      "attrs": {
+        "material": "100% Cotton",
+        "origin": "CN",
+        "ageGroup": "adult"
+      },
+      "assets": [
+        {
+          "kind": "main_image",
+          "ref": "ev_fx1",
+          "width": 1000,
+          "height": 1000,
+          "hasText": false,
+          "background": "white"
+        }
+      ],
+      "listing": {
+        "bullets": 4,
+        "description": "Plain cotton t shirt for daily wear.",
+        "price": {
+          "current": 9.9,
+          "compareAt": 12.9,
+          "currency": "USD"
+        }
+      }
+    }
+  ]
+}

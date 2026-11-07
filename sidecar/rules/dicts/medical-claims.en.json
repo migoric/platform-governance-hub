@@ -1,0 +1,5 @@
+{
+  "name": "medical-claims.en",
+  "description": "医疗功效表述。化妆品、服饰类目一律不许出现，命中即改文案或补资质。",
+  "terms": ["repair", "heal", "cure", "treat", "anti-inflammatory", "regenerate", "therapeutic", "clinically proven"]
+}

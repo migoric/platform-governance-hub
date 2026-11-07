@@ -2,17 +2,21 @@
 // pgh —— 命令路由，只做分发（architecture.md §6：pgh.mjs 只路由）。
 // 业务逻辑一律在 cli/commands/* 或 snapshot/ domain/ 里，这里不做任何计算。
 
+import { runCheck, CHECK_USAGE } from "./cli/commands/check.mjs"
+import { runRules, RULES_USAGE } from "./cli/commands/rules.mjs"
 import { runSnapshot, SNAPSHOT_USAGE } from "./cli/commands/snapshot.mjs"
 import { runTasks, TASKS_USAGE } from "./cli/commands/tasks.mjs"
 
-const VERSION = "0.1.0-m0"
+const VERSION = "0.2.0-m1"
 
 const USAGE = `pgh ${VERSION} — platform governance hub sidecar
 
 用法：pgh <命令> [参数]
 
-  snapshot  生成 / 校验快照（M0 只有 --mock）
-  tasks     生成 / 校验任务列表投影（M0 只有 --mock）
+  snapshot  生成 / 校验快照（--mock）
+  tasks     生成 / 校验任务列表投影（--mock）
+  rules     看规则库、测一条新规则的影响（list / impact）
+  check     对快照跑判定（引擎唯一入口）
 
   pgh <命令> --help   看该命令的参数
   pgh --version       版本
@@ -43,6 +47,10 @@ export function main(argv, io = {}) {
       return runSnapshot(rest, { env: io.env ?? process.env, stdout, stderr })
     case "tasks":
       return runTasks(rest, { env: io.env ?? process.env, stdout, stderr })
+    case "rules":
+      return runRules(rest, { env: io.env ?? process.env, stdout, stderr })
+    case "check":
+      return runCheck(rest, { env: io.env ?? process.env, stdout, stderr })
     default:
       stderr(`不认识的命令：${command}`)
       stderr(USAGE)
@@ -56,4 +64,4 @@ if (invokedDirectly) {
   process.exitCode = main(process.argv.slice(2))
 }
 
-export { SNAPSHOT_USAGE, TASKS_USAGE }
+export { CHECK_USAGE, RULES_USAGE, SNAPSHOT_USAGE, TASKS_USAGE }

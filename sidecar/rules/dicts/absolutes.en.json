@@ -1,0 +1,5 @@
+{
+  "name": "absolutes.en",
+  "description": "英文绝对化用语（平台按违规严重度扣分，见 baseline 规则 listing.title.absolute_terms）",
+  "terms": ["best", "no.1", "number one", "guaranteed", "perfect", "top rated", "world's best", "ultimate", "unbeatable"]
+}

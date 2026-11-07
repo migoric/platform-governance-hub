@@ -4,6 +4,7 @@
 // 宽容解码是 App 侧的事（旧快照缺字段要能读），写盘侧必须严格，否则半截数据会被当成合法数据。
 
 import { parseLocalIso } from "../util/dates.mjs"
+import { getPath } from "../util/paths.mjs"
 
 export const SNAPSHOT_SCHEMA_VERSION = 1
 
@@ -13,31 +14,23 @@ export const KINDS = Object.freeze(["deterministic", "semantic", "manual"])
 export const FINDING_STATUSES = Object.freeze(["open", "fixed", "waived", "stale"])
 export const SOURCE_KINDS = Object.freeze(["export", "browser", "mock", "local"])
 export const ITEM_STATUSES = Object.freeze(["on_sale", "off_sale", "draft", "blocked"])
+/** 证据三态：quote 指字符串位置，absence 指字段没填，element 指数组里的一个元素。 */
+export const EVIDENCE_KINDS = Object.freeze(["quote", "absence", "element"])
 
 const isObj = (v) => typeof v === "object" && v !== null && !Array.isArray(v)
 const isStr = (v) => typeof v === "string"
 const isInt = (v) => Number.isInteger(v)
 const nonEmpty = (v) => isStr(v) && v.trim() !== ""
+// 「填了没有」只有一个判断处：field.required check 与 absence 证据都用它
+const isFilled = (v) =>
+  v !== undefined && v !== null && v !== "" && !(isStr(v) && v.trim() === "") && !(Array.isArray(v) && v.length === 0)
 
 const err = (errors, code, path, message) => errors.push({ code, path, message })
 
-/**
- * 按点号路径读字段：`listing.description`、`attrs.material`。
- * 读不到返回 undefined（调用方决定算「未填」还是「错」）。
- * @param {unknown} root
- * @param {string} path
- * @returns {unknown}
- */
-export function getPath(root, path) {
-  if (!isStr(path) || path === "") return undefined
-  let cur = root
-  for (const key of path.split(".")) {
-    if (!isObj(cur) && !Array.isArray(cur)) return undefined
-    cur = cur[key]
-    if (cur === undefined) return undefined
-  }
-  return cur
-}
+// 路径读取复用 util/paths.mjs：规则、引擎、校验三处必须读同一份实现，
+// 否则会出现「校验通过但规则读不到」这种对不上的错。
+export { getPath }
+
 
 function isIso(value) {
   if (!isStr(value)) return false
@@ -126,10 +119,38 @@ function validateEvidence(item, finding, path, errors) {
   if (isStr(ev.quote) && isInt(ev.length) && ev.length !== ev.quote.length) {
     err(errors, "E_EVIDENCE_LENGTH", `${path}.evidence.length`, `length=${ev.length} 与 quote.length=${ev.quote.length} 不一致`)
   }
+  const kind = ev.kind === undefined ? "quote" : ev.kind
+  if (!EVIDENCE_KINDS.includes(kind)) {
+    err(errors, "E_EVIDENCE_KIND", `${path}.evidence.kind`, `kind 只能是 ${EVIDENCE_KINDS.join("/")}：${kind}`)
+    return
+  }
   if (!isObj(item)) return // item 不存在时上面已报 E_FINDING_ITEM，别再叠一条 quote 错误
-
-  // 硬失败：quote 必须能在 field 的值里按 offset/length 命中，对不上就丢弃（snapshot-contract §4）
   const value = getPath(item, ev.field)
+
+  if (kind === "absence") {
+    // 字段没填才允许 absence：拿它给「有值的字段」开脱，等于把证据链改成了口头承诺
+    if (ev.quote !== "" || ev.offset !== 0 || ev.length !== 0) {
+      err(errors, "E_EVIDENCE_ABSENCE", `${path}.evidence`, "absence 证据的 quote 必须为空、offset 与 length 必须为 0")
+    } else if (isFilled(value)) {
+      err(errors, "E_EVIDENCE_ABSENCE", `${path}.evidence`, `${ev.field} 实际有值，不能用 absence 证据`)
+    }
+    return
+  }
+
+  if (kind === "element") {
+    if (!Array.isArray(value)) {
+      err(errors, "E_EVIDENCE_ELEMENT", `${path}.evidence`, `${ev.field} 不是数组，无法指向元素`)
+    } else if (!isInt(ev.elementIndex) || ev.elementIndex < 0 || ev.elementIndex >= value.length) {
+      err(errors, "E_EVIDENCE_ELEMENT", `${path}.evidence.elementIndex`, `elementIndex 越界：${ev.elementIndex}`)
+    } else if (value[ev.elementIndex] !== ev.quote) {
+      err(errors, "E_EVIDENCE_ELEMENT", `${path}.evidence`, `元素 [${ev.elementIndex}] 实际是「${value[ev.elementIndex]}」，不是「${ev.quote}」`)
+    } else if (ev.offset !== 0 || ev.length !== ev.quote.length) {
+      err(errors, "E_EVIDENCE_ELEMENT", `${path}.evidence`, "element 证据的 offset 必须为 0，length 必须等于 quote 长度")
+    }
+    return
+  }
+
+  // kind === "quote"：硬失败，quote 必须能在 field 的值里按 offset/length 命中（snapshot-contract §4）
   if (!isStr(value)) {
     err(errors, "E_EVIDENCE_QUOTE_MISS", `${path}.evidence`, `${ev.field} 不是字符串，无法命中 quote`)
     return
@@ -277,6 +298,13 @@ export function validateSnapshot(input) {
   findings.forEach((finding, i) => validateFinding(finding, i, { byItemId, ruleIds, ruleIdsDeclared }, errors))
 
   validateSummary(input.summary, findings, errors)
+  if (input.unjudged !== undefined) {
+    if (!Array.isArray(input.unjudged)) {
+      err(errors, "E_UNJUDGED", "unjudged", "unjudged 必须是数组")
+    } else if (isObj(input.summary) && isInt(input.summary.unjudged) && input.unjudged.length !== input.summary.unjudged) {
+      err(errors, "E_UNJUDGED_COUNT", "unjudged", `明细 ${input.unjudged.length} 条与 summary.unjudged=${input.summary.unjudged} 不一致`)
+    }
+  }
 
   return { ok: errors.length === 0, errors }
 }

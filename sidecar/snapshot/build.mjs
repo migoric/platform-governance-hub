@@ -3,10 +3,10 @@
 // M0 只产出 mock：一份能让 UI 出图、能让门禁跑通的合法快照。真实采集在 M3。
 // 纯函数：时间由调用方注入，同一份输入重复调用输出字节级一致（roadmap M1 验收 2 的同一套要求）。
 
+import { evaluate } from "../domain/rules-engine.mjs"
+import { defaultRuleSet } from "../rules/default.mjs"
 import { toLocalIso } from "../util/dates.mjs"
-import { SNAPSHOT_SCHEMA_VERSION, SEVERITIES, getPath, SnapshotValidationError, validateSnapshot } from "./schema.mjs"
-
-const RULE_PACK = { id: "baseline", version: "2026.11.1", ruleCount: 32, effectiveFrom: "2026-11-01" }
+import { SNAPSHOT_SCHEMA_VERSION, SEVERITIES, SnapshotValidationError, validateSnapshot } from "./schema.mjs"
 
 // 全部为虚构数据：不含真实平台名、域名、SKU（architecture.md §8）
 const MOCK_ITEMS = [
@@ -122,117 +122,17 @@ const MOCK_ITEMS = [
   },
 ]
 
-// quote 是判定要引用的原文片段，offset 由程序算出来（见 toFinding）——
-// 手写 offset 必错，而 offset 错一条就等于证据链断一条。
-const MOCK_FINDINGS = [
-  {
-    itemId: "it_8f21a",
-    field: "title",
-    quote: "Best",
-    ruleId: "listing.title.absolute_terms",
-    severity: "blocker",
-    message: "标题含绝对化用词「Best」",
-    hint: "删除 Best / No.1 这类绝对化表述",
-  },
-  {
-    itemId: "it_b204e",
-    field: "title",
-    quote: "Organic",
-    ruleId: "listing.claim.organic_cert",
-    severity: "blocker",
-    message: "宣称 Organic 但未附有机认证",
-    hint: "补充认证文件，或删除 Organic 字样",
-  },
-  {
-    itemId: "it_c61aa",
-    field: "title",
-    quote: "Battery",
-    ruleId: "category.battery.doc_required",
-    severity: "blocker",
-    message: "含电池类目未提供 MSDS",
-    hint: "上传电池 MSDS 与运输声明",
-  },
-  {
-    itemId: "it_3c702",
-    field: "title",
-    quote: "100%",
-    ruleId: "listing.claim.composition",
-    severity: "required",
-    message: "成分宣称 100% 需与材质字段一致并附检测报告",
-    hint: "核对材质字段，补齐检测报告",
-  },
-  {
-    itemId: "it_5d18b",
-    field: "title",
-    quote: "Repair",
-    ruleId: "listing.claim.medical",
-    severity: "required",
-    message: "「Repair」属医疗功效表述，化妆品类目不允许",
-    hint: "改为保湿 / 舒缓等非医疗表述",
-  },
-  {
-    itemId: "it_7a9f1",
-    field: "title",
-    quote: "-50%",
-    ruleId: "listing.promo.expression",
-    severity: "suggest",
-    message: "折扣表述建议改为「原价 × 现价」并列",
-    hint: "按站点要求展示原价与折扣依据",
-  },
-  {
-    itemId: "it_9f4c2",
-    field: "title",
-    quote: "Professional",
-    ruleId: "listing.claim.professional",
-    severity: "suggest",
-    message: "「Professional」属专业级宣称，建议注明适用场景",
-    hint: "补一句适用人群或场景说明",
-  },
-  {
-    itemId: "it_e13b7",
-    field: "title",
-    quote: "1L",
-    ruleId: "listing.unit.dual_display",
-    severity: "observe",
-    message: "容量使用单一单位，部分站点要求双单位",
-    hint: "补标 33.8 oz",
-  },
-]
-
+// 深拷贝一份，且把 titleLen 这个冗余字段算准：一个数字只能有一个计算处（ui-ia §5）
 function cloneItem(item) {
-  const copy = { ...item, category: [...item.category], attrs: { ...item.attrs }, assets: item.assets.map((a) => ({ ...a })), listing: { ...item.listing, price: { ...item.listing.price } } }
+  const copy = {
+    ...item,
+    category: [...item.category],
+    attrs: { ...item.attrs },
+    assets: item.assets.map((a) => ({ ...a })),
+    listing: { ...item.listing, price: { ...item.listing.price } },
+  }
   copy.listing.titleLen = item.title.length
   return copy
-}
-
-function toFinding(spec, byId, judgedAt) {
-  const item = byId.get(spec.itemId)
-  if (!item) throw new Error(`mock 数据不一致：找不到 item ${spec.itemId}`)
-  const value = getPath(item, spec.field)
-  const offset = typeof value === "string" ? value.indexOf(spec.quote) : -1
-  if (offset < 0) {
-    throw new Error(`mock 数据不一致：${spec.itemId} 的 ${spec.field} 里找不到「${spec.quote}」`)
-  }
-  return {
-    id: `fd_${spec.ruleId.split(".").pop()}_${spec.itemId.slice(3)}`,
-    itemId: spec.itemId,
-    ruleId: spec.ruleId,
-    ruleVersion: RULE_PACK.version,
-    severity: spec.severity,
-    kind: "deterministic",
-    message: spec.message,
-    evidence: {
-      field: spec.field,
-      quote: spec.quote,
-      offset,
-      length: spec.quote.length,
-      assetRef: null,
-      sourceRef: `rule:${spec.ruleId}`,
-    },
-    remediation: { hint: spec.hint, autoFixable: false },
-    judgedAt,
-    status: "open",
-  }
 }
 
 function countBySeverity(findings) {
@@ -244,34 +144,40 @@ function countBySeverity(findings) {
 
 /**
  * 造一份合法的 mock 快照。
- * @param {{ now?: Date, label?: string }} [options]
+ *
+ * M1 起 finding **不由这里手写**，而是 `evaluate()` 现算：手写 finding 就等于手写 offset，
+ * 而 offset 错一条就是证据链断一条。同一个引擎同时供给 `pgh check`、`pgh rules impact` 和 App，
+ * 三处的数字才可能一致。
+ *
+ * @param {{ now?: Date, label?: string, ruleSet?: object }} [options]
  * @returns {object}
  */
-export function buildMockSnapshot({ now = new Date(), label = "mock 数据（虚构）" } = {}) {
+export function buildMockSnapshot({ now = new Date(), label = "mock 数据（虚构）", ruleSet = defaultRuleSet() } = {}) {
   if (!(now instanceof Date)) throw new TypeError("buildMockSnapshot: now 必须是 Date")
   const generatedAt = toLocalIso(now)
   const items = MOCK_ITEMS.map(cloneItem)
-  const byId = new Map(items.map((it) => [it.id, it]))
-  const findings = MOCK_FINDINGS.map((spec) => toFinding(spec, byId, generatedAt))
+  const { findings, unjudged } = evaluate({ items, rules: ruleSet.rules, dicts: ruleSet.dicts, judgedAt: generatedAt })
 
   return {
     schemaVersion: SNAPSHOT_SCHEMA_VERSION,
     generatedAt,
     durationMs: 0,
     source: { kind: "mock", label },
-    scope: { platform: "marketplace-a", sites: ["US", "DE"], categories: ["女装", "家居", "美妆"] },
+    scope: { platform: "marketplace-a", sites: ["US", "DE"], categories: ["女装", "家居", "美妆", "童装"] },
     summary: {
       items: items.length,
       findings: findings.length,
       bySeverity: countBySeverity(findings),
-      // 判不了的不算通过：M0 没有规则库，这个数字只是给 UI 一个非零值的样例
-      unjudged: 2,
-      rulesEvaluated: RULE_PACK.ruleCount,
-      rulePacks: 1,
+      // 判不了的不算通过（snapshot-contract §2）：这个数字是「没说」，不是「没问题」
+      unjudged: unjudged.length,
+      rulesEvaluated: ruleSet.rules.length,
+      rulePacks: ruleSet.packMeta.length,
     },
-    rulePacks: [RULE_PACK],
+    rulePacks: ruleSet.packMeta,
     items,
     findings,
+    // 明细随快照走：UI 的「判不了」面板要能点开看到是哪条规则、为什么判不了
+    unjudged,
     agent: {
       provider: "replay",
       capabilities: { streaming: true, tools: true, vision: false, cost: true },

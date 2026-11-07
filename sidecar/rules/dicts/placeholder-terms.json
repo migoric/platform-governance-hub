@@ -1,0 +1,5 @@
+{
+  "name": "placeholder-terms",
+  "description": "占位文案。批量导入时最容易带到线上，命中即要求改。",
+  "terms": ["lorem ipsum", "tbd", "待填", "待补充", "占位", "placeholder", "test product"]
+}

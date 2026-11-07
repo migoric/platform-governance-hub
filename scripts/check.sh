@@ -80,7 +80,17 @@ run_rust() {
     printf '\033[31mcargo test 失败，完整日志：%s\033[0m\n' "$log"
     return 1
   fi
-  grep -E "^test result|Finished" "$log" | tail -3
+  # 结构快照回归：改版前后比结构不比观感（docs/ui-ia.md §8）。
+  # 不一致时退出码 1，并打印是哪个视图变了。
+  ( cd GovernanceHub && cargo run --quiet -p hub -- --check-baseline >> "$log" 2>&1 )
+  rc=$?
+  if [ $rc -ne 0 ]; then
+    grep -E "结构快照|·" "$log" | tail -12
+    printf '\033[31m结构快照与基准不一致，完整日志：%s\033[0m\n' "$log"
+    printf '如果是想要的变化：cd GovernanceHub && cargo run -p hub -- --render fixtures/structure\n'
+    return 1
+  fi
+  grep -E "^test result|结构快照与基准一致" "$log" | tail -4
   rm -f "$log"
 }
 
